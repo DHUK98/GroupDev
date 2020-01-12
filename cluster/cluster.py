@@ -2,7 +2,7 @@
 Use various cluster algorithms to cluster trajectories
 """
 
-import Data.NovClim.reader as rd
+import reader.NovClim.reader as rd
 import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.cluster import AgglomerativeClustering
