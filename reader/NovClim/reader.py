@@ -63,7 +63,8 @@ def plot_2D(X, Y, plot="scatter", xlabel="", ylabel=""):
 if __name__ == "__main__":
 	## EXAMPLE USAGE ###
 
-	time, lat, lon, height, pressure = initialise("Trajectories/ERA-Interim_1degree_CapeGrim_100m_2016_hourly.nc")
+	time, lat, lon, height, pressure = initialise("GroupDev/data/Trajectories/ERA"
+												  "-Interim_1degree_CapeGrim_100m_2016_hourly.nc")
 
 
 
