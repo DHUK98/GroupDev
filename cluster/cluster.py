@@ -4,12 +4,15 @@ Use various cluster algorithms to cluster trajectories
 
 import reader.NovClim.reader as rd
 import numpy as np
+from utils import vector
 from sklearn.cluster import KMeans
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.metrics import davies_bouldin_score
 import json
 from scipy.cluster.hierarchy import dendrogram, linkage
 from matplotlib import pyplot as plt
+
+
 
 def get_trajectory_array(dimensionArray, n):
     # Return a 241 point array of the different data points for a particular dimension dimension should be a string of
@@ -30,59 +33,31 @@ def getData(dimensionArray1, dimensionArray2, n=8756):
         tempList1 = get_trajectory_array(dimensionArray1, i)
         tempList2 = get_trajectory_array(dimensionArray2, i)
 
-        data.append(trajToVec(tempList1, tempList2))
+        data.append(vector.trajToVec(tempList1, tempList2))
 
     X = np.array(data)
 
     return X
 
 
-def trajToVec(dim1, dim2):
-    # Convert 2 dimensions into a vector of dimensions equal to sum of total data
-
-    if len(dim1) != len(dim2):
-        print("Dimensions do not match up")
-    else:
-        Xlist = []
-        for item in dim1:
-            Xlist.append(item)
-        for item in dim2:
-            Xlist.append(item)
-
-        # print(len(Xlist))
-
-        Xarray = np.array(Xlist)
-
-        return Xarray
+# def test_scores(X):
+#     Xs = []
+#     Ys = []
+#
+#     for n in range(20):
+#         m = (n * 30) + 310
+#
+#         kmeans = KMeans(n_clusters=m)
+#         kmeans.fit(X)
+#
+#         Xs.append(m)
+#         Ys.append(davies_bouldin_score(X, kmeans.labels_))
+#
+#     return Xs, Ys
 
 
-def vecToTraj(vec):
-    list = vec
-
-    dim1 = list[:len(list) // 2]
-    dim2 = list[len(list) // 2:]
-
-    return dim1, dim2
-
-
-def test_scores(X):
-    Xs = []
-    Ys = []
-
-    for n in range(20):
-        m = (n * 30) + 310
-
-        kmeans = KMeans(n_clusters=m)
-        kmeans.fit(X)
-
-        Xs.append(m)
-        Ys.append(davies_bouldin_score(X, kmeans.labels_))
-
-    return Xs, Ys
-
-
-# Get all the data points in a cluster
 def get_cluster(data, labels, label):
+    # Get all the data points in a cluster
     data_points = []
 
     for i in range(len(labels)):
@@ -92,8 +67,8 @@ def get_cluster(data, labels, label):
     return data_points
 
 
-# Get the mean trajectory in a cluster
 def agg_centroid(cluster):
+    # Get the mean trajectory in a cluster
     vec_size = len(cluster[0])
 
     mean_vec = [0 for _ in range(vec_size)]
@@ -108,8 +83,9 @@ def agg_centroid(cluster):
     return mean_vec
 
 
-# Get all centroids from the clustering
+
 def all_centroids(data, labels):
+    # Get all centroids from the clustering
     centroids = []
 
     N = max(labels) + 1
@@ -117,7 +93,7 @@ def all_centroids(data, labels):
     for n in range(N):
         cluster = get_cluster(data, labels, n)
         centroid = agg_centroid(cluster)
-        dim1, dim2 = vecToTraj(centroid)
+        dim1, dim2 = vector.vecToTraj(centroid)
 
         centroids.append((tuple(dim1), tuple(dim2)))
 
@@ -154,4 +130,3 @@ if __name__ == "__main__":
     j = buildJson(centroids)
     print('done')
     print(j)
-
