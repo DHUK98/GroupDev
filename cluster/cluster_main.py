@@ -3,68 +3,18 @@ Use various cluster algorithms to cluster trajectories
 """
 
 import reader.NovClim.reader as rd
-import numpy as np
 from utils import vector
+from cluster import cluster_utils
+
+import numpy as np
+from matplotlib import pyplot as plt
+
 from sklearn.cluster import KMeans
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.metrics import davies_bouldin_score
+
 import json
 from scipy.cluster.hierarchy import dendrogram, linkage
-from matplotlib import pyplot as plt
-
-
-
-def get_trajectory_array(dimensionArray, n):
-    # Return a 241 point array of the different data points for a particular dimension dimension should be a string of
-    # either time, latitude, longitude, height, or pressure n is which trajectory - from 0 to 8756. Each one is a
-    # different 241 point array for that particular aerosol particle's journey
-
-    if n > 8756 or n < 0:
-        print("Please use valid value for n")
-        return
-    else:
-        return dimensionArray[n]
-
-
-def getData(dimensionArray1, dimensionArray2, n=8756):
-    data = []
-
-    for i in range(n):
-        tempList1 = get_trajectory_array(dimensionArray1, i)
-        tempList2 = get_trajectory_array(dimensionArray2, i)
-
-        data.append(vector.trajToVec(tempList1, tempList2))
-
-    X = np.array(data)
-
-    return X
-
-
-# def test_scores(X):
-#     Xs = []
-#     Ys = []
-#
-#     for n in range(20):
-#         m = (n * 30) + 310
-#
-#         kmeans = KMeans(n_clusters=m)
-#         kmeans.fit(X)
-#
-#         Xs.append(m)
-#         Ys.append(davies_bouldin_score(X, kmeans.labels_))
-#
-#     return Xs, Ys
-
-
-def get_cluster(data, labels, label):
-    # Get all the data points in a cluster
-    data_points = []
-
-    for i in range(len(labels)):
-        if labels[i] == label:
-            data_points.append(data[i])
-
-    return data_points
 
 
 def agg_centroid(cluster):
@@ -91,7 +41,7 @@ def all_centroids(data, labels):
     N = max(labels) + 1
 
     for n in range(N):
-        cluster = get_cluster(data, labels, n)
+        cluster = cluster_utils.get_cluster(data, labels, n)
         centroid = agg_centroid(cluster)
         dim1, dim2 = vector.vecToTraj(centroid)
 
@@ -113,20 +63,52 @@ def buildJson(centroids):
 
     return json_msg
 
+def plot_dendrogram(model, **kwargs):
+    # Create linkage matrix and then plot the dendrogram
+
+    # create the counts of samples under each node
+    counts = np.zeros(model.children_.shape[0])
+    n_samples = len(model.labels_)
+    for i, merge in enumerate(model.children_):
+        current_count = 0
+        for child_idx in merge:
+            if child_idx < n_samples:
+                current_count += 1  # leaf node
+            else:
+                current_count += counts[child_idx - n_samples]
+        counts[i] = current_count
+
+    linkage_matrix = np.column_stack([model.children_, model.distances_,
+                                      counts]).astype(float)
+
+    # Plot the corresponding dendrogram
+    dendrogram(linkage_matrix, **kwargs)
+
 
 if __name__ == "__main__":
     time, lat, lon, height, pressure = rd.initialise(
         "../data/Trajectories/ERA-Interim_1degree_CapeGrim_100m_2016_hourly.nc")
 
-    X = getData(lat, lon)
+    x = cluster_utils.toVector(lat, lon)
+
+    X = x[:100]
 
     n = 4
     # cluster_model = KMeans(n_clusters=n)
-    cluster_model = AgglomerativeClustering(n_clusters=n)
+    cluster_model = AgglomerativeClustering(n_clusters=None, distance_threshold=0)
     cluster_model.fit(X)
 
     centroids = all_centroids(X, cluster_model.labels_)
 
+
+    # for c in centroids:
+    #     y = [i for i in range(len(c))]
+    #     plt.scatter(c[0], c[1])
+    #     plt.show()
+
+    # plot the top three levels of the dendrogram
+    plot_dendrogram(cluster_model, truncate_mode='level', p=3)
+
     j = buildJson(centroids)
     print('done')
-    print(j)
+    # print(j)
