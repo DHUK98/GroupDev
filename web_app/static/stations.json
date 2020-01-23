@@ -1,0 +1,485 @@
+[
+  {
+    "ID": "ZEP",
+    "Station": "Zeppelin",
+    "lat": 78.906,
+    "lon": 11.888,
+    "Height m.a.s.l": 474
+  },
+  {
+    "ID": "NRD",
+    "Station": "Station Nord",
+    "lat": 81.6,
+    "lon": -16.67,
+    "Height m.a.s.l": 30
+  },
+  {
+    "ID": "ALT",
+    "Station": "Alert",
+    "lat": 82.5,
+    "lon": -62.3,
+    "Height m.a.s.l": 210
+  },
+  {
+    "ID": "BRW",
+    "Station": "Barrow",
+    "lat": 71.32,
+    "lon": -156.616,
+    "Height m.a.s.l": 8
+  },
+  {
+    "ID": "TIK",
+    "Station": "Tiksi",
+    "lat": 71.6,
+    "lon": 128.89,
+    "Height m.a.s.l": 35
+  },
+  {
+    "ID": "ASP",
+    "Station": "Aspvreten",
+    "lat": 58.8,
+    "lon": 17.383,
+    "Height m.a.s.l": 30
+  },
+  {
+    "ID": "BIR",
+    "Station": "Birkenes",
+    "lat": 58.383,
+    "lon": 8.25,
+    "Height m.a.s.l": 190
+  },
+  {
+    "ID": "PAL",
+    "Station": "Pallas",
+    "lat": 67.967,
+    "lon": 24.117,
+    "Height m.a.s.l": 560
+  },
+  {
+    "ID": "PLA",
+    "Station": "Preila",
+    "lat": 55.37,
+    "lon": 21.03,
+    "Height m.a.s.l": 5
+  },
+  {
+    "ID": "SMR",
+    "Station": "Hyytiala (SMEAR II)",
+    "lat": 61.85,
+    "lon": 24.283,
+    "Height m.a.s.l": 181
+  },
+  {
+    "ID": "VHL",
+    "Station": "Vavihill",
+    "lat": 56.017,
+    "lon": 13.15,
+    "Height m.a.s.l": 172
+  },
+  {
+    "ID": "TTU",
+    "Station": "Tartu",
+    "lat": 58.37,
+    "lon": 26.74,
+    "Height m.a.s.l": 40
+  },
+  {
+    "ID": "VIL",
+    "Station": "Vilnius",
+    "lat": 54.643,
+    "lon": 25.183,
+    "Height m.a.s.l": 170
+  },
+  {
+    "ID": "VRO",
+    "Station": "Värriö",
+    "lat": 67.767,
+    "lon": 29.583,
+    "Height m.a.s.l": 400
+  },
+  {
+    "ID": "BOS",
+    "Station": "Bosel",
+    "lat": 53,
+    "lon": 7.95,
+    "Height m.a.s.l": 16
+  },
+  {
+    "ID": "KPO",
+    "Station": "K-Puszta",
+    "lat": 46.967,
+    "lon": 19.317,
+    "Height m.a.s.l": 125
+  },
+  {
+    "ID": "MPZ",
+    "Station": "Melptiz",
+    "lat": 51.54,
+    "lon": 12.93,
+    "Height m.a.s.l": 86
+  },
+  {
+    "ID": "OBK",
+    "Station": "Kosetice",
+    "lat": 49.58,
+    "lon": 15.25,
+    "Height m.a.s.l": 534
+  },
+  {
+    "ID": "HPB",
+    "Station": "Hohenpeissenberg",
+    "lat": 47.8,
+    "lon": 11.01,
+    "Height m.a.s.l": 986
+  },
+  {
+    "ID": "WAL",
+    "Station": "Waldhof",
+    "lat": 52.8,
+    "lon": 10.756,
+    "Height m.a.s.l": 75
+  },
+  {
+    "ID": "PRG",
+    "Station": "Prague",
+    "lat": 50.127,
+    "lon": 14.385,
+    "Height m.a.s.l": 190
+  },
+  {
+    "ID": "CBW",
+    "Station": "Cabauw",
+    "lat": 51.971,
+    "lon": 4.927,
+    "Height m.a.s.l": 1
+  },
+  {
+    "ID": "HWL",
+    "Station": "Harwell",
+    "lat": 51.567,
+    "lon": -1.317,
+    "Height m.a.s.l": 60
+  },
+  {
+    "ID": "NKEN",
+    "Station": "North Kensignton",
+    "lat": 51.521,
+    "lon": -0.2135,
+    "Height m.a.s.l": 5
+  },
+  {
+    "ID": "MHD",
+    "Station": "Mace Head",
+    "lat": 53.326,
+    "lon": -9.904,
+    "Height m.a.s.l": 5
+  },
+  {
+    "ID": "LYN",
+    "Station": "Lyon",
+    "lat": 45.779,
+    "lon": 4.882,
+    "Height m.a.s.l": 185
+  },
+  {
+    "ID": "MDR",
+    "Station": "Madrid",
+    "lat": 40.456,
+    "lon": -3.73,
+    "Height m.a.s.l": 669
+  },
+  {
+    "ID": "PAR",
+    "Station": "Paris (SITRA)",
+    "lat": 48.718,
+    "lon": 2.207,
+    "Height m.a.s.l": 156
+  },
+  {
+    "ID": "FKL",
+    "Station": "Finokalia",
+    "lat": 35.33,
+    "lon": 25.67,
+    "Height m.a.s.l": 250
+  },
+  {
+    "ID": "IPR",
+    "Station": "JRC-Ispra",
+    "lat": 45.82,
+    "lon": 8.63,
+    "Height m.a.s.l": 209
+  },
+  {
+    "ID": "CAP",
+    "Station": "Cap Corse (CHARMEX Supersite)",
+    "lat": 42.969,
+    "lon": 9.38,
+    "Height m.a.s.l": 516
+  },
+  {
+    "ID": "MNY",
+    "Station": "Montseny",
+    "lat": 41.779,
+    "lon": 2.358,
+    "Height m.a.s.l": 720
+  },
+  {
+    "ID": "NEO",
+    "Station": "Navarino Observatory",
+    "lat": 36.83,
+    "lon": 21.704,
+    "Height m.a.s.l": 53
+  },
+  {
+    "ID": "ASI",
+    "Station": "Ascension Island (ARM)",
+    "lat": -7.97,
+    "lon": -14.405,
+    "Height m.a.s.l": 76
+  },
+  {
+    "ID": "MCO",
+    "Station": "Maarco, UAE (Arabian Gulf)",
+    "lat": 24.7,
+    "lon": 54.659,
+    "Height m.a.s.l": 5
+  },
+  {
+    "ID": "GRA",
+    "Station": "Granada",
+    "lat": 37.164,
+    "lon": -3.605,
+    "Height m.a.s.l": 680
+  },
+  {
+    "ID": "OPE",
+    "Station": "Observatoire Perenne de l'Environnement",
+    "lat": 48.562,
+    "lon": 5.506,
+    "Height m.a.s.l": 392
+  },
+  {
+    "ID": "ABU",
+    "Station": "Annaberg-Buchholz",
+    "lat": 50.572,
+    "lon": 12.999,
+    "Height m.a.s.l": 545
+  },
+  {
+    "ID": "NGW",
+    "Station": "Neuglobsow",
+    "lat": 53.167,
+    "lon": 13.033,
+    "Height m.a.s.l": 62
+  },
+  {
+    "ID": "LMO",
+    "Station": "L.mesto",
+    "lat": 50.661,
+    "lon": 14.04,
+    "Height m.a.s.l": 147
+  },
+  {
+    "ID": "VLM",
+    "Station": "Vielsalm",
+    "lat": 50.304,
+    "lon": 6.001,
+    "Height m.a.s.l": 496
+  },
+  {
+    "ID": "ATH",
+    "Station": "Athens",
+    "lat": 37.991,
+    "lon": 23.81,
+    "Height m.a.s.l": 270
+  },
+  {
+    "ID": "LEC",
+    "Station": "LecceECO",
+    "lat": 40.336,
+    "lon": 18.125,
+    "Height m.a.s.l": 36
+  },
+  {
+    "ID": "GIO",
+    "Station": "GiordanLighthouse",
+    "lat": 36.072,
+    "lon": 14.218,
+    "Height m.a.s.l": 167
+  },
+  {
+    "ID": "AYO",
+    "Station": "Anmyeondo, South Korea",
+    "lat": 36.538,
+    "lon": 126.33,
+    "Height m.a.s.l": 46
+  },
+  {
+    "ID": "DRE",
+    "Station": "DresdenWinckelmannstrasse",
+    "lat": 51.036,
+    "lon": 13.731,
+    "Height m.a.s.l": 120
+  },
+  {
+    "ID": "NMY",
+    "Station": "Neumayer",
+    "lat": -70.666,
+    "lon": -8.266,
+    "Height m.a.s.l": 42
+  },
+  {
+    "ID": "GPA",
+    "Station": "GualPahari",
+    "lat": 28.428,
+    "lon": 77.151,
+    "Height m.a.s.l": 320
+  },
+  {
+    "ID": "WVB",
+    "Station": "Walvis Bay (Airport)",
+    "lat": -22.98,
+    "lon": 14.374,
+    "Height m.a.s.l": "n/a"
+  },
+  {
+    "ID": "STH",
+    "Station": "St Helena",
+    "lat": -15.942,
+    "lon": -5.667,
+    "Height m.a.s.l": 435
+  },
+  {
+    "ID": "GOB",
+    "Station": "Gobabeb",
+    "lat": -23.562,
+    "lon": 15.041,
+    "Height m.a.s.l": 405
+  },
+  {
+    "ID": "HEN",
+    "Station": "Henties Bay",
+    "lat": -22.095,
+    "lon": 14.26,
+    "Height m.a.s.l": 20
+  },
+  {
+    "ID": "NAN",
+    "Station": "Nanjing (SORPES)",
+    "lat": 32.121,
+    "lon": 118.953,
+    "Height m.a.s.l": 40
+  },
+  {
+    "ID": "BAL",
+    "Station": "Balia",
+    "lat": 25.8,
+    "lon": 84.2,
+    "Height m.a.s.l": 64
+  },
+  {
+    "ID": "GUW",
+    "Station": "Guwahati",
+    "lat": 26.183,
+    "lon": 91.733,
+    "Height m.a.s.l": 55
+  },
+  {
+    "ID": "PDD",
+    "Station": "Puy de Dôme",
+    "lat": 45.772,
+    "lon": 2.966,
+    "Height m.a.s.l": 1465
+  },
+  {
+    "ID": "SSL",
+    "Station": "Schauinsland",
+    "lat": 47.917,
+    "lon": 7.917,
+    "Height m.a.s.l": 1210
+  },
+  {
+    "ID": "ZSF",
+    "Station": "Zugspitze",
+    "lat": 47.417,
+    "lon": 10.983,
+    "Height m.a.s.l": 2670
+  },
+  {
+    "ID": "JFJ",
+    "Station": "Jungfraujoch",
+    "lat": 46.548,
+    "lon": 7.985,
+    "Height m.a.s.l": 3571
+  },
+  {
+    "ID": "BEO",
+    "Station": "Moussala",
+    "lat": 42.18,
+    "lon": 23.585,
+    "Height m.a.s.l": 2925
+  },
+  {
+    "ID": "CMN",
+    "Station": "Monte Cimone",
+    "lat": 44.2,
+    "lon": 10.7,
+    "Height m.a.s.l": 2165
+  },
+  {
+    "ID": "MLO",
+    "Station": "Mauna Loa Observatory",
+    "lat": 19.54,
+    "lon": -155.58,
+    "Height m.a.s.l": 3397
+  },
+  {
+    "ID": "ARE",
+    "Station": "Åre",
+    "lat": 63.427,
+    "lon": 13.077,
+    "Height m.a.s.l": 1242
+  },
+  {
+    "ID": "SMT",
+    "Station": "Summit",
+    "lat": 72.596,
+    "lon": -38.422,
+    "Height m.a.s.l": 3209
+  },
+  {
+    "ID": "PIC",
+    "Station": "PicduMidi",
+    "lat": 42.937,
+    "lon": 0.142,
+    "Height m.a.s.l": 2877
+  },
+  {
+    "ID": "IZA",
+    "Station": "Izana",
+    "lat": 28.309,
+    "lon": -16.499,
+    "Height m.a.s.l": 2373
+  },
+  {
+    "ID": "NEP",
+    "Station": "NepalClimateObservatoryPyramid",
+    "lat": 27.958,
+    "lon": 86.815,
+    "Height m.a.s.l": 5079
+  },
+  {
+    "ID": "CHAC",
+    "Station": "Mount Chacaltaya",
+    "lat": -16.35,
+    "lon": -68.131,
+    "Height m.a.s.l": 5320
+  },
+  {
+    "ID": "TRO",
+    "Station": "Trollhaugen",
+    "lat": -72.012,
+    "lon": 2.535,
+    "Height m.a.s.l": 1553
+  }
+]
