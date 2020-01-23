@@ -11,7 +11,7 @@ def json_from_netcdf_file(filepath):
     """
     First part is from old reader.py file.
     We can either replace that with a call to the initialise function in reader
-    or just use these util files and render reader obsolete
+    or just use these util files and render reader.py obsolete
     """
 
     f = Dataset(filepath, "r", format="NETCDF4")
@@ -29,7 +29,7 @@ def json_from_netcdf_file(filepath):
     height = height[:]
     pressure = pressure[:]
 
-    # .tolist() function takes a few sections but is needed to make the np.MaskedArray type JSON serialisable
+    # .tolist() function takes a few seconds but is needed to make the np.MaskedArray type JSON serialisable
     data_dict = {"time" : time.tolist(), "lat" : lat.tolist(), "lon" : lon.tolist(), "height" : height.tolist(), "pressure" : pressure.tolist()}
     data_json = json.dumps(data_dict, sort_keys=True)
 
@@ -42,3 +42,6 @@ if __name__ == "__main__":
     my_path = os.path.abspath(os.path.dirname(__file__))
     path = os.path.join(my_path, "../data/ERA-Interim_1degree_CapeGrim_100m_2016_hourly.nc")
     json_output = json_from_netcdf_file(path)
+    with open("json_test.json", "w+") as fw:
+        json.dump(json_output, fw)
+
