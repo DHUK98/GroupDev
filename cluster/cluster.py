@@ -112,12 +112,27 @@ def buildJson(centroids):
     return json_msg
 
 
+# WRITE FUNCTION TO HANDLE KMEANS REQUEST
+
+# WRITE FUNCTION TO HANDLE HIERARCHICAL LINKAGE MATRIX REQUEST
+
+
+
 
 if __name__ == "__main__":
     time, lat, lon, height, pressure = rd.initialise(
         "../data/Trajectories/ERA-Interim_1degree_CapeGrim_100m_2016_hourly.nc")
 
     X = toVector(lat, lon)
+
+    # store_linkage(X)
+
+    Z = open_linkage()
+
+    cc = fcluster(Z, 8, criterion='maxclust')
+
+    print(cc)
+    print(max(cc), min(cc))
 
 
 
