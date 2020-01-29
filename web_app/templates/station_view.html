@@ -1,12 +1,9 @@
 {% extends "base.html" %}
-{% block title %}{{ id }}{% endblock %}
+{% block title %}{{ name }}{% endblock %}
 {% block head %}
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/$VERSION/dragula.min.js'></script>
     {{ super() }}
     <style type="text/css">
-        .important {
-            color: #336699;
-        }
-
         .wrapper {
             display: grid;
             grid-template-rows: 8% 92%;
@@ -36,12 +33,32 @@
             background-color: #555;
             grid-row: 2;
             grid-column: 2;
+            padding: 20px;
+            position: relative;
+
+            height: 100%;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        ::-webkit-scrollbar {
+            width: 0px;
+        }
+
+        .scroll {
+            max-height: 100%;
+            overflow: auto;
         }
 
         .output {
             background-color: #666;
             grid-row: 2;
             grid-column: 3;
+
+        }
+
+        #calculate {
+            width: 100%;
         }
 
         .sphere {
@@ -59,12 +76,13 @@
             stroke-linecap: round;
             vector-effect: non-scaling-stroke;
         }
+
     </style>
 {% endblock %}
 {% block content %}
     <div class="wrapper">
         <div class="w3-container w3-blue-grey head">
-            <h1>{{ id }}</h1>
+            <h1>{{ name }}</h1>
         </div>
 
         <div class="map">
@@ -72,15 +90,102 @@
         </div>
 
         <div class="input">
+            <div class="scroll">
+                <div class="w3-card-4">
+                    <header class="w3-container w3-teal">
+                        <h2>Sector</h2>
+                    </header>
+                    <div class="w3-container w3-white">
+                        <P>
+                            <label>Start angle</label>
+                            <input class="w3-input" id="start_angle_val" type="number">
+                        <P>
+                            <label>End angle</label>
+                            <input class="w3-input" id="end_angle_val" type="number">
+                        <P>
+                            <label>Threshold (time outside sector)</label>
+                            <input class="w3-input" id="sec_threshold_val" type="number">
+                        <P>
+                            <input class="w3-button w3-teal" id="add_sector" type="button" value="Add">
+                    </div>
+
+                </div>
+                <p></p>
+                <div class="w3-card-4">
+                    <header class="w3-container w3-teal">
+                        <h2>Cluster</h2>
+                    </header>
+                    <div class="w3-container w3-white">
+                        <P>
+                            <label>Number of clusters</label>
+                            <input class="w3-input" type="number">
+                        <P>
+                            <input class="w3-button w3-teal" id="add_cluster" type="button" value="Add">
+                    </div>
+
+                </div>
+                <P></P>
+                <ul class="w3-ul w3-border w3-white" id="stack">
+
+                </ul>
+                <p></p>
+                <input class="w3-button w3-teal" id="calculate" type="button" value="Calclate">
+            </div>
         </div>
 
+
         <div class="output">
+            <p id="test_out">TEST OUT</p>
         </div>
 
     </div>
 
     <script>
-        const projection = d3.geoAzimuthalEqualArea();
+        let iid = "{{ id }}";
+
+        var el = document.getElementById('stack');
+        new Sortable(el, {
+            animation: 150
+        });
+        document.getElementById("add_sector").onclick = function () {
+            var z = document.createElement('li'); // is a node
+            z.innerHTML = "<button class='w3-button w3-white' id='sector' onclick='Delete(this)' ali>x</button>" + "\tSector";
+            let stack = document.getElementById("stack");
+            var element = $('#stack #sector');
+            if (element.length > 0) {
+            } else {
+                stack.appendChild(z)
+            }
+            let url = "/sector/"+iid+
+            "/" + document.getElementById("start_angle_val").value + "/" + document.getElementById("end_angle_val").value;
+            $.get(url, function (data, status) {
+                document.getElementById("test_out").innerHTML = data;
+            });
+        }
+        document.getElementById("add_cluster").onclick = function () {
+            var z = document.createElement('li'); // is a node
+            z.innerHTML = "<button class='w3-button w3-white' id='clustor' onclick='Delete(this)' ali>x</button>" + "\tClustor";
+            let stack = document.getElementById("stack");
+            var element = $('#stack #clustor');
+            console.log(element);
+            if (element.length > 0) {
+            } else {
+                stack.appendChild(z)
+
+            }
+        }
+
+        function Delete(currentEl) {
+            currentEl.parentNode.parentNode.removeChild(currentEl.parentNode);
+        }
+
+        console.log({{ lng }});
+        console.log({{ lat }});
+        let lat = {{ lat }};
+        let lng = {{ lng }};
+
+        const projection = d3.geoAzimuthalEqualArea().rotate([-lng, -lat]);
+
         const path = d3.geoPath().projection(projection);
 
         const zoom = d3.zoom()
@@ -88,9 +193,10 @@
             .on('zoom', zoomed);
 
         const svg = d3.select('#svg_map');
-
+        let w = parseInt(svg.style("width"));
+        console.log(w);
         const g = svg.append('g');
-        d3.select('g').attr('transform', 'translate(0 0)')
+        d3.select('g').attr('transform', 'translate(-' + (w / 2) + ' 0)scale(' + (w / 600) + ')')
         {#d3.select('g').attr('transform', 'translate(0,0)')#}
         svg.style("width", "100%");
         g.call(zoom);
@@ -114,13 +220,14 @@
                     .attr('d', path);
             });
 
+
         function zoomed() {
             g
                 .selectAll('path') // To prevent stroke width from scaling
                 .attr('transform', d3.event.transform);
             g
                 .selectAll('circle') // To prevent stroke width from scaling
-                .attr('transform', d3.event.transform).attr("r", Math.min(3, 3 / (d3.event.transform.k / 2)));
+                .attr('transform', d3.event.transform);
         }
     </script>
 {% endblock %}

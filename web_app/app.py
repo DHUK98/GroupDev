@@ -1,7 +1,11 @@
 from flask import Flask, render_template
 import os
 import json
-from flask import request
+import sys
+from flask import jsonify
+
+sys.path.insert(1, '../sector')
+from sector_main import sector
 
 app = Flask(__name__)
 
@@ -16,7 +20,23 @@ def home():
 
 @app.route('/station/<iid>')
 def station(iid):
-    return render_template('station_view.html', id=iid);
+    lat = 0
+    lng = 0
+    try:
+        with open('static/stations/' + iid + "/info.json") as json_file:
+            data = json.load(json_file)
+            lat = data["lat"]
+            lng = data["lon"]
+            name = data["Station"]
+        print(lat, lng)
+        return render_template('station_view.html', id=iid, lat=lat, lng=lng, name=name);
+    except Exception as e:
+        return str(e)
+
+
+@app.route('/sector/<iid>/<start_ang>/<end_ang>')
+def sector(iid, start_ang, end_ang):
+    return jsonify(str(iid + start_ang + end_ang));
 
 
 if __name__ == '__main__':
