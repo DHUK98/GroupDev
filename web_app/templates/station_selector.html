@@ -97,7 +97,7 @@
                 .attr('cy', function (d) {
                     return projection([d.lon, d.lat])[1]
                 }).attr("id", function (d) {
-                return d.Station
+                return d.ID
             })
                 .attr('r', 3).style("fill", "#FFF")
                 .on("mouseover", function () {
@@ -106,7 +106,6 @@
                 d3.select(this).style("fill", "#FFF");
             }).on("click", function () {
                 let iid = d3.select(this).attr("id");
-
                 window.location.href = '{{ url_for( 'station',iid="test") }}'.replace("test", iid)
             })
         });
