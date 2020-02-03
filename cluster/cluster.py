@@ -4,6 +4,7 @@ Use various cluster algorithms to cluster trajectories
 
 import json
 from scipy.cluster.hierarchy import linkage, fcluster
+from sklearn.cluster import KMeans
 from utils import vector
 import reader.NovClim.reader as rd
 import pickle
@@ -12,6 +13,8 @@ import numpy as np
 '''
 General utility functions
 '''
+
+
 def get_trajectory_array(dimensionArray, n):
     # Return a 241 point array of the different data points for a particular dimension dimension should be a string of
     # either time, latitude, longitude, height, or pressure n is which trajectory - from 0 to 8756. Each one is a
@@ -24,10 +27,10 @@ def get_trajectory_array(dimensionArray, n):
         return dimensionArray[n]
 
 
-def toVector(dimensionArray1, dimensionArray2, n=8756):
+def toVector(dimensionArray1, dimensionArray2):
     data = []
 
-    for i in range(n):
+    for i in range(len(dimensionArray1)):
         tempList1 = get_trajectory_array(dimensionArray1, i)
         tempList2 = get_trajectory_array(dimensionArray2, i)
 
@@ -37,14 +40,13 @@ def toVector(dimensionArray1, dimensionArray2, n=8756):
 
     return X
 
+
 def get_cluster(data, data_labels, target_label):
     # Get all the data points in a cluster
     data_points = []
-
     for i in range(len(data_labels)):
         if data_labels[i] == target_label:
             data_points.append(data[i])
-
     return data_points
 
 
@@ -67,7 +69,11 @@ def open_linkage():
 
     return Z
 
+
 def centroid(cluster):
+    # Check for empty cluster
+    if len(cluster[0]) == 0:
+        return []
     # Get the mean trajectory in a cluster
     vec_size = len(cluster[0])
 
@@ -82,41 +88,108 @@ def centroid(cluster):
 
     return mean_vec
 
+
 def get_centroids(X, labels):
     # Get all centroids from the clustering
     centroids = []
 
-    N = max(labels) + 1
+    N = max(labels)
 
     for n in range(N):
+        n += 1  # Avoid off by 1 error, scipy labels clusters from 1-8 not 0-7
         cluster = get_cluster(X, labels, n)
         cent = centroid(cluster)
-        dim1, dim2 = vector.vecToTraj(centroid)
+        dim1, dim2 = vector.vecToTraj(cent)
 
         centroids.append((tuple(dim1), tuple(dim2)))
 
     return centroids
 
 
-# Build a JSON message containing the cluster centroids
-def buildJson(centroids):
-    centroid_dic = {}
+# # Build a JSON message containing the cluster centroids
+# def centroids_json(centroids):
+#     centroid_dic = {}
+#
+#     for c in range(len(centroids)):
+#         # key = "cluster " + str(c)
+#
+#         centroid_dic.update({c: centroids[c]})
+#
+#     json_msg = json.dumps(centroid_dic)
+#
+#     return json_msg
 
-    for c in range(len(centroids)):
-        # key = "cluster " + str(c)
+# Function to handle request for kmeans clustering of a sector
+def kmeans_request(json_msg):
+    # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon), and
+    # number of clusters
 
-        centroid_dic.update({c: centroids[c]})
+    # Read json message
+    loaded = json.loads(json_msg)
 
-    json_msg = json.dumps(centroid_dic)
+    dim1 = loaded.get('dim1')
+    dim2 = loaded.get('dim2')
+    cluster_no = loaded.get('cluster_no')
+
+    X = toVector(dim1, dim2)
+
+    model = KMeans(n_clusters=cluster_no).fit(X)
+
+    labels = model.labels_
+
+    # Convert to same labelling system as scipy: 1 -> N not 0 -> N-1
+    for i in range(len(labels)):
+        labels[i] += 1
+
+    centroids = get_centroids(X, labels)
+
+    json_dict = {'labels': labels.tolist(),
+                 'centroids': centroids
+                 }
+    json_msg = json.dumps(json_dict)
 
     return json_msg
 
 
-# WRITE FUNCTION TO HANDLE KMEANS REQUEST
-
 # WRITE FUNCTION TO HANDLE HIERARCHICAL LINKAGE MATRIX REQUEST
+def linkage_request(json_msg):
+    # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon)
+
+    # Read json message
+    loaded = json.loads(json_msg)
+    # Turn to cluster-able vector
+    X = toVector(loaded.get('dim1'), loaded.get('dim2'))
+
+    # Get linkage matrix
+    Z = linkage(X, 'ward')
+
+    json_dict = {'Z': Z.tolist()}
+
+    json_msg = json.dumps(json_dict)
+
+    return json_msg
 
 
+def cluster_request(json_msg):
+    # Take input of json message containing linkage matrix Z and no. of clusters
+
+    # Read json message
+    loaded = json.loads(json_msg)
+
+    Z = loaded.get('Z')
+    cluster_no = loaded.get('cluster_no')
+    X = toVector(loaded.get('dim1'), loaded.get('dim2'))
+
+    labels = fcluster(Z, cluster_no, criterion='maxclust')
+
+    centroids = get_centroids(X, labels)
+
+    json_dict = {'labels': labels.tolist(),
+                 'centroids': centroids
+                 }
+    json_msg = json.dumps(json_dict)
+
+    return json_msg
 
 
 if __name__ == "__main__":
@@ -127,13 +200,38 @@ if __name__ == "__main__":
 
     # store_linkage(X)
 
-    Z = open_linkage()
+    # Z = open_linkage()
 
-    cc = fcluster(Z, 8, criterion='maxclust')
+    # test_json_dict_linkage = {
+    #                   'dim1': lat.tolist(),
+    #                   'dim2': lon.tolist()
+    #                   }
+    #
+    #
+    # test_json_linkage = json.dumps(test_json_dict_linkage)
+    #
+    # linkage_json_test = linkage_request(test_json_linkage)
 
-    print(cc)
-    print(max(cc), min(cc))
+    # print(linkage_json_test)
 
+    # test_json_dict_cluster = {'Z': Z.tolist(),
+    #                         'cluster_no': 8,
+    #                         'dim1': lat.tolist(),
+    #                         'dim2': lon.tolist()
+    #                         }
+    #
+    # test_json_cluster = json.dumps(test_json_dict_cluster)
 
+    # print(cluster_request(test_json_cluster))
 
+    # cc = fcluster(Z, 8, criterion='maxclust')
+
+    test_json_dict_kmeans = {
+                      'dim1': lat.tolist(),
+                      'dim2': lon.tolist(),
+                      'cluster_no': 8
+                      }
+    test_json_kmeans = json.dumps(test_json_dict_kmeans)
+
+    print(kmeans_request(test_json_kmeans))
 
