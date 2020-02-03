@@ -4,6 +4,7 @@ Use various cluster algorithms to cluster trajectories
 
 import json
 from scipy.cluster.hierarchy import linkage, fcluster
+from sklearn.cluster import KMeans
 from utils import vector
 import reader.NovClim.reader as rd
 import pickle
@@ -111,8 +112,9 @@ def buildJson(centroids):
 
     return json_msg
 
-
-# WRITE FUNCTION TO HANDLE KMEANS REQUEST
+# Function to handle request for kmeans clustering of a sector
+def kmeans_request(dim1, dim2):
+    model = KMeans
 
 # WRITE FUNCTION TO HANDLE HIERARCHICAL LINKAGE MATRIX REQUEST
 
