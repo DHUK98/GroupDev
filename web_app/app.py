@@ -5,7 +5,7 @@ import sys
 from flask import jsonify
 
 sys.path.insert(1, '../sector')
-from sector_main import sector
+# from sector_main import sector
 
 app = Flask(__name__)
 
