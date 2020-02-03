@@ -17,28 +17,117 @@ pressure :
 
 
 import sys, json, math
+from matplotlib.path import Path
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 sys.path.insert(1, '../utils')    # allow reading of utils functions
 
 from json_reader import json_from_netcdf_file
 
 
 
-"""
-Take in JSON.. done
-    Use utils folder function.. done
-
-Iterate through each trajectory's points
-Check if the lat/lon is in the sector based on parameters
-    Think about graph, the sector and the trajectories are using a common scale
-
-    Have a count that increments each time it is not in the sector
-    if it gets to 5 or 6 not in the sector then disregard the sector and move on to the next
-        assign a new JSON and delete the entry off of that one so that the iterating still works
-    if you get to the end then add that trajectory to another JSON in the same format 
 
 """
+Currently: 
+Drawing polygon, making all points relative to the sensor origin
+Checking if points fall inside the polygon
+This works, however the translation of points does not take into account the wrapping around at edges
+from -170 to 170 lat for example. This is only a 20 degree difference 
+but will not translate towards the new relative origin correctly because of the pos/neg signs etc
+
+Need to do/fix:
+A better way would be to use some other conversion package to convert lat/lon to x/y
+So we won't have to think about it
+Look at latlon_to_xy_conversion_example.py in same folder for what I'm attempting to do
+But I can't get pyproj to install for the life of me
+If someone could install pyproj and try running it that would be great
+You need to install this proj Windows binary and I've done everything but nada
+It might end up being easier on Mac 
+
+Failing that try basemap, 
+it's not as targeted towards just converting coordinates but it has the functionality
+though I also can't seem to get the sodding thing to install for the same reason
+"""
+
+# pass lat lon coordinates of polygon points
+# unpack tuple, don't change tuple
+# just unpack and change points when making polygon
+def polygon_sector(data, points, start_lat, start_lon, interpolation=False):
+    sectored_data = dict()
+    r_start_lat = 0
+    r_start_lon = 0
+    contains_count = 0
+    doesnt_contain_count = 0
+    # Create polygon
+    r_polygon = create_polygon(start_lat, start_lon, points)
+
+    for t in range(len(data['lat'])):
+
+        lats = data['lat'][t]
+        lons = data['lon'][t]
+
+        for l in range(len(lats)):
+
+            new_lat = lats[l]
+            new_lon = lons[l]
+
+            r_lat = lats[l] - start_lat
+            r_lon = lons[l] - start_lon
+
+            if r_polygon.contains_point(tuple((r_lat, r_lon))):
+                # print("It contains : (" + str(r_lat) + ", " + str(r_lon) + ")")
+                contains_count += 1
+            else:
+                # print("It doesn't contains : (" + str(r_lat) + ", " + str(r_lon) + ")")
+                doesnt_contain_count += 1
+
+        if contains_count > 1:
+            print("\n\nTrajectory " + str(t) + ": ")
+            print("In sector: " + str(contains_count) + " hours")
+            print("Not in sector: " + str(doesnt_contain_count) + " hours")
+
+        contains_count = 0
+        doesnt_contain_count = 0
+
+
+def create_polygon(start_lat, start_lon, points):
+    # create polygon relative to sensor from lat/lon points
+    r_point_list = []
+    # print(points)
+
+    for p in points:
+        (lat, lon) = p
+        r_point_list.append(tuple((lat - start_lat, lon - start_lon)))
+
+    # join up path with first point again to complete polygon
+    point = points[0]
+    (lat, lon) = point
+    r_point_list.append(tuple((lat - start_lat, lon - start_lon)))
+
+    # append codes to draw polygon
+    codes = []
+    codes.append(Path.MOVETO)
+    for i in range(len(points) - 1):
+        codes.append(Path.LINETO)
+    codes.append(Path.CLOSEPOLY)
+
+    print("Verts:")
+    for r_point in r_point_list:
+        print(r_point)
+
+    r_polygon = Path(r_point_list, codes)
+
+    # plot poly for fun
+    fig, ax = plt.subplots()
+    patch = patches.PathPatch(r_polygon, facecolor='orange', lw=2)
+    ax.add_patch(patch)
+    ax.set_xlim(-20, 20)
+    ax.set_ylim(-20, 20)
+    plt.show()
+
+    return r_polygon
+
 
 
 def sector(data, start_angle, end_angle, start_lat, start_lon):
@@ -96,10 +185,6 @@ def sector(data, start_angle, end_angle, start_lat, start_lon):
                 # print("lons were wrong")
                 # change lon
                 traj_lon_from_center += 360
-
-
-
-
 
             #     pass
             #     print("Adding 360 to lon")
@@ -166,15 +251,15 @@ def check_point(x, y, start_angle, end_angle):
     pass
 
 
-
 if __name__ == "__main__":
     example_path = "../data/ERA-Interim_1degree_CapeGrim_100m_2012_hourly.nc"
     example_lat = -40.682
     example_lon = 144.688
+    example_points = [(-40.682, 144.688), (-35.682, 144.38), (-35.682, 138.688)]
 
     print("Loading data...", end="")
     example_data = json.loads(json_from_netcdf_file(example_path))
     print("Done")
-    output_data = sector(example_data, start_angle=0, end_angle=360, start_lat=example_lat, start_lon=example_lon)
+    output_data = polygon_sector(example_data, points=example_points, start_lat=example_lat, start_lon=example_lon)
     print("\n\n\nOUTPUT DATA: ")
     print(output_data)
