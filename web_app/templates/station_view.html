@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ name }}{% endblock %}
 {% block head %}
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/$VERSION/dragula.min.js'></script>
     {{ super() }}
     <style type="text/css">
         .wrapper {
@@ -13,9 +12,16 @@
         }
 
         .head {
-            grid-column: 1/-1;
+            grid-column: 1;
         }
 
+        .head_in {
+            grid-column: 2;
+        }
+
+        .head_out {
+            grid-column: 3;
+        }
 
         .svg_map {
             height: 100%;
@@ -33,6 +39,18 @@
             background-color: #555;
             grid-row: 2;
             grid-column: 2;
+
+            position: relative;
+
+            height: 100%;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .output {
+            background-color: #555;
+            grid-row: 2;
+            grid-column: 2;
             padding: 20px;
             position: relative;
 
@@ -42,11 +60,23 @@
         }
 
         ::-webkit-scrollbar {
-            width: 0px;
+            width: 10px;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: gray;
+            border-radius: 10px;
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            background: teal;
         }
 
         .scroll {
             max-height: 100%;
+            padding: 20px;
             overflow: auto;
         }
 
@@ -84,6 +114,13 @@
         <div class="w3-container w3-blue-grey head">
             <h1>{{ name }}</h1>
         </div>
+        <div class="w3-container w3-teal head_in">
+            <h1>Input</h1>
+        </div>
+        <div class="w3-container w3-blue-grey head_out">
+            <h1>Output</h1>
+        </div>
+
 
         <div class="map">
             <svg id="svg_map" width="100%" height="100%"></svg>
@@ -98,13 +135,16 @@
                     <div class="w3-container w3-white">
                         <P>
                             <label>Start angle</label>
-                            <input class="w3-input" id="start_angle_val" type="number">
+                            <input class="w3-input" id="start_angle_val" type="number" value=0>
                         <P>
                             <label>End angle</label>
-                            <input class="w3-input" id="end_angle_val" type="number">
+                            <input class="w3-input" id="end_angle_val" type="number" value=0>
+                        <P>
+                            <label>Distance</label>
+                            <input class="w3-input" id="sec_dist_val" type="number" value=0>
                         <P>
                             <label>Threshold (time outside sector)</label>
-                            <input class="w3-input" id="sec_threshold_val" type="number">
+                            <input class="w3-input" id="sec_threshold_val" type="number" value=5>
                         <P>
                             <input class="w3-button w3-teal" id="add_sector" type="button" value="Add">
                     </div>
@@ -118,9 +158,23 @@
                     <div class="w3-container w3-white">
                         <P>
                             <label>Number of clusters</label>
-                            <input class="w3-input" type="number">
+                            <input class="w3-input" type="number" value=0>
                         <P>
                             <input class="w3-button w3-teal" id="add_cluster" type="button" value="Add">
+                    </div>
+
+                </div>
+                <p></p>
+                <div class="w3-card-4">
+                    <header class="w3-container w3-teal">
+                        <h2>Filter by Height</h2>
+                    </header>
+                    <div class="w3-container w3-white">
+                        <P>
+                            <label>Max Height</label>
+                            <input class="w3-input" type="number" value=0>
+                        <P>
+                            <input class="w3-button w3-teal" id="add_height_filter" type="button" value="Add">
                     </div>
 
                 </div>
@@ -130,77 +184,103 @@
                 </ul>
                 <p></p>
                 <input class="w3-button w3-teal" id="calculate" type="button" value="Calclate">
+
+
             </div>
         </div>
 
 
         <div class="output">
-            <p id="test_out">TEST OUT</p>
+            <div class="scroll">
+                <p id="test_out">TEST OUT</p>
+                <p></p>
+                <a id="calculate exportJSON" onclick="exportJson(this);" class="w3-button w3-teal">Download Data</a>
+            </div>
         </div>
 
     </div>
 
+    <script src="{{ url_for('static', filename='javascript/station_view_input.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascript/sector.js') }}"></script>
     <script>
+        let traj = "{{ url_for('static', filename='test4.json') }}";
+        let lats = [], longs = [];
+        let p = [];
+        let p_ = [];
+
+        function exportJson(el) {
+            var obj = {
+                a: 123,
+                b: "4 5 6"
+            };
+            var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
+
+            el.setAttribute("href", "data:" + data);
+            el.setAttribute("download", "data.json");
+        }
+
+
         let iid = "{{ id }}";
 
-        var el = document.getElementById('stack');
-        new Sortable(el, {
-            animation: 150
-        });
-        document.getElementById("add_sector").onclick = function () {
-            var z = document.createElement('li'); // is a node
-            z.innerHTML = "<button class='w3-button w3-white' id='sector' onclick='Delete(this)' ali>x</button>" + "\tSector";
-            let stack = document.getElementById("stack");
-            var element = $('#stack #sector');
-            if (element.length > 0) {
-            } else {
-                stack.appendChild(z)
-            }
-            let url = "/sector/"+iid+
-            "/" + document.getElementById("start_angle_val").value + "/" + document.getElementById("end_angle_val").value;
-            $.get(url, function (data, status) {
-                document.getElementById("test_out").innerHTML = data;
-            });
-        }
-        document.getElementById("add_cluster").onclick = function () {
-            var z = document.createElement('li'); // is a node
-            z.innerHTML = "<button class='w3-button w3-white' id='clustor' onclick='Delete(this)' ali>x</button>" + "\tClustor";
-            let stack = document.getElementById("stack");
-            var element = $('#stack #clustor');
-            console.log(element);
-            if (element.length > 0) {
-            } else {
-                stack.appendChild(z)
 
-            }
-        }
-
-        function Delete(currentEl) {
-            currentEl.parentNode.parentNode.removeChild(currentEl.parentNode);
-        }
-
-        console.log({{ lng }});
-        console.log({{ lat }});
+        {#console.log({{ lng }});#}
+        {#console.log({{ lat }});#}
         let lat = {{ lat }};
         let lng = {{ lng }};
+        lat = -40.682;
+        lng = 144.688;
 
         const projection = d3.geoAzimuthalEqualArea().rotate([-lng, -lat]);
 
         const path = d3.geoPath().projection(projection);
 
-        const zoom = d3.zoom()
-            .scaleExtent([1, 8])
-            .on('zoom', zoomed);
+        const zoom = d3.zoom().scaleExtent([1, 9]).on('zoom', zoomed);
 
         const svg = d3.select('#svg_map');
         let w = parseInt(svg.style("width"));
-        console.log(w);
         const g = svg.append('g');
         d3.select('g').attr('transform', 'translate(-' + (w / 2) + ' 0)scale(' + (w / 600) + ')')
-        {#d3.select('g').attr('transform', 'translate(0,0)')#}
         svg.style("width", "100%");
         g.call(zoom);
 
+        var lineFunction = d3.line()
+            .x(function (d) {
+                return projection([d[1], d[0]])[0];
+            })
+            .y(function (d) {
+                return projection([d[1], d[0]])[1];
+            }).curve(d3.curveCatmullRom.alpha(0.5));
+
+        let path_p = {{ test_traj }};
+        console.log(path_p);
+        path_p = sector_trajecotory(path_p,0,90,1000000,5);
+        function renderLines() {
+            $.getJSON(traj, function (json) {
+                {#console.log(json); // this will show the info it in firebug console#}
+
+                {#console.log(lats);#}
+                {#console.log(longs);#}
+                for (let l = 0; l < 8; l++) {
+                    p_ = [];
+                    lats = json[l][0];
+                    longs = json[l][1];
+                    for (let i = 0; i < lats.length; i++) {
+                        p_.push([lats[i], longs[i]]);
+                    }
+                    p.push(p_);
+                }
+                {#console.log(JSON.stringify(p));#}
+
+            });
+            console.log(path_p);
+             for (let i = 0; i < 200; i++) {
+                    g.append("path")
+                        .attr("d", lineFunction(path_p[i]))
+                        .attr("stroke", "red")
+                        .attr("stroke-width", 0.2)
+                        .attr("fill", "none");
+                }
+        }
 
         d3.json("{{ url_for('static', filename='world-110m2.json') }}")
             .then(world => {
@@ -218,8 +298,8 @@
                     .datum(topojson.mesh(world, world.objects.countries, (a, b) => a !== b))
                     .attr('class', 'boundary')
                     .attr('d', path);
+                renderLines();
             });
-
 
         function zoomed() {
             g
