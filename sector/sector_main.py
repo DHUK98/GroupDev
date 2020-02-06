@@ -250,6 +250,36 @@ def check_point(x, y, start_angle, end_angle):
         return False
     pass
 
+def filter_height_single(height, threshold, threshold_time):
+    # Function to filter out a single trajectory that oversteps the threshold
+    # height -> list containing height measurements over time for single trajectory
+    # threshold -> maximum permitted value for height
+    # threshold_time -> amount of time the trajectory is allowed to spend above the threshold
+    #
+    # Returns True if the trajectory is permitted, False if trajectory is to be discarded
+
+    count = 0
+
+    for h in height:
+        if h > threshold:
+            count+=1
+        if count > threshold_time:
+            return False
+    return True
+
+def filter_height(heights, threshold, threshold_time):
+    # Function to apply filter_height_single() to whole set of measurements
+    # heights -> list containing height measurements over time for all trajectories
+    # threshold -> maximum permitted value for height
+    # threshold_time -> amount of time the trajectory is allowed to spend above the threshold
+
+    filtered_heights = []
+
+    for height in heights:
+        if filter_height_single(height, threshold, threshold_time):
+            filtered_heights.append(height)
+
+    return filtered_heights
 
 if __name__ == "__main__":
     example_path = "../data/ERA-Interim_1degree_CapeGrim_100m_2012_hourly.nc"
