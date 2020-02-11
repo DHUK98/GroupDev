@@ -252,8 +252,8 @@
             }).curve(d3.curveCatmullRom.alpha(0.5));
 
         let path_p = {{ test_traj }};
-        console.log(path_p);
-        path_p = sector_trajecotory(path_p,0,90,1000000,5);
+        {#console.log(path_p);#}
+        {#path_p = sector_trajecotory(path_p,0,90,1000000,5);#}
         function renderLines() {
             $.getJSON(traj, function (json) {
                 {#console.log(json); // this will show the info it in firebug console#}
@@ -273,7 +273,7 @@
 
             });
             console.log(path_p);
-             for (let i = 0; i < 200; i++) {
+             for (let i = 0; i < 80000; i+=80) {
                     g.append("path")
                         .attr("d", lineFunction(path_p[i]))
                         .attr("stroke", "red")

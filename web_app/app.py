@@ -34,7 +34,7 @@ def station(iid):
         temp = []
         for k in range(len(cur[0])):
             temp.append([cur[0][k],cur[1][k]])
-        lat_lon2.append(temp)
+        lat_lon2.append(temp)   
     print(lat_lon2[0])
     lat = 0
     lng = 0
