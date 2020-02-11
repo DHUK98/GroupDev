@@ -8,6 +8,9 @@ def initialise(dataset):
 	# open dataset
 	f = Dataset(dataset, "r", format="NETCDF4")
 
+	for v in f.variables:
+		print(v)
+
 	# read in variables
 	mt = f.variables['time']
 	lat = f.variables['latitude']
