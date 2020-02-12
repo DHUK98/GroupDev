@@ -9,6 +9,8 @@ verify_ssl = true
 flask = "*"
 netcdf4 = "*"
 request = "*"
+scipy = "*"
+scikit-learn = "*"
 
 [requires]
 python_version = "3.6"
