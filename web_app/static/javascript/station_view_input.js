@@ -63,7 +63,7 @@ document.getElementById("add_cluster").onclick = function () {
     let c_nu = document.getElementById("number_of_cluster").value;
     z.innerHTML = "Cluster (" + c_nu + ")";
     let stack = document.getElementById("stack");
-    let element = $('#stack #zstack_cluster');fren
+    let element = $('#stack #zstack_cluster');
     if (!element.length > 0) {
         stack.appendChild(z)
         let url = "/cluster/" + iid;
