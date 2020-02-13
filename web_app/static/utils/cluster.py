@@ -157,7 +157,7 @@ def linkage_request(json_msg):
     # Read json message
     loaded = json.loads(json_msg)
     # Turn to cluster-able vector
-    X = toVector(loaded.get('dim1'), loaded.get('dim2'))
+    X = toVector(loaded.get('lat'), loaded.get('lon'))
 
     # Get linkage matrix
     Z = linkage(X, 'ward')
@@ -169,11 +169,11 @@ def linkage_request(json_msg):
     return json_msg
 
 
-def h_cluster_request(matrix):
+def h_cluster_request(json_msg):
     # Take input of json message containing linkage matrix Z and no. of clusters
 
     # Read json message
-    loaded = json.loads(matrix)
+    loaded = json.loads(json_msg)
 
     Z = loaded.get('Z')
     cluster_no = loaded.get('cluster_no')

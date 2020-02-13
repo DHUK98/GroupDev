@@ -5,6 +5,7 @@ import sys
 import json
 from flask import jsonify
 import os
+from static.utils import  cluster
 
 sys.path.insert(1, '../sector')
 # from sector_main import sector
@@ -41,21 +42,9 @@ def station(iid):
         return str(e)
 
 
-@app.route('/sector/<iid>/<start_ang>/<end_ang>/<dist>/<thresh>')
-def sector(iid, start_ang, end_ang, dist, thresh):
-    # return jsonify("OUT: " + str(iid + " " + start_ang + " "+ end_ang + " " +dist +" "+ thresh))
-    SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
-    json_url = os.path.join(SITE_ROOT, "static/", "cluster.json")
-    data = json.load(open(json_url))
-    return data
-
-
-@app.route('/cluster/<iid>/')
-def cluster(iid):
-    # return jsonify("OUT: " + str(iid + " " + start_ang + " "+ end_ang + " " +dist +" "+ thresh))
-    # SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
-    # json_url = os.path.join(SITE_ROOT, "static/", "cluster.json")
-    # data = json.load(open(json_url))
+@app.route('/cluster/<num_c>', methods=['GET', 'POST'])
+def cluster(iid,num_c):
+    cluster.h_cluster_request(,num_c)
     return ""
 
 
