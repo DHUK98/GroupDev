@@ -5,7 +5,7 @@ import sys
 import json
 from flask import jsonify
 import os
-from static.utils import cluster
+from static.utils.cluster import linkage_request
 
 sys.path.insert(1, '../sector')
 # from sector_main import sector
@@ -42,11 +42,64 @@ def station(iid):
         return str(e)
 
 
-@app.route('/cluster/req/', methods=['POST'])
-def cluster():
-    data = request
+@app.route('/cluster/req/<iid>', methods=['POST'])
+def cluster(iid):
+    data = request.get_json()
     print(data)
+    mask = json.loads(data[0])
+    f_name = data[1]
+    print(data)
+    with open("static/stations/" + iid + "/" + f_name, "r") as f:
+        traj = json.load(f)
+    traj = applyMask(mask, traj)
+    print(len(traj["lon"]))
+    print(linkage_request(json.dumps(traj)))
     return jsonify({"result": "Success"})
+
+
+def applyMask(mask, d):
+    d = json.loads(json.dumps(d))
+
+    lat = d["lat"]
+    lon = d["lon"]
+    time = d["time"]
+    height = d["height"]
+    pressure = d["pressure"]
+
+    n_lat = []
+    n_lon = []
+    n_time = []
+    n_height = []
+    n_pressure = []
+
+    for i in range(len(mask)):
+        if mask[i] == 1:
+            n_lat.append(lat[i])
+            n_lon.append(lon[i])
+            n_time.append(time[i])
+            n_height.append(height[i])
+            n_pressure.append(pressure[i])
+
+    out = {"lat": n_lat,
+           "lon": n_lon,
+           "time": n_time,
+           "height": n_height,
+           "pressure": n_pressure}
+
+    return out
+
+
+#     }
+#     let json = {
+#         "lat": n_lat,
+#         "lon": n_lon,
+#         "time": n_time,
+#         "height": n_height,
+#         "pressure": n_pressure
+#     };
+#
+#     return JSON.stringify(json);
+# }
 
 
 if __name__ == '__main__':

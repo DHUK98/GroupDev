@@ -19,7 +19,7 @@ function u_filter(data, type, min, max, thresh) {
 
 function u_cluster(data, num_clust) {
     console.log("cluster");
-    $.post("/cluster/req/", data);
+    // $.post("/cluster/req/", data);
     // $.ajax({
     //     type: 'POST',
     //     url: "/cluster/req",
@@ -29,6 +29,16 @@ function u_cluster(data, num_clust) {
     //         alert("huraa");
     //     }
     // });
+    $.ajax({
+        url: '/cluster/req/'+iid,
+        type: 'post',
+        dataType: 'json',
+        contentType: 'application/json',
+        success: function (data) {
+            alert(data);
+        },
+        data: JSON.stringify([JSON.stringify(data),"ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json"])
+    });
 
 }
 
