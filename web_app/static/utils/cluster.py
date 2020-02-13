@@ -151,11 +151,11 @@ def kmeans_request(json_msg):
 
 
 # WRITE FUNCTION TO HANDLE HIERARCHICAL LINKAGE MATRIX REQUEST
-def linkage_request(json_msg):
+def linkage_request(json_data):
     # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon)
 
     # Read json message
-    loaded = json.loads(json_msg)
+    loaded = json.loads(json_data)
     # Turn to cluster-able vector
     X = toVector(loaded.get('lat'), loaded.get('lon'))
 
