@@ -169,11 +169,11 @@ def linkage_request(json_msg):
     return json_msg
 
 
-def cluster_request(json_msg):
+def h_cluster_request(matrix):
     # Take input of json message containing linkage matrix Z and no. of clusters
 
     # Read json message
-    loaded = json.loads(json_msg)
+    loaded = json.loads(matrix)
 
     Z = loaded.get('Z')
     cluster_no = loaded.get('cluster_no')
