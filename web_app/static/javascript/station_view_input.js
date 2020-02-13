@@ -66,14 +66,10 @@ document.getElementById("add_cluster").onclick = function () {
     let element = $('#stack #zstack_cluster');
     if (!element.length > 0) {
         stack.appendChild(z)
-        let url = "/cluster/" + iid;
-        $.get(url, function (data, status) {
-            // processCentroids(data);
-            document.getElementById("test_out").innerHTML = data;
-        });
-        stack_f.push(function () {
-            return u_cluster();
-        });
+
+        // stack_f.push(function () {
+        //     return u_cluster(c_nu);
+        // });
 
     }
 };

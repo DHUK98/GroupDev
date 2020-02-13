@@ -15,21 +15,16 @@ function angle_between(n, a, b) {
 
 function sector(x, y, ssaa, eeaa, dist) {
     let point_ang = angle_between_points(0, 0, x, y) + 90;
-    // console.log(point_ang);
     let a = 0 - x;
     let b = 0 - y;
     let d = Math.sqrt(a * a + b * b);
     if (d > dist) {
         return false;
     }
-    // console.log(ssaa, eeaa, point_ang);
-    // console.log(point_ang, ssaa, eeaa);
     return angle_between(point_ang, ssaa, eeaa);
 }
 
 function sector_trajecotory(data, start_angle, end_angle, dist, thresh) {
-    // console.log("AAAAAAAAAAAAA",start_angle, end_angle, dist, thresh);
-
     let output = [];
     let lat = data["lat"];
     let lon = data["lon"];
@@ -48,13 +43,6 @@ function sector_trajecotory(data, start_angle, end_angle, dist, thresh) {
             start_angle =  parseFloat(start_angle);
             end_angle =  parseFloat(end_angle);
             dist =  parseFloat(dist);
-            if (i == 0 && j < 5){
-;
-                console.log(t_traj[1], t_traj[0], start_angle, end_angle, dist);
-                console.log(angle_between_points(0,0,t_traj[1],t_traj[0])+90);
-                console.log(sec);
-                console.log();
-            }
             if (!sec) {
                 outside += 1;
             }

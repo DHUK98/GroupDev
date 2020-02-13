@@ -332,8 +332,9 @@
 
 
         function renderLines(mm) {
+            mm = JSON.parse(mm);
             g.selectAll(".traj").remove();
-            let lat_lng = [data["lat"], data["lon"]];
+            let lat_lng = [mm["lat"], mm["lon"]];
             for (let l = 0; l < lat_lng[0].length; l++) {
                 p_ = [];
                 lats = lat_lng[0][l];
@@ -345,15 +346,13 @@
             }
             console.log(p);
             for (let i = 0; i < lat_lng[0].length; i += 5) {
-                if (mm[i] == 1) {
-                    g.append("path")
-                            .attr("class","traj")
-                        .attr("d", lineFunction(p[i]))
-                        .attr("stroke", "red")
-                        .attr("stroke-width", 0.2)
-                        .attr("fill", "none")
-                         .attr("transform", "translate(" + trans[0] + "," + trans[1] + ")" + "scale(" + trans[2] + ")");
-                }
+                g.append("path")
+                    .attr("class", "traj")
+                    .attr("d", lineFunction(p[i]))
+                    .attr("stroke", "red")
+                    .attr("stroke-width", 0.2)
+                    .attr("fill", "none")
+                    .attr("transform", "translate(" + trans[0] + "," + trans[1] + ")" + "scale(" + trans[2] + ")");
             }
         }
 

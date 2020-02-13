@@ -1,11 +1,11 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import os
 import json
 import sys
 import json
 from flask import jsonify
 import os
-from static.utils import  cluster
+from static.utils import cluster
 
 sys.path.insert(1, '../sector')
 # from sector_main import sector
@@ -42,10 +42,11 @@ def station(iid):
         return str(e)
 
 
-@app.route('/cluster/<num_c>', methods=['GET', 'POST'])
-def cluster(iid,num_c):
-    cluster.h_cluster_request(,num_c)
-    return ""
+@app.route('/cluster/req/', methods=['POST'])
+def cluster():
+    data = request
+    print(data)
+    return jsonify({"result": "Success"})
 
 
 if __name__ == '__main__':
