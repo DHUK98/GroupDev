@@ -169,15 +169,14 @@ def linkage_request(json_msg):
     return json_msg
 
 
-def h_cluster_request(json_msg):
+def h_cluster_request(json_data, json_Z, cluster_no):
     # Take input of json message containing linkage matrix Z and no. of clusters
 
     # Read json message
-    loaded = json.loads(json_msg)
+    loaded_data = json.loads(json_data)
 
-    Z = loaded.get('Z')
-    cluster_no = loaded.get('cluster_no')
-    X = toVector(loaded.get('dim1'), loaded.get('dim2'))
+    Z = json.loads(json_Z).get('Z')
+    X = toVector(loaded_data.get('dim1'), loaded_data.get('dim2'))
 
     labels = fcluster(Z, cluster_no, criterion='maxclust')
 

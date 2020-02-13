@@ -231,7 +231,9 @@ if __name__ == "__main__":
                       'dim2': lon.tolist(),
                       'cluster_no': 8
                       }
-    test_json_kmeans = json.dumps(test_json_dict_kmeans)
 
-    print(kmeans_request(test_json_kmeans))
+    print(len(test_json_dict_kmeans['dim1']))
+    # test_json_kmeans = json.dumps(test_json_dict_kmeans)
+    #
+    # print(kmeans_request(test_json_kmeans))
 
