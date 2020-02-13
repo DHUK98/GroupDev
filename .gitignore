@@ -1,2 +1,4 @@
 data/
 /cluster/linkage.txt
+*.nc
+*.json
