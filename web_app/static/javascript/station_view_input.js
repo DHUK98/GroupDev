@@ -33,6 +33,7 @@ function array_move(arr, old_index, new_index) {
 
 document.getElementById("add_sector").onclick = function () {
     let z = document.createElement('li'); // is a node
+    z.setAttribute("id", "stack_sector");
     z.innerHTML = "Sector";
     let stack = document.getElementById("stack");
     let element = $('#stack #stack_sector');
@@ -47,18 +48,22 @@ document.getElementById("add_sector").onclick = function () {
             "/" + d_s + "/" + t_h;
         if (url.includes("//"))
             return;
+        renderSector(s_a, e_a, d_s);
+
         stack.appendChild(z);
         stack_f.push(function () {
-            u_sector(data, s_a, e_a, d_s, t_h);
+            return u_sector(data, s_a, e_a, d_s, t_h);
         });
     }
 
 };
 document.getElementById("add_cluster").onclick = function () {
     let z = document.createElement('li'); // is a node
-    z.innerHTML = "<p id='stack_cluster'>Cluster</p>";
+    z.setAttribute("id", "zstack_cluster");
+    let c_nu = document.getElementById("number_of_cluster").value;
+    z.innerHTML = "Cluster (" + c_nu + ")";
     let stack = document.getElementById("stack");
-    let element = $('#stack #stack_cluster');
+    let element = $('#stack #zstack_cluster');fren
     if (!element.length > 0) {
         stack.appendChild(z)
         let url = "/cluster/" + iid;
@@ -67,7 +72,7 @@ document.getElementById("add_cluster").onclick = function () {
             document.getElementById("test_out").innerHTML = data;
         });
         stack_f.push(function () {
-            u_cluster();
+            return u_cluster();
         });
 
     }
@@ -75,14 +80,19 @@ document.getElementById("add_cluster").onclick = function () {
 
 document.getElementById("add_filter").onclick = function () {
     let z = document.createElement('li'); // is a node
+    z.setAttribute("id", "stack_filter");
+
     let type = document.getElementById("filter_option");
     let type_f = type.options[type.selectedIndex].value;
-    z.innerHTML = "Filter by " + type_f;
+    let max = document.getElementById("filter_max_val").value;
+    let min = document.getElementById("filter_min_val").value;
+    let thresh = document.getElementById("filter_thresh_val").value;
+    z.innerHTML = "Filter by " + type_f + "<br/><br/>[min/max/thresh : "+min+"/"+max+"/"+thresh+"]";
     let stack = document.getElementById("stack");
     let element = $('#stack #stack_filter');
     stack.appendChild(z);
     stack_f.push(function () {
-        u_filter(type_f);
+        return u_filter(data, type_f, min,max, thresh);
     });
 };
 
