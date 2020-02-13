@@ -54,7 +54,7 @@ def cluster(iid):
     traj = applyMask(mask, traj)
     print(len(traj["lon"]))
     linkage = linkage_request(json.dumps(traj))
-    cluster = h_cluster_request(json.dumps(traj),linkage,8)
+    cluster = h_cluster_request(json.dumps(traj),linkage,15)
     print(cluster)
     return jsonify(cluster)
 

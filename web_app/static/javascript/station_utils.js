@@ -29,7 +29,14 @@ function u_cluster(data, num_clust) {
             out = JSON.parse(data);
             console.log(out["labels"]);
             console.log(out["centroids"]);
-            renderLines(out["centroids"])
+            let weight = [];
+                for(let j = 1; j <= new Set(out["labels"]).size;j++){
+                weight[j-1]= out["labels"].filter(x => x==j).length;
+            }
+            console.log("WWW",weight);
+            let d = {"lat":out["centroids"][0],"lon":out["centroids"][1]};
+            console.log(d);
+            renderLines(d,weight);
         },
         data: JSON.stringify([JSON.stringify(data), "ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json"])
     });

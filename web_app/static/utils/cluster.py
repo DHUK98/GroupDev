@@ -113,7 +113,7 @@ def get_centroids(X, labels):
     for n in range(N):
         n += 1 # Avoid off by 1 error, scipy labels clusters from 1-8 not 0-7
 
-        cluster = get_cluster((X, labels, n))
+        cluster = get_cluster(X, labels, n)
 
         cent = centroid(cluster)
 

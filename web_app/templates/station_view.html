@@ -331,26 +331,29 @@
             });
 
 
-        function renderLines(mm) {
-            mm = JSON.parse(mm);
+        function renderLines(mm,weight) {
+            {#mm = JSON.parse(mm);#}
             g.selectAll(".traj").remove();
             let lat_lng = [mm["lat"], mm["lon"]];
+            console.log("l_l",lat_lng[0].length);
             for (let l = 0; l < lat_lng[0].length; l++) {
                 p_ = [];
                 lats = lat_lng[0][l];
                 longs = lat_lng[1][l];
+                console.log(l,lats,longs)
                 for (let i = 0; i < lats.length; i++) {
                     p_.push([lats[i], longs[i]]);
                 }
                 p.push(p_);
             }
             console.log(p);
-            for (let i = 0; i < lat_lng[0].length; i += 5) {
+            for (let i = 0; i < lat_lng[0].length; i ++) {
+                let w = weight[i];
                 g.append("path")
                     .attr("class", "traj")
                     .attr("d", lineFunction(p[i]))
                     .attr("stroke", "red")
-                    .attr("stroke-width", 0.2)
+                    .attr("stroke-width", w/100)
                     .attr("fill", "none")
                     .attr("transform", "translate(" + trans[0] + "," + trans[1] + ")" + "scale(" + trans[2] + ")");
             }
