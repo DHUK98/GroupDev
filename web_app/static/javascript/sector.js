@@ -16,12 +16,12 @@ function angle_between(n, a, b) {
 function sector(x, y, ssaa, eeaa, dist) {
     let point_ang = angle_between_points(0, 0, x, y) + 90;
     // console.log(point_ang);
-    // let a = 0 - x;
-    // let b = 0 - y;
-    // let d = Math.sqrt(a * a + b * b);
-    // if (d > dist) {
-    //     return false;
-    // }
+    let a = 0 - x;
+    let b = 0 - y;
+    let d = Math.sqrt(a * a + b * b);
+    if (d > dist) {
+        return false;
+    }
     // console.log(ssaa, eeaa, point_ang);
     // console.log(point_ang, ssaa, eeaa);
     return angle_between(point_ang, ssaa, eeaa);
