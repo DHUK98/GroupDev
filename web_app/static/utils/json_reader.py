@@ -25,6 +25,7 @@ def json_from_netcdf_file(filepath):
     except:
         lat = f.variables['lat']
         lon = f.variables['lon']
+
     height = f.variables['height']
     pressure = f.variables['pressure']
 

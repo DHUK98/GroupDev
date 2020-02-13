@@ -16,7 +16,7 @@ pressure :
 """
 
 
-import sys, json, math
+import sys, json, math, operator
 from matplotlib.path import Path
 import numpy as np
 import matplotlib.pyplot as plt
@@ -24,8 +24,6 @@ import matplotlib.patches as patches
 sys.path.insert(1, '../utils')    # allow reading of utils functions
 
 from json_reader import json_from_netcdf_file
-
-
 
 
 """
@@ -142,7 +140,6 @@ def sector(data, start_angle, end_angle, start_lat, start_lon):
     print(len(data['lat']))
 
 
-
     # for each trajectory
     for t in range(len(data['lat'])):
         last_lat = 0
@@ -160,75 +157,27 @@ def sector(data, start_angle, end_angle, start_lat, start_lon):
             traj_lat_from_center = lats[l]
             traj_lon_from_center = lons[l]
 
-
-            # - 190 -> 170
-            #(-190) + 360 = 170
-
             # if traj_lon_from_center > 180 or traj_lon_from_center < -180:
             if abs(traj_lat_from_center - last_lat) > 90:
-                # print("Anomalous Lat")
-                # print("Lat: ", end="")
-                # print(traj_lat_from_center)
-                # print("Lon: ", end="")
-                # print(traj_lon_from_center)
 
                 # print("Changing lat from " + str(traj_lat_from_center) + " to " + str(traj_lat_from_center + 180), end="\n\n")
                 traj_lat_from_center += 180
 
 
             if abs(traj_lon_from_center - last_lon) > 180:
-                # print("Anomalous Lon")
-                # print("Lat: ", end="")
-                # print(traj_lat_from_center)
-                # print("Lon: ", end="")
-                # print(traj_lon_from_center)
-                # print("lons were wrong")
-                # change lon
+
                 traj_lon_from_center += 360
-
-            #     pass
-            #     print("Adding 360 to lon")
-            #     traj_lon_from_center += 360
-
-
-                # continue
-
 
             traj_lats.append(traj_lat_from_center)
             traj_lons.append(traj_lon_from_center)
 
-            # print(traj_lat_from_center)
-            # print(traj_lon_from_center)
-
-            # ax.add_artist(circle)
-
-            # if not check_point(lons[l] - start_lon, lats[l] - start_lat, start_angle_r, end_angle_r):
-            #     out_count += 1
-            # else:
-            #     # print("\nPoint (" + str(lats[l]) + ", " + str(lons[l]) + ") lies in sector")
-            #     pass
-            # if out_count > 5:
-            #     break
-
-            if l >= (len(lats) - 1):
-                # print("Got to last hour")
-                # print("\n**\nTrajectory included!")
-                #
-                # sectored_data['time'].append(data['time'][t])
-                # sectored_data['lat'].append(data['lat'][t])
-                # sectored_data['lon'].append(data['lon'][t])
-                # sectored_data['height'].append(data['height'][t])
-                # sectored_data['pressure'].append(data['pressure'][t])
-
-                # print("*", end="")
+            if l >= (len(lats) - 1):    # final hour
                 plt.plot(traj_lons, traj_lats, color='k', linestyle='-', linewidth=0.5)
                 last_lat = traj_lat_from_center
                 last_lon = traj_lon_from_center
     plt.show()
 
-
     print("\n\nLength of data after sectoring: " + str(len(data['lat'])))
-
 
     return sectored_data
 
@@ -250,36 +199,48 @@ def check_point(x, y, start_angle, end_angle):
         return False
     pass
 
-def filter_height_single(height, threshold, threshold_time):
-    # Function to filter out a single trajectory that oversteps the threshold
+
+def filter_attr_single(attr, threshold, threshold_time, greater_or_lesser):
+    # Function to filter out a single trajectory whose attribute oversteps the threshold
+    # at least threshold_time number of times
     # height -> list containing height measurements over time for single trajectory
     # threshold -> maximum permitted value for height
-    # threshold_time -> amount of time the trajectory is allowed to spend above the threshold
-    #
+    # threshold_time -> amount of time in hours the trajectory is allowed to spend above the threshold
     # Returns True if the trajectory is permitted, False if trajectory is to be discarded
-
     count = 0
 
-    for h in height:
-        if h > threshold:
-            count+=1
-        if count > threshold_time:
-            return False
+    if greater_or_lesser == operator.gt:         # check if each is over threshold
+
+        for a in attr:
+            if a > threshold:       # greater than
+                count += 1
+            if count > threshold_time:
+                return False
+
+    else:                                       # check if each is under threshold
+        for a in attr:
+            if a < threshold:               # less than
+                count += 1
+            if count > threshold_time:
+                return False
+
     return True
 
-def filter_height(heights, threshold, threshold_time):
+
+def filter_attr(attrs, threshold, threshold_time, greater_or_lesser):
     # Function to apply filter_height_single() to whole set of measurements
     # heights -> list containing height measurements over time for all trajectories
     # threshold -> maximum permitted value for height
     # threshold_time -> amount of time the trajectory is allowed to spend above the threshold
 
-    filtered_heights = []
+    filtered_attrs = []
 
-    for height in heights:
-        if filter_height_single(height, threshold, threshold_time):
-            filtered_heights.append(height)
+    for attr in attrs:
+        if filter_attr_single(attr, threshold, threshold_time, greater_or_lesser):
+            filtered_attrs.append(attr)
 
-    return filtered_heights
+    return filtered_attrs
+
 
 if __name__ == "__main__":
     example_path = "../data/ERA-Interim_1degree_CapeGrim_100m_2012_hourly.nc"

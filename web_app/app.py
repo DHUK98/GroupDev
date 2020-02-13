@@ -36,7 +36,7 @@ def station(iid):
             lat = data["lat"]
             lng = data["lon"]
             name = data["Station"]
-        return render_template('station_view.html', id=iid, lat=lat, lng=lng, name=name,file_ns=file_ns)
+        return render_template('station_view.html', id=iid, lat=lat, lng=lng, name=name, file_ns=file_ns)
     except Exception as e:
         return str(e)
 

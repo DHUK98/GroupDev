@@ -15,6 +15,14 @@ def json_from_netcdf_file(filepath):
     """
 
     f = Dataset(filepath, "r", format="NETCDF4")
+    # print(f)
+
+    print(f.variables['latitude'])
+    print(f.variables['longitude'])
+    # print()
+    # for v in f.groups:
+    #     print(v)
+
 
     # # read in variables
     mt = f.variables['time']
@@ -40,8 +48,8 @@ def json_from_netcdf_file(filepath):
 
 if __name__ == "__main__":
     my_path = os.path.abspath(os.path.dirname(__file__))
-    path = os.path.join(my_path, "../data/ERA-Interim_1degree_CapeGrim_100m_2016_hourly.nc")
-    json_output = json_from_netcdf_file(path)
+    path = os.path.join(my_path, "..\\data\\ERA-Interim_1degree_CapeGrim_100m_2016_hourly.nc")
+    json_output = json_from_netcdf_file("D:\\PrototypeNovClim\\GroupDev\\data\\ERA-Interim_1degree_CapeGrim_100m_2012_hourly.nc")
     with open("json_test.json", "w+") as fw:
         json.dump(json_output, fw)
 
