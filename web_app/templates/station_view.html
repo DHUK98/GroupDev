@@ -183,7 +183,7 @@
 
                 </ul>
                 <p></p>
-                <input class="w3-button w3-teal" id="calculate" type="button" value="Calclate">
+                <input class="w3-button w3-teal" id="calculate" type="button" value="Calculate">
 
 
             </div>
@@ -194,7 +194,9 @@
             <div class="scroll">
                 <p id="test_out">TEST OUT</p>
                 <p></p>
-                <a id="calculate exportJSON" onclick="exportJson(this);" class="w3-button w3-teal">Download Data</a>
+                <a id="calculate exportJSON" onclick="exportJson(this);" class="w3-button w3-teal">Download JSON</a>
+                <p></p>
+                <a id="calculate exportnetCDF" onclick="exportnetCDF(this, json_list);" class="w3-button w3-teal">Download netCDF</a>
             </div>
         </div>
 
@@ -203,6 +205,9 @@
     <script src="{{ url_for('static', filename='javascript/station_view_input.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/sector.js') }}"></script>
     <script>
+
+
+
         let traj = "{{ url_for('static', filename='test4.json') }}";
         let lats = [], longs = [];
         let p = [];
@@ -219,6 +224,76 @@
             el.setAttribute("download", "data.json");
         }
 
+        function zip_download_files(el, cluster_filepaths) {
+            // zips files together.
+            // cluster_filepaths contains a list of paths to the files to be zipped
+            // files are added as names cluster_i where i is the cluster number
+            // assuming that they are read in in order
+            // couldn't test so almost definitely doesn't work
+            // see function below for probably much better idea
+
+            var fs = require('fs');
+            var archiver = require('archiver');
+            var output = fs.createWriteStream('./example.zip');
+
+
+            var archive = archiver('zip', {
+                gzip: true,
+                zlib: { level: 9 } // Sets the compression level.
+            });
+
+            archive.on('error', function(err) {
+              throw err;
+            });
+
+            // pipe archive data to the output file
+            archive.pipe(output);
+
+            // append files
+            for (i = 0; i < cluster_filepaths.length; i++) {
+                console.log(cluster_filepaths[i]);
+                archive.file(cluster_filepaths[i], {name: "Cluster_".concat(parseInt(i))});
+            }
+
+            archive.finalize();
+
+
+        }
+
+            var obj = {
+                a: 123,
+                b: "4 5 6"
+            };
+
+            var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
+
+
+            el.setAttribute("href", "data:" + data);
+            el.setAttribute("download", "data.json");
+        }
+
+        // TO USE AS GUIDANCE. Probably will use this tomorrow morning when I start again
+        // as above function is really hard to understand fully
+        // so when clustering, just write the resulting JSONs to a particular directory
+        // and use that directory as an argument to this
+        // then use a function to download that particular resulting zip file
+        // or add it on to this function
+        var zipJSONs = function(working_directory) {
+            var fs = require('fs');
+            var path = require('path');
+            var output = fs.createWriteStream(path.join(working_directory, 'logs.zip'));
+            var archiver =  require('archiver');
+            var zipArchive = archiver('zip');
+
+            zipArchive.pipe(output);
+            zipArchive.bulk([{src: [path.join(working_directory, '*.json')],  expand: true}]);
+            zipArchive.finalize(function(err, bytes) {
+                if (err)
+                    throw err;
+
+            console.log('done:', base, bytes);
+            });
+        }
 
         let iid = "{{ id }}";
 

@@ -1,3 +1,5 @@
+var netcdf4 = require("netcdf4");
+
 function fmod(dividend, divisor) {
     var multiplier = 0;
 

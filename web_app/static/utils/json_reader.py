@@ -18,8 +18,8 @@ def json_from_netcdf_file(filepath):
 
     # # read in variables
     mt = f.variables['time']
-    lat = f.variables['lat']
-    lon = f.variables['lon']
+    lat = f.variables['latitude']
+    lon = f.variables['longitude']
     height = f.variables['height']
     pressure = f.variables['pressure']
 

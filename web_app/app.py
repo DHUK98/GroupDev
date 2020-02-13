@@ -23,7 +23,7 @@ def home():
 
 @app.route('/station/<iid>')
 def station(iid):
-    data = json.loads(json_from_netcdf_file('static/stations/CGR/UKESM_1degree_CapeGrim_100m_2012_hourly.nc'))
+    data = json.loads(json_from_netcdf_file('static/stations/CGR/ERA-Interim_1degree_CapeGrim_100m_2012_hourly.nc'))
     lat_lon = []
     for i in range(len(data["lat"])):
         lat_lon.append([data["lat"][i], data["lon"][i]])
@@ -33,7 +33,7 @@ def station(iid):
         cur = lat_lon[j]
         temp = []
         for k in range(len(cur[0])):
-            temp.append([cur[0][k],cur[1][k]])
+            temp.append([cur[0][k], cur[1][k]])
         lat_lon2.append(temp)   
     print(lat_lon2[0])
     lat = 0
