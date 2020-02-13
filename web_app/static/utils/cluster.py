@@ -150,9 +150,9 @@ def kmeans_request(json_msg):
     return json_msg
 
 
-# WRITE FUNCTION TO HANDLE HIERARCHICAL LINKAGE MATRIX REQUEST
 def linkage_request(json_data):
-    # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon)
+    # Take input of json message containing nested array containing data for dimension 1,
+    # nested array containing data for dimension 2 (usually lat and lon)
 
     # Read json message
     loaded = json.loads(json_data)
