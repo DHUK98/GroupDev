@@ -19,25 +19,19 @@ function u_filter(data, type, min, max, thresh) {
 
 function u_cluster(data, num_clust) {
     console.log("cluster");
-    // $.post("/cluster/req/", data);
-    // $.ajax({
-    //     type: 'POST',
-    //     url: "/cluster/req",
-    //     dataType: "json",
-    //     data: {mask: [1, 1, 0]},
-    //     success: function (data) {
-    //         alert("huraa");
-    //     }
-    // });
+    let out;
     $.ajax({
-        url: '/cluster/req/'+iid,
+        url: '/cluster/req/' + iid,
         type: 'post',
         dataType: 'json',
         contentType: 'application/json',
         success: function (data) {
-            alert(data);
+            out = JSON.parse(data);
+            console.log(out["labels"]);
+            console.log(out["centroids"]);
+            renderLines(out["centroids"])
         },
-        data: JSON.stringify([JSON.stringify(data),"ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json"])
+        data: JSON.stringify([JSON.stringify(data), "ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json"])
     });
 
 }

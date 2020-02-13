@@ -5,7 +5,7 @@ import sys
 import json
 from flask import jsonify
 import os
-from static.utils.cluster import linkage_request
+from static.utils.cluster import linkage_request, h_cluster_request
 
 sys.path.insert(1, '../sector')
 # from sector_main import sector
@@ -53,8 +53,10 @@ def cluster(iid):
         traj = json.load(f)
     traj = applyMask(mask, traj)
     print(len(traj["lon"]))
-    print(linkage_request(json.dumps(traj)))
-    return jsonify({"result": "Success"})
+    linkage = linkage_request(json.dumps(traj))
+    cluster = h_cluster_request(json.dumps(traj),linkage,8)
+    print(cluster)
+    return jsonify(cluster)
 
 
 def applyMask(mask, d):

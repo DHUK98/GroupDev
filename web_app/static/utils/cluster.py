@@ -176,7 +176,7 @@ def h_cluster_request(json_data, json_Z, cluster_no):
     loaded_data = json.loads(json_data)
 
     Z = json.loads(json_Z).get('Z')
-    X = toVector(loaded_data.get('dim1'), loaded_data.get('dim2'))
+    X = toVector(loaded_data.get('lat'), loaded_data.get('lon'))
 
     labels = fcluster(Z, cluster_no, criterion='maxclust')
 
