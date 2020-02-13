@@ -88,7 +88,7 @@ def centroid(cluster):
     return mean_vec
 
 
-def get_centroids(X, labels):
+def get_centroids_old(X, labels):
     # Get all centroids from the clustering
     centroids = []
 
@@ -104,19 +104,26 @@ def get_centroids(X, labels):
 
     return centroids
 
+def get_centroids(X, labels):
 
-# # Build a JSON message containing the cluster centroids
-# def centroids_json(centroids):
-#     centroid_dic = {}
-#
-#     for c in range(len(centroids)):
-#         # key = "cluster " + str(c)
-#
-#         centroid_dic.update({c: centroids[c]})
-#
-#     json_msg = json.dumps(centroid_dic)
-#
-#     return json_msg
+    centroids = [[],[]]
+
+    N = max(labels)
+
+    for n in range(N):
+        n += 1 # Avoid off by 1 error, scipy labels clusters from 1-8 not 0-7
+
+        cluster = get_cluster((X, labels, n))
+
+        cent = centroid(cluster)
+
+        lat, lon = vector.vecToTraj(cent)
+
+        centroids[0].append(lat)
+        centroids[1].append(lon)
+
+    return centroids
+
 
 # Function to handle request for kmeans clustering of a sector
 def kmeans_request(json_msg):
