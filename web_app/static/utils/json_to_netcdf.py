@@ -4,15 +4,17 @@ from netCDF4 import Dataset
 from json_reader import json_from_netcdf_file
 
 
-def json_to_netcdf(json_filepath):
-    keys = []
+def json_to_netcdf(json_filepath, netcdf_filename):
 
     # load json from filepath
     with open(json_filepath) as f:
         json_data = json.load(f)
 
+
+    netcdf_filepath = "../netcdf_export/" + netcdf_filename + ".nc"
+
     # create new netCDF file
-    nc_file = Dataset("test2.nc", "w", format="NETCDF4")
+    nc_file = Dataset(netcdf_filepath, "w", format="NETCDF4")
 
     # create metadata
     nc_file.title = 'Exported data'
@@ -41,6 +43,7 @@ def json_to_netcdf(json_filepath):
     nc_file.close()
 
 
+
 def check_data_loads(filepath):
     data_check = json_from_netcdf_file(filepath)
     data_check = json.loads(data_check)
@@ -52,6 +55,6 @@ def check_data_loads(filepath):
 if __name__ == "__main__":
     print("Running")
 
-    json_to_netcdf("../stations/CGR/ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json")
+    json_to_netcdf("../stations/CGR/ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json", "test8")
     # check_data_loads("output.nc")
 

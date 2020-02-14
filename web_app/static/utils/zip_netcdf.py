@@ -1,13 +1,36 @@
+import os
+from os import listdir
+
 from zipfile import ZipFile
 
-def zip_folder(filepath):
+def zip_netcdf_exports():
 
 
-    with ZipFile('export.zip', 'w') as zipObj:
-        # Add multiple files to the zip
-        zipObj.write('test.nc')
-        zipObj.write('test2.nc')
+    # create a ZipFile object
+    with ZipFile('../netcdf_export/download.zip', 'w') as zipObj:
+        # Iterate over all the files in directory
+
+        for folderName, subfolders, filenames in os.walk("..\\netcdf_export\\"):
+
+            for filename in filenames:
+
+                if filename != "download.zip":
+                    # create complete filepath of file in directory
+                    filePath = os.path.join(folderName, filename)
+
+                    # Add file to zip
+                    print("Zipping: " + str(filePath))
+                    zipObj.write(filePath)
+
+
+def delete_nc_exports():
+    folder_path = "../netcdf_export/"
+
+    for file_name in listdir(folder_path):
+        if file_name.endswith('.nc'):
+            os.remove(folder_path + file_name)
 
 
 if __name__ == "__main__":
-    zip_folder("")
+    zip_netcdf_exports()
+    delete_nc_exports()
