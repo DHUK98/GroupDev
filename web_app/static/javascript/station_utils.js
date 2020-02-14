@@ -49,6 +49,8 @@ function u_cluster(data_l, num_clust) {
 }
 
 function calculate() {
+    document.getElementById("calculate").value= "Loading";
+
     console.log(stack_f);
     let return_stack = [];
     for (let i = 0; i < stack_f.length; i++) {
@@ -56,12 +58,15 @@ function calculate() {
             let comb = combine_mask(return_stack);
             let n = stack_f[i]();
             u_cluster(comb, n);
+            document.getElementById("calculate").value= "Calculate";
             return;
         } else {
             let r = stack_f[i]();
             return_stack.push(r);
         }
     }
+    document.getElementById("calculate").value= "Calculate";
+
 
     let comb = combine_mask(return_stack);
     // let d = applyMask(data,comb);
