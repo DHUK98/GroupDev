@@ -16,6 +16,7 @@ def json_from_netcdf_file(filepath):
     """
 
     f = Dataset(filepath, "r", format="NETCDF4")
+    print(f.dimensions)
 
     # # read in variables
     mt = f.variables['time']
@@ -44,19 +45,21 @@ def json_from_netcdf_file(filepath):
     return data_json
 
 
-path = '../stations/CGR/'
-files = []
-for file in os.listdir(path):
-    if file.endswith(".nc"):
-        files.append(file)
+# path = '../stations/CGR/'
+# files = []
+# for file in os.listdir(path):
+#     if file.endswith(".nc"):
+#         files.append(file)
+# #
+# # for f in files:
+# #     test = json_from_netcdf_file("../stations/CGR/" + f)
+# #     json_f = f.replace(".nc", ".json")
+# #     with open("../stations/CGR/" + json_f, 'w') as outfile:
+# #         outfile.write(test)
 #
-# for f in files:
-#     test = json_from_netcdf_file("../stations/CGR/" + f)
-#     json_f = f.replace(".nc", ".json")
-#     with open("../stations/CGR/" + json_f, 'w') as outfile:
-#         outfile.write(test)
+# with open("../stations/CGR/"+files[0].replace(".nc",".json")) as file:
+#     data = json.load(file)
+#
+# print(data)
 
-with open("../stations/CGR/"+files[0].replace(".nc",".json")) as file:
-    data = json.load(file)
 
-print(data)
