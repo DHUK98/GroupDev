@@ -6,8 +6,6 @@ from .json_reader import json_from_netcdf_file
 
 
 def json_to_netcdf(json_data, netcdf_filename):
-    print("CURRENT WORKING DIRECTORY: ", end="")
-    print(os.getcwd())
 
     # load json from filepath
     # with open(json_filepath) as f:
@@ -17,7 +15,7 @@ def json_to_netcdf(json_data, netcdf_filename):
     # json_data = json.load(json_data)
 
     netcdf_filepath = "static/netcdf_export/" + netcdf_filename + ".nc"
-    print(netcdf_filepath)
+    # print(netcdf_filepath)
 
     # create new netCDF file
     nc_file = Dataset(netcdf_filepath, "w", format="NETCDF4")

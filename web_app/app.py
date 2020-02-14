@@ -59,13 +59,14 @@ def cluster(iid,n):
 def convert_to_netcdf(index_json):
     data = request.get_json()
     json_to_netcdf(data, "cluster_" + str(int(index_json) + 1))
-    return "result : success"
+    return json.dumps({'success' : True}), 200, {'ContentType':'application/json'}
 
 @app.route('/zip_netcdf_exports', methods=['POST'])
 def zip_netcdf():
+    print("ZIP NETCDF APP FUNCTION")
     zip_netcdf_exports()
     delete_nc_exports()
-    return "result : success"
+    return json.dumps({'success' : True}), 200, {'ContentType':'application/json'}
 
 
 def applyMask(mask, d):

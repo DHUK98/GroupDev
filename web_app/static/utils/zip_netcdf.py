@@ -1,9 +1,10 @@
 import os
 from os import listdir
-
 from zipfile import ZipFile
 
+
 def zip_netcdf_exports():
+    print("zip_netcdf.py function")
 
     # create a ZipFile object
     with ZipFile('static/netcdf_export/download.zip', 'w') as zipObj:
@@ -27,6 +28,7 @@ def delete_nc_exports():
 
     for file_name in listdir(folder_path):
         if file_name.endswith('.nc'):
+            print("About to delete: " + folder_path + file_name)
             os.remove(folder_path + file_name)
             print("Deleted: " + str(file_name))
 
