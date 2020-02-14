@@ -42,7 +42,7 @@ document.getElementById("add_sector").onclick = function () {
     } else {
         let s_a = document.getElementById("start_angle_val").value;
         let e_a = document.getElementById("end_angle_val").value;
-        let d_s = document.getElementById("sec_dist_val").value;
+        let d_s = document.getElementById("sec_dist_val").value*2.5;
         let t_h = document.getElementById("sec_threshold_val").value;
         let url = "/sector/" + iid +
             "/" + s_a + "/" + e_a +
