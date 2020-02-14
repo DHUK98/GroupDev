@@ -3,6 +3,8 @@ import json
 from flask import jsonify
 import os
 from static.utils.cluster import linkage_request, h_cluster_request
+from static.utils.json_to_netdf import json_to_netcdf
+from static.utils.zip_netcdf import zip_netcdf_exports, delete_nc_exports
 
 app = Flask(__name__)
 
@@ -51,6 +53,14 @@ def cluster(iid,n):
     cluster = h_cluster_request(json.dumps(traj),linkage,n)
     print(cluster)
     return jsonify(cluster)
+
+
+@app.route('/convert_to_netcdf/<index_json>', methods=['POST'])
+def convert_to_netcdf(index_json):
+    data = request.get_json()
+    json_to_netcdf(data, "export" + str(index_json))
+
+
 
 
 def applyMask(mask, d):

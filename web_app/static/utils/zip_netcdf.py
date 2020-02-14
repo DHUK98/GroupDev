@@ -5,7 +5,6 @@ from zipfile import ZipFile
 
 def zip_netcdf_exports():
 
-
     # create a ZipFile object
     with ZipFile('../netcdf_export/download.zip', 'w') as zipObj:
         # Iterate over all the files in directory
