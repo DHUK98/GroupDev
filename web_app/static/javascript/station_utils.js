@@ -21,7 +21,7 @@ function u_cluster2(n) {
     return n;
 }
 
-function u_cluster(data, num_clust) {
+function u_cluster(data_l, num_clust) {
     console.log("cluster");
     let out;
     $.ajax({
@@ -29,8 +29,8 @@ function u_cluster(data, num_clust) {
         type: 'post',
         dataType: 'json',
         contentType: 'application/json',
-        success: function (data) {
-            out = JSON.parse(data);
+        success: function (data__) {
+            out = JSON.parse(data__);
             console.log(out["labels"]);
             console.log(out["centroids"]);
             let weight = [];
@@ -41,9 +41,9 @@ function u_cluster(data, num_clust) {
             let d = {"lat": out["centroids"][0], "lon": out["centroids"][1]};
             console.log(d);
             renderLines(d, weight);
-            console.log(applyMask2(data,out["labels"]));
+            console.log(applyMask2(out["labels"], data));
         },
-        data: JSON.stringify([JSON.stringify(data), "ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json"])
+        data: JSON.stringify([JSON.stringify(data_l), "ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json"])
     });
 
 }
@@ -65,7 +65,7 @@ function calculate() {
 
     let comb = combine_mask(return_stack);
     // let d = applyMask(data,comb);
-    renderLines(d);
+    // renderLines(d);
 }
 
 function combine_mask(masks) {
@@ -85,7 +85,7 @@ function combine_mask(masks) {
 }
 
 function applyMask2(mask, d) {
-    console.log("data",d);
+    console.log("data", d);
     let lat = d["lat"];
     let lon = d["lon"];
     let time = d["time"];
@@ -115,8 +115,14 @@ function applyMask2(mask, d) {
             "height": n_height,
             "pressure": n_pressure
         };
+
         out.push(json);
+
     }
+    $('#json-renderer').jsonViewer(out[0], {collapsed: true, withQuotes: true, withLinks: false});
+    // console.log("downlad");
+    // downloadObjectAsJson(out, "cluster" );
+    return out;
 }
 
 function applyMask(mask, d) {
@@ -149,4 +155,14 @@ function applyMask(mask, d) {
     };
 
     return JSON.stringify(json);
+}
+
+function downloadObjectAsJson(exportObj, exportName) {
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
+    let downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", exportName + ".json");
+    document.body.appendChild(downloadAnchorNode); // required for firefox
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
 }
