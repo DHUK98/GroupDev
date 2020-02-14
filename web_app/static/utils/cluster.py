@@ -87,25 +87,8 @@ def centroid(cluster):
 
     return mean_vec
 
-
-def get_centroids_old(X, labels):
-    # Get all centroids from the clustering
-    centroids = []
-
-    N = max(labels)
-
-    for n in range(N):
-        n += 1  # Avoid off by 1 error, scipy labels clusters from 1-8 not 0-7
-        cluster = get_cluster(X, labels, n)
-        cent = centroid(cluster)
-        dim1, dim2 = vector.vecToTraj(cent)
-
-        centroids.append((tuple(dim1), tuple(dim2)))
-
-    return centroids
-
 def get_centroids(X, labels):
-
+    # banter
     centroids = [[],[]]
 
     N = max(labels)
