@@ -65,7 +65,7 @@ function calculate() {
 
     let comb = combine_mask(return_stack);
     // let d = applyMask(data,comb);
-    renderLines(d);
+    // renderLines(d);
 }
 
 function combine_mask(masks) {
@@ -120,7 +120,8 @@ function applyMask2(mask, d) {
 
     }
     $('#json-renderer').jsonViewer(out[0], {collapsed: true, withQuotes: true, withLinks: false});
-
+    // console.log("downlad");
+    // downloadObjectAsJson(out, "cluster" );
     return out;
 }
 
@@ -154,4 +155,14 @@ function applyMask(mask, d) {
     };
 
     return JSON.stringify(json);
+}
+
+function downloadObjectAsJson(exportObj, exportName) {
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
+    let downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", exportName + ".json");
+    document.body.appendChild(downloadAnchorNode); // required for firefox
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
 }
