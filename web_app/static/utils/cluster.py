@@ -88,7 +88,7 @@ def centroid(cluster):
     return mean_vec
 
 def get_centroids(X, labels):
-
+    # banter
     centroids = [[],[]]
 
     N = max(labels)
