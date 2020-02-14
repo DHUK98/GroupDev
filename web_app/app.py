@@ -3,7 +3,7 @@ import json
 from flask import jsonify
 import os
 from static.utils.cluster import linkage_request, h_cluster_request
-from static.utils.json_to_netdf import json_to_netcdf
+from static.utils.json_to_netcdf import json_to_netcdf
 from static.utils.zip_netcdf import zip_netcdf_exports, delete_nc_exports
 
 app = Flask(__name__)
@@ -41,14 +41,14 @@ def station(iid):
 @app.route('/cluster/req/<iid>/<n>', methods=['POST'])
 def cluster(iid,n):
     data = request.get_json()
-    print(data)
+    # print(data)
     mask = json.loads(data[0])
     f_name = data[1]
-    print(data)
+    # print(data)
     with open("static/stations/" + iid + "/" + f_name, "r") as f:
         traj = json.load(f)
     traj = applyMask(mask, traj)
-    print(len(traj["lon"]))
+    # print(len(traj["lon"]))
     linkage = linkage_request(json.dumps(traj))
     cluster = h_cluster_request(json.dumps(traj),linkage,n)
     print(cluster)
@@ -58,9 +58,14 @@ def cluster(iid,n):
 @app.route('/convert_to_netcdf/<index_json>', methods=['POST'])
 def convert_to_netcdf(index_json):
     data = request.get_json()
-    json_to_netcdf(data, "export" + str(index_json))
+    json_to_netcdf(data, "cluster_" + str(int(index_json) + 1))
+    return "result : success"
 
-
+@app.route('/zip_netcdf_exports', methods=['POST'])
+def zip_netcdf():
+    zip_netcdf_exports()
+    delete_nc_exports()
+    return "result : success"
 
 
 def applyMask(mask, d):

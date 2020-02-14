@@ -6,10 +6,10 @@ from zipfile import ZipFile
 def zip_netcdf_exports():
 
     # create a ZipFile object
-    with ZipFile('../netcdf_export/download.zip', 'w') as zipObj:
+    with ZipFile('static/netcdf_export/download.zip', 'w') as zipObj:
         # Iterate over all the files in directory
 
-        for folderName, subfolders, filenames in os.walk("..\\netcdf_export\\"):
+        for folderName, subfolders, filenames in os.walk("static\\netcdf_export\\"):
 
             for filename in filenames:
 
@@ -23,11 +23,12 @@ def zip_netcdf_exports():
 
 
 def delete_nc_exports():
-    folder_path = "../netcdf_export/"
+    folder_path = "static/netcdf_export/"
 
     for file_name in listdir(folder_path):
         if file_name.endswith('.nc'):
             os.remove(folder_path + file_name)
+            print("Deleted: " + str(file_name))
 
 
 if __name__ == "__main__":

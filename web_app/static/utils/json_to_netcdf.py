@@ -1,18 +1,23 @@
 import json
 import numpy as np
+import os
 from netCDF4 import Dataset
-from json_reader import json_from_netcdf_file
+from .json_reader import json_from_netcdf_file
 
 
 def json_to_netcdf(json_data, netcdf_filename):
+    print("CURRENT WORKING DIRECTORY: ", end="")
+    print(os.getcwd())
 
     # load json from filepath
     # with open(json_filepath) as f:
     #     json_data = json.load(f)
 
-    # make sure json_data is loaded in correctly
+    # load in from string
+    # json_data = json.load(json_data)
 
-    netcdf_filepath = "../netcdf_export/" + netcdf_filename + ".nc"
+    netcdf_filepath = "static/netcdf_export/" + netcdf_filename + ".nc"
+    print(netcdf_filepath)
 
     # create new netCDF file
     nc_file = Dataset(netcdf_filepath, "w", format="NETCDF4")

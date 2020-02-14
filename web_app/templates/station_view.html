@@ -221,7 +221,7 @@
 
                 </ul>
                 <p></p>
-                <input class="w3-button w3-teal" id="calculate" type="button" value="Calclate">
+                <input class="w3-button w3-teal" id="calculate" type="button" value="Calculate">
 
 
             </div>
@@ -230,7 +230,7 @@
 
         <div class="output">
             <div class="scroll">
-                <a id="calculate exportJSON" class="w3-button w3-teal">Download Data</a>
+                <a id="export_data_button" class="w3-button w3-teal">Download Data</a>
                 <p></p>
                 <pre id="json-renderer"></pre>
                 <p></p>
@@ -243,6 +243,11 @@
     <script src="{{ url_for('static', filename='javascript/station_view_input.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/sector.js') }}"></script>
     <script>
+
+        var download_button = document.getElementById('export_data_button');
+        download_button.onclick = zip_files();
+
+
         let file_ns = "{{ file_ns }}";
         console.log(file_ns);
         let iid = "{{ id }}";
@@ -299,6 +304,22 @@
                 });
         }
 
+        function zip_files() {
+            $.ajax({
+                url: '/zip_netcdf_exports',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function (data) {
+                    console.log("zip_netcdf_exports post success!")
+                },
+                data: ""
+            });
+
+            // then download it
+
+        }
+
         function renderLocation() {
             console.log([lng, lat]);
             g.append("circle")
@@ -325,29 +346,6 @@
                 .style("fill", "#008080");
         }
 
-        // to be put into station_utils
-        function convert_cluster_jsons(current_data) {
-
-            for (let i = 0; i < current_data.length; i++) {
-                send_json_to_netcdf(current_data[i], i)
-            }
-
-        }
-
-        function send_json_to_netcdf(current_data, json_index) {
-
-            $.ajax({
-                url: '/convert_to_netcdf/' + json_index,
-                type: 'post',
-                dataType: 'json',
-                contentType: 'application/json',
-                success: function (data) {
-                    console.log("json_to_netcdf post success!")
-                },
-                data: current_data
-            });
-
-        }
 
 
         var lineFunction = d3.line()

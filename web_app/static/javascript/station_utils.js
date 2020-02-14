@@ -84,6 +84,32 @@ function combine_mask(masks) {
     return combined;
 }
 
+function convert_cluster_jsons(current_data) {
+
+    for (let i = 0; i < current_data.length; i++) {
+        console.log("sending json to netcdf")
+        send_json_to_netcdf(current_data[i], i);
+    }
+
+}
+
+function send_json_to_netcdf(single_json, json_index) {
+
+    single_json = JSON.stringify(single_json);
+
+    $.ajax({
+        url: '/convert_to_netcdf/' + json_index,
+        type: 'post',
+        dataType: 'json',
+        contentType: 'application/json',
+        success: function (data) {
+            console.log("json_to_netcdf post success!")
+        },
+        data: single_json
+    });
+}
+
+
 function applyMask2(mask, d) {
     console.log("data", d);
     let lat = d["lat"];
@@ -122,6 +148,7 @@ function applyMask2(mask, d) {
     $('#json-renderer').jsonViewer(out[0], {collapsed: true, withQuotes: true, withLinks: false});
     // console.log("downlad");
     // downloadObjectAsJson(out, "cluster" );
+    convert_cluster_jsons(out);
     return out;
 }
 
