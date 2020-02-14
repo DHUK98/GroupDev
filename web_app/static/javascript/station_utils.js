@@ -17,11 +17,15 @@ function u_filter(data, type, min, max, thresh) {
     return out;
 }
 
+function u_cluster2(n) {
+    return n;
+}
+
 function u_cluster(data, num_clust) {
     console.log("cluster");
     let out;
     $.ajax({
-        url: '/cluster/req/' + iid,
+        url: '/cluster/req/' + iid + "/" + num_clust,
         type: 'post',
         dataType: 'json',
         contentType: 'application/json',
@@ -30,13 +34,14 @@ function u_cluster(data, num_clust) {
             console.log(out["labels"]);
             console.log(out["centroids"]);
             let weight = [];
-                for(let j = 1; j <= new Set(out["labels"]).size;j++){
-                weight[j-1]= out["labels"].filter(x => x==j).length;
+            for (let j = 1; j <= new Set(out["labels"]).size; j++) {
+                weight[j - 1] = out["labels"].filter(x => x == j).length;
             }
-            console.log("WWW",weight);
-            let d = {"lat":out["centroids"][0],"lon":out["centroids"][1]};
+            console.log("WWW", weight);
+            let d = {"lat": out["centroids"][0], "lon": out["centroids"][1]};
             console.log(d);
-            renderLines(d,weight);
+            renderLines(d, weight);
+            console.log(applyMask2(data,out["labels"]));
         },
         data: JSON.stringify([JSON.stringify(data), "ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json"])
     });
@@ -47,16 +52,20 @@ function calculate() {
     console.log(stack_f);
     let return_stack = [];
     for (let i = 0; i < stack_f.length; i++) {
-        let r = stack_f[i]();
-        return_stack.push(r);
+        if (i == stack_f.length - 1 && stack_f[i].toString().includes("cluster")) {
+            let comb = combine_mask(return_stack);
+            let n = stack_f[i]();
+            u_cluster(comb, n);
+            return;
+        } else {
+            let r = stack_f[i]();
+            return_stack.push(r);
+        }
     }
-    console.log(return_stack);
 
     let comb = combine_mask(return_stack);
-    let f = applyMask(comb, data);
-
-    // renderLines(f);
-    u_cluster(comb, 8);
+    // let d = applyMask(data,comb);
+    renderLines(d);
 }
 
 function combine_mask(masks) {
@@ -73,6 +82,41 @@ function combine_mask(masks) {
         }
     }
     return combined;
+}
+
+function applyMask2(mask, d) {
+    console.log("data",d);
+    let lat = d["lat"];
+    let lon = d["lon"];
+    let time = d["time"];
+    let height = d["height"];
+    let pressure = d["pressure"];
+
+    let out = [];
+    for (let j = 1; j <= new Set(mask).size; j++) {
+        let n_lat = [];
+        let n_lon = [];
+        let n_time = [];
+        let n_height = [];
+        let n_pressure = [];
+        for (let i = 0; i < mask.length; i++) {
+            if (mask[i] == j) {
+                n_lat.push(lat[i]);
+                n_lon.push(lon[i]);
+                n_time.push(time[i]);
+                n_height.push(height[i]);
+                n_pressure.push(pressure[i]);
+            }
+        }
+        let json = {
+            "lat": n_lat,
+            "lon": n_lon,
+            "time": n_time,
+            "height": n_height,
+            "pressure": n_pressure
+        };
+        out.push(json);
+    }
 }
 
 function applyMask(mask, d) {

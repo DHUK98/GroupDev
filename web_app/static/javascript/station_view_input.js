@@ -20,6 +20,7 @@ new Sortable(el, {
 
 
 function array_move(arr, old_index, new_index) {
+    console.log("MOVE");
     if (new_index >= arr.length) {
         let k = new_index - arr.length + 1;
         while (k--) {
@@ -67,9 +68,9 @@ document.getElementById("add_cluster").onclick = function () {
     if (!element.length > 0) {
         stack.appendChild(z)
 
-        // stack_f.push(function () {
-        //     return u_cluster(c_nu);
-        // });
+        stack_f.push(function () {
+            return u_cluster2(c_nu);
+        });
 
     }
 };

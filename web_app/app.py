@@ -1,14 +1,8 @@
 from flask import Flask, render_template, request
-import os
-import json
-import sys
 import json
 from flask import jsonify
 import os
 from static.utils.cluster import linkage_request, h_cluster_request
-
-sys.path.insert(1, '../sector')
-# from sector_main import sector
 
 app = Flask(__name__)
 
@@ -42,8 +36,8 @@ def station(iid):
         return str(e)
 
 
-@app.route('/cluster/req/<iid>', methods=['POST'])
-def cluster(iid):
+@app.route('/cluster/req/<iid>/<n>', methods=['POST'])
+def cluster(iid,n):
     data = request.get_json()
     print(data)
     mask = json.loads(data[0])
@@ -54,7 +48,7 @@ def cluster(iid):
     traj = applyMask(mask, traj)
     print(len(traj["lon"]))
     linkage = linkage_request(json.dumps(traj))
-    cluster = h_cluster_request(json.dumps(traj),linkage,15)
+    cluster = h_cluster_request(json.dumps(traj),linkage,n)
     print(cluster)
     return jsonify(cluster)
 
