@@ -28,9 +28,31 @@ document.getElementById("add_sector").onclick = function () {
 };
 
 
+// CLUSTERING KMEANS
+
+document.getElementById("add_cluster_kmeans").onclick = function () {
+    let z = document.createElement('li'); // is a node
+    z.setAttribute("id", "zstack_cluster");
 
 
-// CLUSTERING
+    let c_nu = document.getElementById("number_of_cluster").value;
+
+    z.innerHTML = "K-means Cluster (" + c_nu + ")";
+    let stack = document.getElementById("stack");
+    let element = $('#stack #zstack_cluster');
+
+    if (!element.length > 0) {
+        stack.appendChild(z);
+
+        stack_f.push([function () {
+            return u_cluster2(c_nu);
+        }, 100]);
+        stack_f.sort(sortFunction)
+    }
+};
+
+
+// CLUSTERING DBSCAN
 
 document.getElementById("add_cluster").onclick = function () {
     let z = document.createElement('li'); // is a node
@@ -42,21 +64,19 @@ document.getElementById("add_cluster").onclick = function () {
     let min_samp = document.getElementById("minimum_samples_for_cluster").value;
     let eps_val = document.getElementById("eps_value").value;
 
-    z.innerHTML = "Cluster (" + min_samp + ", " + eps_val + ")";
+    z.innerHTML = "DBScan Cluster (" + min_samp + ", " + eps_val + ")";
     let stack = document.getElementById("stack");
     let element = $('#stack #zstack_cluster');
 
     if (!element.length > 0) {
-        stack.appendChild(z)
-;
+        stack.appendChild(z);
+
         stack_f.push([function () {
             return u_cluster2_dbscan(min_samp, eps_val);
         }, 100]);
         stack_f.sort(sortFunction)
     }
 };
-
-
 
 
 document.getElementById("add_filter").onclick = function () {

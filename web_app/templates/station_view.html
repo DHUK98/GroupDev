@@ -151,6 +151,20 @@
                     </div>
                 </div>
                 <P></P>
+                <div class="w3-card-4 render_all">
+                    <header class="w3-container w3-teal">
+                        <h2>Rendering</h2>
+                    </header>
+                    <div class="w3-container w3-white">
+                            <p>
+                            <div>
+                                <input class="w3-check" id="render_all_check" type="checkbox">
+                                <label>Render all Trajectories</label>
+                            </div>
+                            </p>
+                    </div>
+                </div>
+                <P></P>
                 <div class="w3-card-4">
                     <header class="w3-container w3-teal">
                         <h2>Sector</h2>
@@ -345,9 +359,12 @@
 
 
         function renderLines(mm, weight) {
+            console.log("For render lines, mm is ");
+            console.log(mm);
             g.selectAll(".traj").remove();
             let lat_lng = [mm["lat"], mm["lon"]];
             {#console.log("l_l", lat_lng[0].length);#}
+
             for (let l = 0; l < lat_lng[0].length; l++) {
                 p_ = [];
                 lats = lat_lng[0][l];
@@ -358,6 +375,8 @@
                 }
                 p.push(p_);
             }
+
+
             console.log(p);
             let m = Math.max(...weight);
             for (let i = 0; i < lat_lng[0].length; i++) {
@@ -374,6 +393,48 @@
                     .attr("transform", "translate(" + trans[0] + "," + trans[1] + ")" + "scale(" + trans[2] + ")");
             }
         }
+
+
+        function render_all_lines(mm) {
+
+            console.log("Running render_all_lines function");
+            console.log("mm is ");
+            console.log(mm);
+
+
+            g.selectAll(".traj").remove();
+            let lat_lng = [mm["lat"], mm["lon"]];
+            {#console.log("l_l", lat_lng[0].length);#}
+            for (let l = 0; l < lat_lng[0].length; l++) {
+                p_ = [];
+                lats = lat_lng[0][l];
+                longs = lat_lng[1][l];
+                {#console.log(l, lats, longs)#}
+                for (let i = 0; i < lats.length; i++) {
+                    p_.push([lats[i], longs[i]]);
+                }
+                p.push(p_);
+            }
+            console.log(p);
+            // let m = Math.max(...weight);
+            for (let i = 0; i < lat_lng[0].length; i++) {
+                // let w = weight[i];
+                g.append("path")
+                    .attr("class", "traj")
+                    .attr("d", lineFunction(p[i]))
+                    {#.attr("stroke", "gray")#}
+                    .attr("stroke", function () {
+                        return "gray";
+                    })
+                    .attr("stroke-width", 1)
+                    .attr("fill", "none")
+                    .attr("opacity", 0.3)
+                    .attr("transform", "translate(" + trans[0] + "," + trans[1] + ")" + "scale(" + trans[2] + ")");
+            }
+        }
+
+
+
 
         function zoomed() {
             trans = [d3.event.transform.x, d3.event.transform.y, d3.event.transform.k];

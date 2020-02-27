@@ -60,6 +60,7 @@ def cluster_dbscan(iid, min_samp, eps_val):
     return jsonify(cluster)
 
 
+
 @app.route('/cluster/req/<iid>/<n>', methods=['POST'])
 def cluster(iid, n):
     data = request.get_json()
@@ -70,8 +71,13 @@ def cluster(iid, n):
     with open("static/stations/" + iid + "/" + f_name, "r") as f:
         traj = json.load(f)
     traj = applyMask(mask, traj)
+
+
+    # put K-means request here
+
+
     # linkage = linkage_request(json.dumps(traj))
-    cluster = cluster_request(json.dumps(traj), n, "kmeans", min_samples=10, eps=50)
+    # cluster = cluster_request(json.dumps(traj), n, "kmeans", min_samples=10, eps=50)
     # cluster = cluster_request(json.dumps(traj), n, "dbscan", min_samples=10, eps=50)
     print(cluster)
     return jsonify(cluster)

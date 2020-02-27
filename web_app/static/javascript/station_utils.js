@@ -9,6 +9,8 @@ function sortFunction(a, b) {
         return (a[0] > b[0]) ? -1 : 1;
     }
 }
+
+
 function u_sector(data, start_ang, end_ang, dist, thresh) {
     console.log("sector");
     console.log("data", start_ang, end_ang, dist, thresh);
@@ -26,9 +28,9 @@ function u_filter(data, type, min, max, thresh) {
 
 function u_cluster2_dbscan(min_samp, eps_val) {
     let params = [min_samp, eps_val]
-
     return params
 }
+
 
 function u_cluster_dbscan(data_l, params) {
     let min_samp = params[0]
@@ -92,46 +94,59 @@ function u_cluster(data_l, num_clust) {
         },
         data: JSON.stringify([JSON.stringify(data_l), "ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json"])
     });
-
 }
+
 
 function calculate() {
     document.getElementById("calculate").value = "Loading";
 
+
     console.log(stack_f);
     let return_stack = [];
     for (let i = 0; i < stack_f.length; i++) {
-        if (i == stack_f.length - 1 && stack_f[i][0].toString().includes("cluster")) {
+        if (i == stack_f.length - 1 && stack_f[i][0].toString().includes("DBScan")) {
             let comb = combine_mask(return_stack);
 
-
-
-            //////////////////////////
-            // this is the num_clusters
-            // let n = stack_f[i][0]();
-            ///////////////////////////////
+            // it worked with data, but that was all of the data
+            // we need to pass it an array of lats and lons
+            let render_all = document.getElementById("render_all_check").checked;
+            if (render_all) {
+                console.log("RENDER ALL IS CHECKED");
+                render_all_lines(comb);
+            }
 
 
             let dbscan_vars = stack_f[i][0]();
-
-
-
-
             u_cluster_dbscan(comb, dbscan_vars);
-            // u_cluster(comb, n);
             return;
+
+
+        } else if (i == stack_f.length - 1 && stack_f[i][0].toString().includes("K-means")) {
+            let comb = combine_mask(return_stack);
+            let n = stack_f[i][0]();
+            u_cluster(comb, n);
+            return;
+
         } else {
             let r = stack_f[i][0]();
             return_stack.push(r);
         }
     }
-    document.getElementById("calculate").value = "Calculate";
 
+    document.getElementById("calculate").value = "Calculate";
+    console.log("ABOUT TO TRY TO RENDER ALL");
+
+    // New render all lines
+    if (render_all) {
+        console.log("RENDERING ALL");
+        render_all_lines(data);
+    }
 
     let comb = combine_mask(return_stack);
-    let d = applyMask(data,comb);
-     renderLines(d);
+    let d = applyMask(data, comb);
+    renderLines(d);
 }
+
 if (typeof console  != "undefined")
     if (typeof console.log != 'undefined')
         console.olog = console.log;
@@ -142,7 +157,9 @@ console.log = function(message) {
     console.olog(message);
     $('#debugDiv').append('<p>' + message + '</p>');
 };
-console.error = console.debug = console.info =  console.log
+console.error = console.debug = console.info = console.log
+
+
 function combine_mask(masks) {
     let combined = [];
     for (let i = 0; i < masks[0].length; i++) {
