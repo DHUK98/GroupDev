@@ -124,15 +124,16 @@ def cluster_request(json_msg, cluster_no, cluster_type):
 
     if cluster_type == 'kmeans':
         model = KMeans(n_clusters=int(cluster_no)).fit(X)
-        labels = model.labels_
+        # labels = model.labels_
 
     elif cluster_type == 'spectral':
         model = SpectralClustering(n_clusters=int(cluster_no)).fit(X)
-        labels = model.labels_
+        # labels = model.labels_
 
     elif cluster_type == 'dbscan':
-        _, labels = DBSCAN(X)
+        model = DBSCAN(min_samples=10).fit(X)
 
+    labels = model.labels_
 
     # Convert to same labelling system as scipy: 1 -> N not 0 -> N-1
     for i in range(len(labels)):
