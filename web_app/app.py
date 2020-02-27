@@ -49,7 +49,7 @@ def cluster(iid, n):
         traj = json.load(f)
     traj = applyMask(mask, traj)
     # linkage = linkage_request(json.dumps(traj))
-    cluster = cluster_request(json.dumps(traj), n,"kmeans")
+    cluster = cluster_request(json.dumps(traj), n,"dbscan", min_samples=10, eps=50)
     print(cluster)
     return jsonify(cluster)
 
