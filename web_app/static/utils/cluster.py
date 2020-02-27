@@ -4,7 +4,7 @@ Use various cluster algorithms to cluster trajectories
 
 import json
 from scipy.cluster.hierarchy import linkage, fcluster
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, SpectralClustering
 from . import vector
 import pickle
 import numpy as np
@@ -106,6 +106,39 @@ def get_centroids(X, labels):
         centroids[1].append(lon)
 
     return centroids
+
+# Handle all non-hierarchical cluster requests
+def cluster_request(json_msg, cluster_no, cluster_type):
+    # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon), and
+    # number of clusters
+
+    # Read json message
+    loaded = json.loads(json_msg)
+
+    dim1 = loaded.get('lat')
+    dim2 = loaded.get('lon')
+
+    X = toVector(dim1, dim2)
+
+    if cluster_type == 'kmeans':
+        model = KMeans(n_clusters=int(cluster_no)).fit(X)
+    elif cluster_type == 'spectral':
+        model = SpectralClustering(n_clusters=int(cluster_no)).fit(X)
+
+    labels = model.labels_
+
+    # Convert to same labelling system as scipy: 1 -> N not 0 -> N-1
+    for i in range(len(labels)):
+        labels[i] += 1
+
+    centroids = get_centroids(X, labels)
+
+    json_dict = {'labels': labels.tolist(),
+                 'centroids': centroids
+                 }
+    json_msg = json.dumps(json_dict)
+
+    return json_msg
 
 
 # Function to handle request for kmeans clustering of a sector
