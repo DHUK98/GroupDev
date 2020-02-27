@@ -48,11 +48,11 @@ document.getElementById("add_cluster").onclick = function () {
 
     if (!element.length > 0) {
         stack.appendChild(z)
-
+;
         stack_f.push([function () {
             return u_cluster2_dbscan(min_samp, eps_val);
         }, 100]);
-        stack_f.sort(sortFunction);
+        stack_f.sort(sortFunction)
     }
 };
 
