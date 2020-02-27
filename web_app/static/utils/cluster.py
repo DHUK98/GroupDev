@@ -110,7 +110,7 @@ def get_centroids(X, labels):
 
 
 # Handle all non-hierarchical cluster requests
-def cluster_request(json_msg, cluster_no, cluster_type):
+def cluster_request(json_msg, cluster_no, cluster_type, min_samples=70, eps=50):
     # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon), and
     # number of clusters
 
@@ -131,7 +131,7 @@ def cluster_request(json_msg, cluster_no, cluster_type):
         # labels = model.labels_
 
     elif cluster_type == 'dbscan':
-        model = DBSCAN(min_samples=10, eps=0.3).fit(X)
+        model = DBSCAN(min_samples=min_samples, eps=eps).fit(X)
 
     labels = model.labels_
 
