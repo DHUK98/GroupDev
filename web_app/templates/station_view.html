@@ -341,7 +341,6 @@
 
 
         function renderLines(mm, weight) {
-            {#mm = JSON.parse(mm);#}
             g.selectAll(".traj").remove();
             let lat_lng = [mm["lat"], mm["lon"]];
             {#console.log("l_l", lat_lng[0].length);#}

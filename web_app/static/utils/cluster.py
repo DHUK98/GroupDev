@@ -87,14 +87,15 @@ def centroid(cluster):
 
     return mean_vec
 
+
 def get_centroids(X, labels):
     # banter
-    centroids = [[],[]]
+    centroids = [[], []]
 
     N = max(labels)
 
     for n in range(N):
-        n += 1 # Avoid off by 1 error, scipy labels clusters from 1-8 not 0-7
+        n += 1  # Avoid off by 1 error, scipy labels clusters from 1-8 not 0-7
 
         cluster = get_cluster(X, labels, n)
 
@@ -106,6 +107,7 @@ def get_centroids(X, labels):
         centroids[1].append(lon)
 
     return centroids
+
 
 # Handle all non-hierarchical cluster requests
 def cluster_request(json_msg, cluster_no, cluster_type):

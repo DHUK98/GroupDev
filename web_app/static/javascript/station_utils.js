@@ -42,6 +42,7 @@ function u_cluster(data_l, num_clust) {
             console.log(d);
             renderLines(d, weight);
             console.log(applyMask2(out["labels"], data));
+            console.log("cluster Success");
         },
         data: JSON.stringify([JSON.stringify(data_l), "ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json"])
     });

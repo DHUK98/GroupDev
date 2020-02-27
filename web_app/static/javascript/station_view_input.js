@@ -8,7 +8,7 @@ new Sortable(el, {
             array_move(stack_f, evt.oldIndex, evt.newIndex);
     },
     removeOnSpill: true,
-    onSpill: function (/**Event*/evt) {
+    onSpill: function (evt) {
         if (stack_f.length > 1) {
             stack_f.splice(evt.oldIndex, 1);
         } else {

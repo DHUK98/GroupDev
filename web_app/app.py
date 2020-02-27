@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 import json
 from flask import jsonify
 import os
-from static.utils.cluster import linkage_request, kmeans_request
+from static.utils.cluster import linkage_request, cluster_request
 from static.utils.json_to_netcdf import json_to_netcdf
 from static.utils.zip_netcdf import zip_netcdf_exports, delete_nc_exports
 
@@ -39,7 +39,7 @@ def station(iid):
 
 
 @app.route('/cluster/req/<iid>/<n>', methods=['POST'])
-def cluster(iid,n):
+def cluster(iid, n):
     data = request.get_json()
     # print(data)
     mask = json.loads(data[0])
@@ -48,9 +48,8 @@ def cluster(iid,n):
     with open("static/stations/" + iid + "/" + f_name, "r") as f:
         traj = json.load(f)
     traj = applyMask(mask, traj)
-    # print(len(traj["lon"]))
     # linkage = linkage_request(json.dumps(traj))
-    cluster = kmeans_request(json.dumps(traj), n)
+    cluster = cluster_request(json.dumps(traj), n,"kmeans")
     print(cluster)
     return jsonify(cluster)
 
@@ -59,7 +58,7 @@ def cluster(iid,n):
 def convert_to_netcdf(index_json):
     data = request.get_json()
     json_to_netcdf(data, "cluster_" + str(int(index_json) + 1))
-    return json.dumps({'success' : True}), 200, {'ContentType':'application/json'}
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
 @app.route('/zip_netcdf_exports', methods=['POST'])
@@ -67,7 +66,7 @@ def zip_netcdf():
     print("ZIP NETCDF APP FUNCTION")
     zip_netcdf_exports()
     delete_nc_exports()
-    return json.dumps({'success' : True}), 200, {'ContentType':'application/json'}
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
 def applyMask(mask, d):
