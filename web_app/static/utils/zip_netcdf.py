@@ -8,14 +8,14 @@ def zip_netcdf_exports():
 
     # create a ZipFile object
     with ZipFile('static/netcdf_export/download.zip', 'w') as zipObj:
-        # Iterate over all the files in directory
 
+        # Iterate over all the files in directory
         for folderName, subfolders, filenames in os.walk("static\\netcdf_export\\"):
 
             for filename in filenames:
 
                 if filename != "download.zip":
-                    # create complete filepath of file in directory
+                    # concatenate complete filepath of file in directory
                     filePath = os.path.join(folderName, filename)
 
                     # Add file to zip

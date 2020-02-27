@@ -24,9 +24,47 @@ function u_filter(data, type, min, max, thresh) {
     return out;
 }
 
+function u_cluster2_dbscan(min_samp, eps_val) {
+    let params = [min_samp, eps_val]
+
+    return params
+}
+
+function u_cluster_dbscan(data_l, params) {
+    let min_samp = params[0]
+    let eps_val = params[1]
+
+    console.log("cluster");
+    let out;
+    $.ajax({
+        url: '/cluster/req/' + iid + "/" + min_samp + "/" + eps_val,
+        type: 'post',
+        dataType: 'json',
+        contentType: 'application/json',
+        success: function (data__) {
+            out = JSON.parse(data__);
+            console.log(out["labels"]);
+            console.log(out["centroids"]);
+            let weight = [];
+            for (let j = 1; j <= new Set(out["labels"]).size; j++) {
+                weight[j - 1] = out["labels"].filter(x => x == j).length;
+            }
+            console.log("WWW", weight);
+            let d = {"lat": out["centroids"][0], "lon": out["centroids"][1]};
+            console.log(d);
+            renderLines(d, weight);
+            console.log(applyMask2(out["labels"], data));
+            console.log("cluster Success");
+            document.getElementById("calculate").value = "";
+        },
+        data: JSON.stringify([JSON.stringify(data_l), "ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json"])
+    })
+}
+
 function u_cluster2(n) {
     return n;
 }
+
 
 function u_cluster(data_l, num_clust) {
     console.log("cluster");
@@ -65,8 +103,22 @@ function calculate() {
     for (let i = 0; i < stack_f.length; i++) {
         if (i == stack_f.length - 1 && stack_f[i][0].toString().includes("cluster")) {
             let comb = combine_mask(return_stack);
-            let n = stack_f[i][0]();
-            u_cluster(comb, n);
+
+
+
+            //////////////////////////
+            // this is the num_clusters
+            // let n = stack_f[i][0]();
+            ///////////////////////////////
+
+
+            let dbscan_vars = stack_f[i][0]();
+
+
+
+
+            u_cluster_dbscan(comb, dbscan_vars);
+            // u_cluster(comb, n);
             return;
         } else {
             let r = stack_f[i][0]();

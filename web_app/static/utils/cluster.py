@@ -109,6 +109,35 @@ def get_centroids(X, labels):
     return centroids
 
 
+# separate request function for dbscan
+def cluster_request_dbscan(json_msg, min_samples=70, eps=50):
+    # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon), and
+    # number of clusters
+    # Read json message
+    loaded = json.loads(json_msg)
+
+    dim1 = loaded.get('lat')
+    dim2 = loaded.get('lon')
+
+    X = toVector(dim1, dim2)
+
+    model = DBSCAN(min_samples=min_samples, eps=eps).fit(X)
+    labels = model.labels_
+
+    # Convert to same labelling system as scipy: 1 -> N not 0 -> N-1
+    for i in range(len(labels)):
+        labels[i] += 1
+
+    centroids = get_centroids(X, labels)
+
+    json_dict = {'labels': labels.tolist(),
+                 'centroids': centroids
+                 }
+    json_msg = json.dumps(json_dict)
+
+    return json_msg
+
+
 # Handle all non-hierarchical cluster requests
 def cluster_request(json_msg, cluster_no, cluster_type, min_samples=70, eps=50):
     # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon), and
