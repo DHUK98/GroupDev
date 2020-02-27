@@ -112,7 +112,7 @@ def get_centroids(X, labels):
 
 # separate request function for dbscan
 def cluster_request_dbscan(json_msg, min_samples=70, eps=50):
-    print("Got to cluster request dbscan")
+
     # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon), and
     # number of clusters
     # Read json message
