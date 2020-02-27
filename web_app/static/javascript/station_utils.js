@@ -1,19 +1,26 @@
 let stack_f = [];
 
+
+function sortFunction(a, b) {
+    if (a[0] === b[0]) {
+        return 0;
+    }
+    else {
+        return (a[0] > b[0]) ? -1 : 1;
+    }
+}
 function u_sector(data, start_ang, end_ang, dist, thresh) {
     console.log("sector");
     console.log("data", start_ang, end_ang, dist, thresh);
     let out = sector_trajecotory(data, start_ang, end_ang, dist, thresh);
-    console.log(out);
-    console.log(out.filter(x => x == 1).length);
+
     return out;
 }
 
 function u_filter(data, type, min, max, thresh) {
     console.log("filter " + type);
     let out = filter(data, type, min, max, thresh);
-    console.log(out);
-    console.log(out.filter(x => x == 1).length);
+
     return out;
 }
 
@@ -42,6 +49,8 @@ function u_cluster(data_l, num_clust) {
             console.log(d);
             renderLines(d, weight);
             console.log(applyMask2(out["labels"], data));
+            console.log("cluster Success");
+            document.getElementById("calculate").value = "";
         },
         data: JSON.stringify([JSON.stringify(data_l), "ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json"])
     });
@@ -49,30 +58,39 @@ function u_cluster(data_l, num_clust) {
 }
 
 function calculate() {
-    document.getElementById("calculate").value= "Loading";
+    document.getElementById("calculate").value = "Loading";
 
     console.log(stack_f);
     let return_stack = [];
     for (let i = 0; i < stack_f.length; i++) {
-        if (i == stack_f.length - 1 && stack_f[i].toString().includes("cluster")) {
+        if (i == stack_f.length - 1 && stack_f[i][0].toString().includes("cluster")) {
             let comb = combine_mask(return_stack);
-            let n = stack_f[i]();
+            let n = stack_f[i][0]();
             u_cluster(comb, n);
-            document.getElementById("calculate").value= "Calculate";
             return;
         } else {
-            let r = stack_f[i]();
+            let r = stack_f[i][0]();
             return_stack.push(r);
         }
     }
-    document.getElementById("calculate").value= "Calculate";
+    document.getElementById("calculate").value = "Calculate";
 
 
     let comb = combine_mask(return_stack);
-    // let d = applyMask(data,comb);
-    // renderLines(d);
+    let d = applyMask(data,comb);
+     renderLines(d);
 }
+if (typeof console  != "undefined")
+    if (typeof console.log != 'undefined')
+        console.olog = console.log;
+    else
+        console.olog = function() {};
 
+console.log = function(message) {
+    console.olog(message);
+    $('#debugDiv').append('<p>' + message + '</p>');
+};
+console.error = console.debug = console.info =  console.log
 function combine_mask(masks) {
     let combined = [];
     for (let i = 0; i < masks[0].length; i++) {
@@ -114,7 +132,6 @@ function send_json_to_netcdf(single_json, json_index) {
     });
 }
 
-
 function applyMask2(mask, d) {
     console.log("data", d);
     let lat = d["lat"];
@@ -150,9 +167,6 @@ function applyMask2(mask, d) {
         out.push(json);
 
     }
-    $('#json-renderer').jsonViewer(out[0], {collapsed: true, withQuotes: true, withLinks: false});
-    // console.log("downlad");
-    // downloadObjectAsJson(out, "cluster" );
     convert_cluster_jsons(out);
     return out;
 }

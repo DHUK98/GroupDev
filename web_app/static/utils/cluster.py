@@ -4,7 +4,7 @@ Use various cluster algorithms to cluster trajectories
 
 import json
 from scipy.cluster.hierarchy import linkage, fcluster
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, SpectralClustering, DBSCAN
 from . import vector
 import pickle
 import numpy as np
@@ -87,14 +87,15 @@ def centroid(cluster):
 
     return mean_vec
 
+
 def get_centroids(X, labels):
     # banter
-    centroids = [[],[]]
+    centroids = [[], []]
 
     N = max(labels)
 
     for n in range(N):
-        n += 1 # Avoid off by 1 error, scipy labels clusters from 1-8 not 0-7
+        n += 1  # Avoid off by 1 error, scipy labels clusters from 1-8 not 0-7
 
         cluster = get_cluster(X, labels, n)
 
@@ -108,21 +109,60 @@ def get_centroids(X, labels):
     return centroids
 
 
-# Function to handle request for kmeans clustering of a sector
-def kmeans_request(json_msg):
+# Handle all non-hierarchical cluster requests
+def cluster_request(json_msg, cluster_no, cluster_type):
     # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon), and
     # number of clusters
 
     # Read json message
     loaded = json.loads(json_msg)
 
-    dim1 = loaded.get('dim1')
-    dim2 = loaded.get('dim2')
-    cluster_no = loaded.get('cluster_no')
+    dim1 = loaded.get('lat')
+    dim2 = loaded.get('lon')
 
     X = toVector(dim1, dim2)
 
-    model = KMeans(n_clusters=cluster_no).fit(X)
+    if cluster_type == 'kmeans':
+        model = KMeans(n_clusters=int(cluster_no)).fit(X)
+        # labels = model.labels_
+
+    elif cluster_type == 'spectral':
+        model = SpectralClustering(n_clusters=int(cluster_no)).fit(X)
+        # labels = model.labels_
+
+    elif cluster_type == 'dbscan':
+        model = DBSCAN(min_samples=10, eps=0.3).fit(X)
+
+    labels = model.labels_
+
+    # Convert to same labelling system as scipy: 1 -> N not 0 -> N-1
+    for i in range(len(labels)):
+        labels[i] += 1
+
+    centroids = get_centroids(X, labels)
+
+    json_dict = {'labels': labels.tolist(),
+                 'centroids': centroids
+                 }
+    json_msg = json.dumps(json_dict)
+
+    return json_msg
+
+
+# Function to handle request for kmeans clustering of a sector
+def kmeans_request(json_msg, cluster_no):
+    # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon), and
+    # number of clusters
+
+    # Read json message
+    loaded = json.loads(json_msg)
+
+    dim1 = loaded.get('lat')
+    dim2 = loaded.get('lon')
+
+    X = toVector(dim1, dim2)
+
+    model = KMeans(n_clusters=int(cluster_no)).fit(X)
 
     labels = model.labels_
 
