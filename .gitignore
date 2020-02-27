@@ -5,3 +5,4 @@ data/
 *.zip
 *.pyc
 /web_app/static/utils/sandbox.py
+/web_app/.idea/
