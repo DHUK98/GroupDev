@@ -53,11 +53,8 @@ def cluster_dbscan(iid, min_samp, eps_val):
 
     cluster_json = json.loads(cluster)
     centroid_sizes = Counter(cluster_json['labels'])
-    print(centroid_sizes)
+    print(sorted(centroid_sizes.items()))
 
-    #
-    # for s in range(len(cluster_sizes)):
-    #     print("Cluster " + str(s) + ": " + str(cluster_sizes[s]) + " trajectories")
 
     return jsonify(cluster)
 
