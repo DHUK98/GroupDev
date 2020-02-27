@@ -129,7 +129,7 @@ def cluster_request(json_msg, cluster_no, cluster_type):
         # labels = model.labels_
 
     elif cluster_type == 'dbscan':
-        model = DBSCAN(min_samples=10).fit(X)
+        model = DBSCAN(min_samples=10, eps=0.3).fit(X)
 
     labels = model.labels_
 
