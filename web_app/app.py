@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 import json
 from flask import jsonify
 import os
-from static.utils.cluster import linkage_request, cluster_request
+from static.utils.cluster import linkage_request, cluster_request, cluster_request_dbscan
 from static.utils.json_to_netcdf import json_to_netcdf
 from static.utils.zip_netcdf import zip_netcdf_exports, delete_nc_exports
 
@@ -38,6 +38,21 @@ def station(iid):
         return str(e)
 
 
+@app.route('/cluster/req/<iid>/<min_samp>/<eps_val>', methods=['POST'])
+def cluster_dbscan(iid, min_samp, eps_val):
+    data = request.get_json()
+    mask = json.loads(data[0])
+    f_name = data[1]
+
+    with open("static/stations/" + iid + "/" + f_name, "r") as f:
+        traj = json.load(f)
+    traj = applyMask(mask, traj)
+
+    cluster = cluster_request_dbscan(json_msg=json.dumps(traj), min_samples=int(min_samp), eps=float(eps_val))
+    print(cluster)
+    return jsonify(cluster)
+
+
 @app.route('/cluster/req/<iid>/<n>', methods=['POST'])
 def cluster(iid, n):
     data = request.get_json()
@@ -49,7 +64,8 @@ def cluster(iid, n):
         traj = json.load(f)
     traj = applyMask(mask, traj)
     # linkage = linkage_request(json.dumps(traj))
-    cluster = cluster_request(json.dumps(traj), n,"dbscan", min_samples=10, eps=50)
+    cluster = cluster_request(json.dumps(traj), n, "kmeans", min_samples=10, eps=50)
+    # cluster = cluster_request(json.dumps(traj), n, "dbscan", min_samples=10, eps=50)
     print(cluster)
     return jsonify(cluster)
 
