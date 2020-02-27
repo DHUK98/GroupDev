@@ -319,12 +319,12 @@
                 .attr("class", "arc")
                 .attr("d", arc)
                 .attr("transform", "translate(" + ll[0] * trans[2] + "," + ll[1] * trans[2] + ")" + "translate(" + trans[0] + "," + trans[1] + ")" + "scale(" + trans[2] + ")")
-                .attr("fill-opacity", "0.5")
-                .style("fill", "#008080");
+                .attr("fill-opacity", "0.3")
+                .style("fill", "#8b0000");
         }
 
 
-        var lineFunction = d3.line()
+        let lineFunction = d3.line()
             .x(function (d) {
                 return projection_([d[1], d[0]])[0];
             })
