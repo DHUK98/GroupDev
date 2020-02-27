@@ -179,6 +179,42 @@ def cluster_request(json_msg, cluster_no, cluster_type, min_samples=70, eps=50):
 
     return json_msg
 
+def dbscan_kmeans(json_msg, cluster_no, min_samples, eps):
+    # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon), and
+    # number of clusters
+    # Read json message
+    loaded = json.loads(json_msg)
+
+    dim1 = loaded.get('lat')
+    dim2 = loaded.get('lon')
+
+    X = toVector(dim1, dim2)
+
+    model_dbscan = DBSCAN(min_samples=min_samples, eps=eps).fit(X)
+
+    # Filter out trajectories that were judged as noise by DBSCAN
+    X_noise_free = []
+    noisy = []
+
+    for i in range(len(X)):
+        if model_dbscan.labels_[i] != -1:
+            X_noise_free.append(X[i])
+        else:
+            noisy.append(X[i])
+
+    print(len(noisy))
+
+    model_kmeans = KMeans(n_clusters=int(cluster_no)).fit(X_noise_free)
+
+    centroids_kmeans = get_centroids(X, model_kmeans.labels_)
+
+    json_dict = {'labels': model_kmeans.labels_.tolist(),
+                 'centroids': centroids_kmeans
+                 }
+
+    json_msg = json.dumps(json_dict)
+
+    return json_msg
 
 # Function to handle request for kmeans clustering of a sector
 def kmeans_request(json_msg, cluster_no):

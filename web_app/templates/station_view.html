@@ -243,6 +243,24 @@
                         <P>
                             <input class="w3-button w3-teal" id="add_cluster" type="button" value="Add">
                     </div>
+                    <p></p>
+                <div class="w3-card-4">
+                    <header class="w3-container w3-teal">
+                        <h2>Cluster Kmeans</h2>
+                    </header>
+                    <div class="w3-container w3-white">
+                        <P>
+
+                            Old K-means style menu
+
+                            <label>Number of clusters</label>
+                            <input class="w3-input" id="number_of_cluster" type="number" value=0>
+
+
+
+                        <P>
+                            <input class="w3-button w3-teal" id="add_cluster_kmeans" type="button" value="Add">
+                    </div>
 
                 </div>
                 <P></P>
@@ -388,6 +406,7 @@
                     .attr("stroke", function () {
                         return "red";
                     })
+                    // .attr("stroke-width", (w / m) * 2.5)
                     .attr("stroke-width", (w / m) * 2.5)
                     .attr("fill", "none")
                     .attr("transform", "translate(" + trans[0] + "," + trans[1] + ")" + "scale(" + trans[2] + ")");
