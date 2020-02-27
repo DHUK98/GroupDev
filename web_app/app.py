@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import json
 from flask import jsonify
 import os
+from collections import Counter
 from static.utils.cluster import linkage_request, cluster_request, cluster_request_dbscan
 from static.utils.json_to_netcdf import json_to_netcdf
 from static.utils.zip_netcdf import zip_netcdf_exports, delete_nc_exports
@@ -49,7 +50,15 @@ def cluster_dbscan(iid, min_samp, eps_val):
     traj = applyMask(mask, traj)
 
     cluster = cluster_request_dbscan(json_msg=json.dumps(traj), min_samples=int(min_samp), eps=float(eps_val))
-    print(cluster)
+
+    cluster_json = json.loads(cluster)
+    centroid_sizes = Counter(cluster_json['labels'])
+    print(centroid_sizes)
+
+    #
+    # for s in range(len(cluster_sizes)):
+    #     print("Cluster " + str(s) + ": " + str(cluster_sizes[s]) + " trajectories")
+
     return jsonify(cluster)
 
 

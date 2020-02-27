@@ -8,6 +8,7 @@ from sklearn.cluster import KMeans, SpectralClustering, DBSCAN
 from . import vector
 import pickle
 import numpy as np
+from collections import Counter
 
 '''
 General utility functions
@@ -111,6 +112,7 @@ def get_centroids(X, labels):
 
 # separate request function for dbscan
 def cluster_request_dbscan(json_msg, min_samples=70, eps=50):
+    print("Got to cluster request dbscan")
     # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon), and
     # number of clusters
     # Read json message
@@ -130,11 +132,8 @@ def cluster_request_dbscan(json_msg, min_samples=70, eps=50):
 
     centroids = get_centroids(X, labels)
 
-    centroid_lens = [len(c) for c in centroids]
-
     json_dict = {'labels': labels.tolist(),
-                 'centroids': centroids,
-                 'centroid_lens': centroid_lens
+                 'centroids': centroids
                  }
     json_msg = json.dumps(json_dict)
 
