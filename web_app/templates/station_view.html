@@ -115,7 +115,7 @@
 {% block content %}
     <div class="wrapper">
         <div class="w3-container w3-blue-grey head">
-            <h1>{{ name }}</h1>
+            <h1>{{ name }} lat: {{ lat }} lon: {{ lng }}</h1>
         </div>
         <div class="w3-container w3-teal head_in">
             <h1>Input</h1>
@@ -232,27 +232,26 @@
             <div class="scroll">
                 <a id="export_data_button" class="w3-button w3-teal">Export Output</a>
 
-                <p></p>
-                <pre id="json-renderer"></pre>
-                <p></p>
+
                 <div id="debugDiv"></div>
             </div>
         </div>
 
     </div>
-    <script src="{{ url_for('static', filename='javascript/json-viewer.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/station_utils.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/station_view_input.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/sector.js') }}"></script>
     <script>
-
-
-
-
+        // Data files in the stations directory
         let file_ns = "{{ file_ns }}";
+
+        // Id of the stations
         let iid = "{{ id }}";
+
+        // Latitude and longitude of the station
         let lat = {{ lat }};
         let lng = {{ lng }};
+
         let lats = [], longs = [];
         let p = [];
         let p_ = [];
@@ -262,9 +261,9 @@
         let pp = "{{ url_for('static', filename='stations/CGR/ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json') }}";
         $.getJSON(pp, function (j) {
             data = j;
-            render();
-
+            renderMap();
         });
+
         const projection_ = d3.geoAzimuthalEqualArea().rotate([-lng, -lat]);
         const path = d3.geoPath().projection(projection_);
         const zoom = d3.zoom().scaleExtent([1, 9]).on('zoom', zoomed);
@@ -277,9 +276,8 @@
         d3.select('g').attr('transform', 'translate(-' + (w / 2) + ' 0)scale(' + (w / 600) + ')')
         svg.style("width", "100%");
         g.call(zoom);
-        let worldRender = false;
 
-        function render() {
+        function renderMap() {
             d3.json("{{ url_for('static', filename='world-110m2.json') }}")
                 .then(world => {
                     g.append('path')
@@ -297,20 +295,12 @@
                         .attr('class', 'boundary')
                         .attr('d', path);
 
-                    {#renderLines();#}
-                    renderLocation();
-
-                    worldRender = true;
+                    g.append("circle")
+                        .attr("cx", projection_([lng, lat])[0])
+                        .attr("cy", projection_([lng, lat])[1])
+                        .attr("r", 2.5)
+                        .style("fill", "white");
                 });
-        }
-
-        function renderLocation() {
-            {#console.log([lng, lat]);#}
-            g.append("circle")
-                .attr("cx", projection_([lng, lat])[0])
-                .attr("cy", projection_([lng, lat])[1])
-                .attr("r", 2.5)
-                .style("fill", "white");
         }
 
         let ll = projection_([lng, lat]);
