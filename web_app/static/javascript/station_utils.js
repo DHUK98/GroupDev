@@ -47,6 +47,32 @@ function u_cluster(data_l, num_clust) {
     });
 
 }
+
+function calculate() {
+    document.getElementById("calculate").value = "Loading";
+
+    console.log(stack_f);
+    let return_stack = [];
+    for (let i = 0; i < stack_f.length; i++) {
+        if (i == stack_f.length - 1 && stack_f[i].toString().includes("cluster")) {
+            let comb = combine_mask(return_stack);
+            let n = stack_f[i]();
+            u_cluster(comb, n);
+            document.getElementById("calculate").value = "Calculate";
+
+            return;
+        } else {
+            let r = stack_f[i]();
+            return_stack.push(r);
+        }
+    }
+    document.getElementById("calculate").value = "Calculate";
+
+
+    let comb = combine_mask(return_stack);
+    // let d = applyMask(data,comb);
+    // renderLines(d);
+}
 if (typeof console  != "undefined")
     if (typeof console.log != 'undefined')
         console.olog = console.log;
@@ -58,31 +84,6 @@ console.log = function(message) {
     $('#debugDiv').append('<p>' + message + '</p>');
 };
 console.error = console.debug = console.info =  console.log
-function calculate() {
-    document.getElementById("calculate").value= "Loading";
-
-    console.log(stack_f);
-    let return_stack = [];
-    for (let i = 0; i < stack_f.length; i++) {
-        if (i == stack_f.length - 1 && stack_f[i].toString().includes("cluster")) {
-            let comb = combine_mask(return_stack);
-            let n = stack_f[i]();
-            u_cluster(comb, n);
-            document.getElementById("calculate").value= "Calculate";
-            return;
-        } else {
-            let r = stack_f[i]();
-            return_stack.push(r);
-        }
-    }
-    document.getElementById("calculate").value= "Calculate";
-
-
-    let comb = combine_mask(return_stack);
-    // let d = applyMask(data,comb);
-    // renderLines(d);
-}
-
 function combine_mask(masks) {
     let combined = [];
     for (let i = 0; i < masks[0].length; i++) {

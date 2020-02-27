@@ -109,20 +109,19 @@ def get_centroids(X, labels):
 
 
 # Function to handle request for kmeans clustering of a sector
-def kmeans_request(json_msg):
+def kmeans_request(json_msg, cluster_no):
     # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon), and
     # number of clusters
 
     # Read json message
     loaded = json.loads(json_msg)
 
-    dim1 = loaded.get('dim1')
-    dim2 = loaded.get('dim2')
-    cluster_no = loaded.get('cluster_no')
+    dim1 = loaded.get('lat')
+    dim2 = loaded.get('lon')
 
     X = toVector(dim1, dim2)
 
-    model = KMeans(n_clusters=cluster_no).fit(X)
+    model = KMeans(n_clusters=int(cluster_no)).fit(X)
 
     labels = model.labels_
 

@@ -101,3 +101,26 @@ document.getElementById("calculate").onclick = function () {
 function Delete(currentEl) {
     currentEl.parentNode.parentNode.removeChild(currentEl.parentNode);
 }
+
+let download_button = document.getElementById('export_data_button').onclick = function () {
+    zip_files();
+};
+
+
+function zip_files() {
+    console.log("zip_files javascript function");
+    $.ajax({
+        url: '/zip_netcdf_exports',
+        type: 'post',
+        dataType: 'json',
+        contentType: 'application/json',
+        success: function (data) {
+            // console.log("zip_netcdf_exports post success!")
+            // window.open("/static/netcdf_export/download.zip", '_self');
+
+            console.log("About to download");
+            window.open("/static/netcdf_export/download.zip", '_self');
+        },
+        data: ""
+    });
+}

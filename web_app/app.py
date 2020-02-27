@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 import json
 from flask import jsonify
 import os
-from static.utils.cluster import linkage_request, h_cluster_request
+from static.utils.cluster import linkage_request, kmeans_request
 from static.utils.json_to_netcdf import json_to_netcdf
 from static.utils.zip_netcdf import zip_netcdf_exports, delete_nc_exports
 
@@ -49,8 +49,8 @@ def cluster(iid,n):
         traj = json.load(f)
     traj = applyMask(mask, traj)
     # print(len(traj["lon"]))
-    linkage = linkage_request(json.dumps(traj))
-    cluster = h_cluster_request(json.dumps(traj),linkage,n)
+    # linkage = linkage_request(json.dumps(traj))
+    cluster = kmeans_request(json.dumps(traj), n)
     print(cluster)
     return jsonify(cluster)
 
@@ -60,6 +60,7 @@ def convert_to_netcdf(index_json):
     data = request.get_json()
     json_to_netcdf(data, "cluster_" + str(int(index_json) + 1))
     return json.dumps({'success' : True}), 200, {'ContentType':'application/json'}
+
 
 @app.route('/zip_netcdf_exports', methods=['POST'])
 def zip_netcdf():

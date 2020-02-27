@@ -231,10 +231,11 @@
         <div class="output">
             <div class="scroll">
                 <a id="export_data_button" class="w3-button w3-teal">Export Output</a>
-                <div id="debugDiv"></div>
+
                 <p></p>
                 <pre id="json-renderer"></pre>
                 <p></p>
+                <div id="debugDiv"></div>
             </div>
         </div>
 
@@ -245,16 +246,10 @@
     <script src="{{ url_for('static', filename='javascript/sector.js') }}"></script>
     <script>
 
-        var download_button = document.getElementById('export_data_button').onclick = function () {
-            zip_files();
 
-
-
-        };
 
 
         let file_ns = "{{ file_ns }}";
-        console.log(file_ns);
         let iid = "{{ id }}";
         let lat = {{ lat }};
         let lng = {{ lng }};
@@ -309,29 +304,8 @@
                 });
         }
 
-        function zip_files() {
-            console.log("zip_files javascript function");
-            $.ajax({
-                url: '/zip_netcdf_exports',
-                type: 'post',
-                dataType: 'json',
-                contentType: 'application/json',
-                success: function (data) {
-                    // console.log("zip_netcdf_exports post success!")
-                    // window.open("/static/netcdf_export/download.zip", '_self');
-
-                    console.log("About to download");
-                    window.open("/static/netcdf_export/download.zip", '_self');
-                },
-                data: ""
-            });
-
-
-
-        }
-
         function renderLocation() {
-            console.log([lng, lat]);
+            {#console.log([lng, lat]);#}
             g.append("circle")
                 .attr("cx", projection_([lng, lat])[0])
                 .attr("cy", projection_([lng, lat])[1])
@@ -357,7 +331,6 @@
         }
 
 
-
         var lineFunction = d3.line()
             .x(function (d) {
                 return projection_([d[1], d[0]])[0];
@@ -371,12 +344,12 @@
             {#mm = JSON.parse(mm);#}
             g.selectAll(".traj").remove();
             let lat_lng = [mm["lat"], mm["lon"]];
-            console.log("l_l", lat_lng[0].length);
+            {#console.log("l_l", lat_lng[0].length);#}
             for (let l = 0; l < lat_lng[0].length; l++) {
                 p_ = [];
                 lats = lat_lng[0][l];
                 longs = lat_lng[1][l];
-                console.log(l, lats, longs)
+                {#console.log(l, lats, longs)#}
                 for (let i = 0; i < lats.length; i++) {
                     p_.push([lats[i], longs[i]]);
                 }
