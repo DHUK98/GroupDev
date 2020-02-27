@@ -3,7 +3,7 @@ import json
 from flask import jsonify
 import os
 from collections import Counter
-from static.utils.cluster import linkage_request, cluster_request, cluster_request_dbscan
+from static.utils.cluster import linkage_request, cluster_request, cluster_request_dbscan, dbscan_kmeans
 from static.utils.json_to_netcdf import json_to_netcdf
 from static.utils.zip_netcdf import zip_netcdf_exports, delete_nc_exports
 
@@ -49,8 +49,8 @@ def cluster_dbscan(iid, min_samp, eps_val):
         traj = json.load(f)
     traj = applyMask(mask, traj)
 
-    cluster = cluster_request_dbscan(json_msg=json.dumps(traj), min_samples=int(min_samp), eps=float(eps_val))
-
+    # cluster = cluster_request_dbscan(json_msg=json.dumps(traj), min_samples=int(min_samp), eps=float(eps_val))
+    cluster = dbscan_kmeans(json.dumps(traj), 10, 10, 150)
     cluster_json = json.loads(cluster)
     centroid_sizes = Counter(cluster_json['labels'])
     print("\n\nThere are " + str(len(centroid_sizes) - 1) + " trajectories")
@@ -71,8 +71,8 @@ def cluster(iid, n):
         traj = json.load(f)
     traj = applyMask(mask, traj)
     # linkage = linkage_request(json.dumps(traj))
-    cluster = cluster_request(json.dumps(traj), n, "kmeans", min_samples=10, eps=50)
-    # cluster = cluster_request(json.dumps(traj), n, "dbscan", min_samples=10, eps=50)
+    # cluster = cluster_request(json.dumps(traj), n, "kmeans", min_samples=10, eps=50)
+    cluster = cluster_request(json.dumps(traj), n, "dbscan", min_samples=10, eps=50)
     print(cluster)
     return jsonify(cluster)
 
