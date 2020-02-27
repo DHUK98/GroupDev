@@ -130,8 +130,11 @@ def cluster_request_dbscan(json_msg, min_samples=70, eps=50):
 
     centroids = get_centroids(X, labels)
 
+    centroid_lens = [len(c) for c in centroids]
+
     json_dict = {'labels': labels.tolist(),
-                 'centroids': centroids
+                 'centroids': centroids,
+                 'centroid_lens': centroid_lens
                  }
     json_msg = json.dumps(json_dict)
 
