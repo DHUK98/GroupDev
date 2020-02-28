@@ -266,7 +266,7 @@
 
 
             </div>
-        </div>
+            </div></div>
 
         <div class="output">
             <div class="scroll">
@@ -406,8 +406,11 @@
         }
 
 
-        function render_all_lines(mm) {
+        function render_all_lines(mm, parse=true) {
 
+            if (parse) {
+                mm = JSON.parse(mm);
+            }
 
 
             // console.log("Running render_all_lines function");
@@ -443,7 +446,7 @@
                     })
                     .attr("stroke-width", 0.5)
                     .attr("fill", "none")
-                    .attr("opacity", 0.5)
+                    .attr("opacity", 0.3)
                     .attr("transform", "translate(" + trans[0] + "," + trans[1] + ")" + "scale(" + trans[2] + ")");
             }
         }
