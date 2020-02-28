@@ -99,10 +99,11 @@
         .land {
             fill: #567D46;
             stroke: #333;
-             stroke-linejoin: round;
+            stroke-linejoin: round;
             stroke-linecap: round;
             vector-effect: non-scaling-stroke;
         }
+
         .boundary {
             fill: none;
             stroke: #333;
@@ -156,12 +157,12 @@
                         <h2>Rendering</h2>
                     </header>
                     <div class="w3-container w3-white">
-                            <p>
-                            <div>
-                                <input class="w3-check" id="render_all_check" type="checkbox">
-                                <label>Render all Trajectories</label>
-                            </div>
-                            </p>
+                        <p>
+                        <div>
+                            <input class="w3-check" id="render_all_check" type="checkbox">
+                            <label>Render all Trajectories</label>
+                        </div>
+                        </p>
                     </div>
                 </div>
                 <P></P>
@@ -244,31 +245,31 @@
                             <input class="w3-button w3-teal" id="add_cluster" type="button" value="Add">
                     </div>
                     <p></p>
-                <div class="w3-card-4">
-                    <header class="w3-container w3-teal">
-                        <h2>K-Means Cluster</h2>
-                    </header>
-                    <div class="w3-container w3-white">
-                        <P>
+                    <div class="w3-card-4">
+                        <header class="w3-container w3-teal">
+                            <h2>K-Means Cluster</h2>
+                        </header>
+                        <div class="w3-container w3-white">
+                            <P>
 
-                            <label>Number of clusters</label>
-                            <input class="w3-input" id="number_of_cluster" type="number" value=0>
+                                <label>Number of clusters</label>
+                                <input class="w3-input" id="number_of_cluster" type="number" value=0>
 
 
+                            <P>
+                                <input class="w3-button w3-teal" id="add_cluster_kmeans" type="button" value="Add">
+                        </div>
 
-                        <P>
-                            <input class="w3-button w3-teal" id="add_cluster_kmeans" type="button" value="Add">
                     </div>
+                    <P></P>
+                    <ul class="w3-ul w3-border w3-white" id="stack">
+
+                    </ul>
+                    <p></p>
+                    <input class="w3-button w3-teal" id="calculate" type="button" value="Calculate">
+
 
                 </div>
-                <P></P>
-                <ul class="w3-ul w3-border w3-white" id="stack">
-
-                </ul>
-                <p></p>
-                <input class="w3-button w3-teal" id="calculate" type="button" value="Calculate">
-
-
             </div>
         </div>
 
@@ -282,6 +283,7 @@
         </div>
 
     </div>
+
     <script src="{{ url_for('static', filename='javascript/station_utils.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/station_view_input.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/sector.js') }}"></script>
@@ -449,8 +451,6 @@
                     .attr("transform", "translate(" + trans[0] + "," + trans[1] + ")" + "scale(" + trans[2] + ")");
             }
         }
-
-
 
 
         function zoomed() {
