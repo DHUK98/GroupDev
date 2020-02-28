@@ -110,7 +110,7 @@ function calculate() {
     let render_all = document.getElementById("render_all_check").checked;
     if (render_all) {
         console.log("RENDER ALL IS CHECKED");
-        render_all_lines(data);
+        render_all_lines(data, false);
     }
 
     console.log(stack_f);
@@ -149,8 +149,9 @@ function calculate() {
 
 
     let comb = combine_mask(return_stack);
-    data = JSON.parse(data);
-    let d = applyMask(comb,data);
+
+
+    let d = applyMask(comb, data);
 
     console.log("Return stack is: ");
     console.log(return_stack);
@@ -267,8 +268,7 @@ function applyMask2(mask, d) {
 }
 
 function applyMask(mask, d) {
-    console.log("Mask in applymask: ");
-    console.log(mask);
+
     let lat = d["lat"];
     let lon = d["lon"];
     let time = d["time"];
@@ -283,7 +283,6 @@ function applyMask(mask, d) {
 
     for (let i = 0; i < mask.length; i++) {
         if (mask[i] == 1) {
-            console.log("there's a 1");
             n_lat.push(lat[i]);
             n_lon.push(lon[i]);
             n_time.push(time[i]);
