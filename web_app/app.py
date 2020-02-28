@@ -72,14 +72,8 @@ def cluster(iid, n):
         traj = json.load(f)
     traj = applyMask(mask, traj)
 
-
-    # put K-means request here
-
-
-    # linkage = linkage_request(json.dumps(traj))
-    # cluster = cluster_request(json.dumps(traj), n, "kmeans", min_samples=10, eps=50)
-    # cluster = cluster_request(json.dumps(traj), n, "dbscan", min_samples=10, eps=50)
-    cluster = cluster_request(json.dumps(traj), n, "dbscan", min_samples=10, eps=50)
+    # K-means request
+    cluster = cluster_request(json.dumps(traj), n, "kmeans")
 
     print(cluster)
     return jsonify(cluster)
