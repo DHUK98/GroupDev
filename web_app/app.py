@@ -78,11 +78,9 @@ def cluster(iid, n):
 
     # linkage = linkage_request(json.dumps(traj))
     # cluster = cluster_request(json.dumps(traj), n, "kmeans", min_samples=10, eps=50)
-<<<<<<< HEAD
     # cluster = cluster_request(json.dumps(traj), n, "dbscan", min_samples=10, eps=50)
-=======
     cluster = cluster_request(json.dumps(traj), n, "dbscan", min_samples=10, eps=50)
->>>>>>> f941c712981f0cecdc591a59a5785a88d4a45bf8
+
     print(cluster)
     return jsonify(cluster)
 

@@ -63,7 +63,7 @@ function u_cluster_dbscan(data_l, params) {
     })
 }
 
-function u_cluster2(n) {
+function u_cluster2_kmeans(n) {
     return n;
 }
 
@@ -104,7 +104,8 @@ function calculate() {
     console.log(stack_f);
     let return_stack = [];
     for (let i = 0; i < stack_f.length; i++) {
-        if (i == stack_f.length - 1 && stack_f[i][0].toString().includes("DBScan")) {
+        if (i == stack_f.length - 1 && stack_f[i][0].toString().includes("dbscan")) {
+            console.log("In the DBScan Stack if clause");
             let comb = combine_mask(return_stack);
 
             // it worked with data, but that was all of the data
@@ -121,7 +122,8 @@ function calculate() {
             return;
 
 
-        } else if (i == stack_f.length - 1 && stack_f[i][0].toString().includes("K-means")) {
+        } else if (i == stack_f.length - 1 && stack_f[i][0].toString().includes("kmeans")) {
+            console.log("In the K-Means Stack if clause");
             let comb = combine_mask(return_stack);
             let n = stack_f[i][0]();
             u_cluster(comb, n);
@@ -134,18 +136,13 @@ function calculate() {
     }
 
     document.getElementById("calculate").value = "Calculate";
-    console.log("ABOUT TO TRY TO RENDER ALL");
 
-    // New render all lines
-    if (render_all) {
-        console.log("RENDERING ALL");
-        render_all_lines(data);
-    }
 
     let comb = combine_mask(return_stack);
     let d = applyMask(data, comb);
     renderLines(d);
 }
+
 
 if (typeof console  != "undefined")
     if (typeof console.log != 'undefined')
@@ -157,7 +154,7 @@ console.log = function(message) {
     console.olog(message);
     $('#debugDiv').append('<p>' + message + '</p>');
 };
-console.error = console.debug = console.info = console.log
+console.error = console.debug = console.info = console.log;
 
 
 function combine_mask(masks) {
