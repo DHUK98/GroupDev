@@ -63,6 +63,10 @@ function u_cluster_dbscan(data_l, params) {
     })
 }
 
+function submitButtonStyle(_this) {
+  _this.style.backgroundColor = "red";
+}
+
 function u_cluster2_kmeans(n) {
     return n;
 }
@@ -98,8 +102,16 @@ function u_cluster(data_l, num_clust) {
 
 
 function calculate() {
-    document.getElementById("calculate").value = "Loading";
+    let has_been_clustered = false;
 
+    document.getElementById("calculate").value = "Loading";
+    // document.getElementById("calculate").style.backgroundColor = "red";
+
+    let render_all = document.getElementById("render_all_check").checked;
+    if (render_all) {
+        console.log("RENDER ALL IS CHECKED");
+        render_all_lines(data);
+    }
 
     console.log(stack_f);
     let return_stack = [];
@@ -110,15 +122,11 @@ function calculate() {
 
             // it worked with data, but that was all of the data
             // we need to pass it an array of lats and lons
-            let render_all = document.getElementById("render_all_check").checked;
-            if (render_all) {
-                console.log("RENDER ALL IS CHECKED");
-                render_all_lines(comb);
-            }
 
 
             let dbscan_vars = stack_f[i][0]();
             u_cluster_dbscan(comb, dbscan_vars);
+            has_been_clustered = true;
             return;
 
 
@@ -127,9 +135,11 @@ function calculate() {
             let comb = combine_mask(return_stack);
             let n = stack_f[i][0]();
             u_cluster(comb, n);
+            has_been_clustered = true;
             return;
 
         } else {
+            console.log(stack_f[i][0].toString());
             let r = stack_f[i][0]();
             return_stack.push(r);
         }
@@ -139,8 +149,27 @@ function calculate() {
 
 
     let comb = combine_mask(return_stack);
-    let d = applyMask(data, comb);
-    renderLines(d);
+    data = JSON.parse(data);
+    let d = applyMask(comb,data);
+
+    console.log("Return stack is: ");
+    console.log(return_stack);
+
+    console.log("Comb is: ");
+    console.log(comb);
+
+    console.log("d is: ");
+    console.log(d);
+
+    if (has_been_clustered) {
+
+        // renderLines(d);
+
+    } else {
+
+        render_all_lines(d)
+    }
+
 }
 
 
@@ -238,6 +267,8 @@ function applyMask2(mask, d) {
 }
 
 function applyMask(mask, d) {
+    console.log("Mask in applymask: ");
+    console.log(mask);
     let lat = d["lat"];
     let lon = d["lon"];
     let time = d["time"];
@@ -249,8 +280,10 @@ function applyMask(mask, d) {
     let n_time = [];
     let n_height = [];
     let n_pressure = [];
+
     for (let i = 0; i < mask.length; i++) {
         if (mask[i] == 1) {
+            console.log("there's a 1");
             n_lat.push(lat[i]);
             n_lon.push(lon[i]);
             n_time.push(time[i]);
