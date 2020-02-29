@@ -195,7 +195,7 @@
 
             let s = new process_stack.stack();
             let sec_test = new process_stack.sector(0, 45, 100, 5);
-            let fil_tets = new process_stack.filter("height",0,1000,5);
+            let fil_tets = new process_stack.filter("height", 0, 1000, 5);
             s.add(sec_test);
             s.add(fil_tets);
 
@@ -260,7 +260,6 @@
         }
 
 
-
         let lineFunction = d3.line()
             .x(function (d) {
                 return projection_([d[1], d[0]])[0];
@@ -312,10 +311,7 @@
                 mm = JSON.parse(mm);
             }
 
-
-            // console.log("Running render_all_lines function");
-            // console.log("mm is ");
-            // console.log(JSON.parse(mm)['lat']);
+            console.log(mm["height"][74]);
 
             g.selectAll(".traj").remove();
             let lat_lng = [mm["lat"], mm["lon"]];
@@ -343,12 +339,16 @@
 
                     .attr("stroke", function () {
                         return "gray";
-                    })
+                    }).attr("id", i)
                     .attr("stroke-width", 0.5)
                     .attr("fill", "none")
                     .attr("opacity", 0.3)
-                    .attr("transform", "translate(" + trans[0] + "," + trans[1] + ")" + "scale(" + trans[2] + ")");
+                    .attr("transform", "translate(" + trans[0] + "," + trans[1] + ")" + "scale(" + trans[2] + ")")
+                    .on("click", function () {
+                        console.log(d3.select(this).attr("id"));
+                    });
             }
+
         }
 
 
