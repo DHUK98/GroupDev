@@ -170,6 +170,7 @@
     <script src="{{ url_for('static', filename='javascript/station_utils.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/station_view_input.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/sector.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascript/stack.js') }}"></script>
     <script>
         // Data files in the stations directory
         let file_ns = "{{ file_ns }}";
@@ -191,6 +192,14 @@
         $.getJSON(pp, function (j) {
             data = j;
             renderMap();
+
+            let s = new process_stack.stack();
+            let sec_test = new process_stack.sector(0, 45, 100, 5);
+            let fil_tets = new process_stack.filter("height",0,1000,5);
+            s.add(sec_test);
+            s.add(fil_tets);
+
+            console.log(s.calculate());
         });
 
         const projection_ = d3.geoAzimuthalEqualArea().rotate([-lng, -lat]);
@@ -249,6 +258,7 @@
                 .attr("fill-opacity", "0.3")
                 .style("fill", "#8b0000");
         }
+
 
 
         let lineFunction = d3.line()

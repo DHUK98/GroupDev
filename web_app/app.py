@@ -126,18 +126,5 @@ def applyMask(mask, d):
     return out
 
 
-#     }
-#     let json = {
-#         "lat": n_lat,
-#         "lon": n_lon,
-#         "time": n_time,
-#         "height": n_height,
-#         "pressure": n_pressure
-#     };
-#
-#     return JSON.stringify(json);
-# }
-
-
 if __name__ == '__main__':
     app.run()
