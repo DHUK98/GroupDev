@@ -69,3 +69,7 @@
 .data_input label {
     font-size: 10px;
 }
+
+.sphere {
+    stroke: #333;
+}

@@ -3,45 +3,8 @@
 {% block title %}Select a station{% endblock %}
 {% block head %}
     {{ super() }}
-    <style type="text/css">
-        .wrapper {
-            display: grid;
-            grid-template-rows: 8% 92%;
-            width: 100vw;
-            height: 100vh;
-        }
-
-        .svg {
-            height: 100%;
-            width: 50%;
-            background-color: #006994;
-        }
-
-        .map {
-            background-color: #006994;
-        }
-
-        .sphere {
-            fill: #006994;
-        }
-
-        .land {
-            fill: #567D46;
-            stroke: #333;
-             stroke-linejoin: round;
-            stroke-linecap: round;
-            vector-effect: non-scaling-stroke;
-        }
-
-        .boundary {
-            fill: none;
-            stroke: #333;
-            stroke-linejoin: round;
-            stroke-linecap: round;
-            vector-effect: non-scaling-stroke;
-        }
-
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/map.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/station_selector.css') }}">
 {% endblock %}
 {% block content %}
     <div class="wrapper">
@@ -52,67 +15,67 @@
         <div class="map">
             <svg class="svg" width="100%"></svg>
         </div>
-
     </div>
     <script>
         const projection = d3.geoMercator();
         const path = d3.geoPath().projection(projection);
 
-        const zoom = d3.zoom()
-            .scaleExtent([1, 8])
-            .on('zoom', zoomed);
+        const zoom = d3.zoom().scaleExtent([1, 8]).on('zoom', zoomed);
+        const svg = d3.select('svg').style("width", "100%");
+        const g = svg.append('g').call(zoom);
 
-        const svg = d3.select('svg');
-
-        const g = svg.append('g');
         let w = parseInt(d3.select("body").style("width")) / 2;
         let w2 = parseInt(svg.style("width"));
-        d3.select('g').attr('transform', 'translate(' + (w - w2) + ',40)scale(2)')
-        {#d3.select('g').attr('transform', 'translate(0,0)')#}
-        svg.style("width", "100%");
-        g.call(zoom);
+        d3.select('g').attr('transform', 'translate(' + (w - w2) + ',40)scale(2)');
 
+        renderMap();
+        function renderMap() {
+            d3.json("{{ url_for('static', filename='world-110m2.json') }}")
+                .then(world => {
+                    g.append('path')
+                        .datum({type: 'Sphere'})
+                        .attr('class', 'sphere')
+                        .attr('d', path);
 
-        d3.json("{{ url_for('static', filename='world-110m2.json') }}")
-            .then(world => {
-                g.append('path')
-                    .datum({type: 'Sphere'})
-                    .attr('class', 'sphere')
-                    .attr('d', path);
+                    g.append('path')
+                        .datum(topojson.merge(world, world.objects.countries.geometries))
+                        .attr('class', 'land')
+                        .attr('d', path);
 
-                g.append('path')
-                    .datum(topojson.merge(world, world.objects.countries.geometries))
-                    .attr('class', 'land')
-                    .attr('d', path);
+                    g.append('path')
+                        .datum(topojson.mesh(world, world.objects.countries, (a, b) => a !== b))
+                        .attr('class', 'boundary')
+                        .attr('d', path);
 
-                g.append('path')
-                    .datum(topojson.mesh(world, world.objects.countries, (a, b) => a !== b))
-                    .attr('class', 'boundary')
-                    .attr('d', path);
-            });
-        d3.json("{{ url_for('static', filename='stations.json') }}").then(marker => {
-            g.selectAll('circle')
-                .data(marker)
-                .enter()
-                .append('circle')
-                .attr('cx', function (d) {
-                    return projection([d.lon, d.lat])[0]
+                    renderStations();
+                });
+        }
+
+        function renderStations() {
+            d3.json("{{ url_for('static', filename='stations.json') }}").then(marker => {
+                g.selectAll('circle')
+                    .data(marker)
+                    .enter()
+                    .append('circle')
+                    .attr('cx', function (d) {
+                        return projection([d.lon, d.lat])[0]
+                    })
+                    .attr('cy', function (d) {
+                        return projection([d.lon, d.lat])[1]
+                    }).attr("id", function (d) {
+                    return d.ID
                 })
-                .attr('cy', function (d) {
-                    return projection([d.lon, d.lat])[1]
-                }).attr("id", function (d) {
-                return d.ID
-            })
-                .attr('r', 3).style("fill", "#FFF")
-                .on("mouseover", function () {
-                    d3.select(this).style("fill", "orange");
-                }).on("mouseout", function () {
-                d3.select(this).style("fill", "#FFF");
-            }).on("click", function () {
-                let iid = d3.select(this).attr("id");
-                window.location.href = '{{ url_for( 'station',iid="test") }}'.replace("test", iid)
-            })
-        });
+                    .attr('r', 3).style("fill", "#FFF")
+                    .on("mouseover", function () {
+                        d3.select(this).style("fill", "orange");
+                    }).on("mouseout", function () {
+                    d3.select(this).style("fill", "#FFF");
+                }).on("click", function () {
+                    let iid = d3.select(this).attr("id");
+                    window.location.href = '{{ url_for( 'station',iid="test") }}'.replace("test", iid)
+                })
+            });
+        }
 
         function zoomed() {
             g

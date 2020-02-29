@@ -1,0 +1,16 @@
+.wrapper {
+    display: grid;
+    grid-template-rows: 8% 92%;
+    width: 100vw;
+    height: 100vh;
+}
+
+.svg {
+    height: 100%;
+    width: 50%;
+    background-color: #006994;
+}
+
+.map {
+    background-color: #006994;
+}
