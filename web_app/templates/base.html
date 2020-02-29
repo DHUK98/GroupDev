@@ -3,13 +3,14 @@
 <head>
     {% block head %}
         <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-        <script src="{{ url_for('static', filename='style/json-style.css') }}"></script>
         <title>{% block title %}{% endblock %}</title>
     {% endblock %}
     <script src="//unpkg.com/topojson@3"></script>
     <script src="https://d3js.org/d3.v5.js"></script>
     <script src="{{ url_for('static', filename='jquery-3.4.1.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='Sortable.js') }}"></script>
+    <link rel="icon"
+          type="image/png"
+          href="{{ url_for('static', filename='images/favicon.ico') }}">
 </head>
 <body>
 
