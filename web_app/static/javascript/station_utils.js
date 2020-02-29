@@ -1,6 +1,6 @@
 let stack_f = [];
 
-
+// method to be used to sort the stack from lowest to highest [1,2,3,...,n]
 function sortFunction(a, b) {
     if (a[0] === b[0]) {
         return 0;
@@ -63,10 +63,6 @@ function u_cluster_dbscan(data_l, params) {
     })
 }
 
-function submitButtonStyle(_this) {
-  _this.style.backgroundColor = "red";
-}
-
 function u_cluster2_kmeans(n) {
     return n;
 }
@@ -105,7 +101,6 @@ function calculate() {
     let has_been_clustered = false;
 
     document.getElementById("calculate").value = "Loading";
-    // document.getElementById("calculate").style.backgroundColor = "red";
 
     let render_all = document.getElementById("render_all_check").checked;
     if (render_all) {
@@ -119,10 +114,6 @@ function calculate() {
         if (i == stack_f.length - 1 && stack_f[i][0].toString().includes("dbscan")) {
             console.log("In the DBScan Stack if clause");
             let comb = combine_mask(return_stack);
-
-            // it worked with data, but that was all of the data
-            // we need to pass it an array of lats and lons
-
 
             let dbscan_vars = stack_f[i][0]();
             u_cluster_dbscan(comb, dbscan_vars);
@@ -162,12 +153,7 @@ function calculate() {
     console.log("d is: ");
     console.log(d);
 
-    if (has_been_clustered) {
-
-        // renderLines(d);
-
-    } else {
-
+    if (!has_been_clustered) {
         render_all_lines(d)
     }
 
@@ -213,9 +199,7 @@ function convert_cluster_jsons(current_data) {
 }
 
 function send_json_to_netcdf(single_json, json_index) {
-
     single_json = JSON.stringify(single_json);
-
     $.ajax({
         url: '/convert_to_netcdf/' + json_index,
         type: 'post',

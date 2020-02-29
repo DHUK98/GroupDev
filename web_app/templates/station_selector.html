@@ -21,14 +21,18 @@
         const path = d3.geoPath().projection(projection);
 
         const zoom = d3.zoom().scaleExtent([1, 8]).on('zoom', zoomed);
-        const svg = d3.select('svg').style("width", "100%");
-        const g = svg.append('g').call(zoom);
+        const svg = d3.select('svg');
+        const g = svg.append('g');
 
         let w = parseInt(d3.select("body").style("width")) / 2;
         let w2 = parseInt(svg.style("width"));
         d3.select('g').attr('transform', 'translate(' + (w - w2) + ',40)scale(2)');
+        svg.style("width", "100%");
+        g.call(zoom);
+
 
         renderMap();
+
         function renderMap() {
             d3.json("{{ url_for('static', filename='world-110m2.json') }}")
                 .then(world => {
@@ -78,12 +82,8 @@
         }
 
         function zoomed() {
-            g
-                .selectAll('path') // To prevent stroke width from scaling
-                .attr('transform', d3.event.transform);
-            g
-                .selectAll('circle') // To prevent stroke width from scaling
-                .attr('transform', d3.event.transform).attr("r", Math.min(3, 3 / (d3.event.transform.k / 2)))
+            g.selectAll('path').attr('transform', d3.event.transform);
+            g.selectAll('circle').attr('transform', d3.event.transform).attr("r", Math.min(3, 3 / (d3.event.transform.k / 2)))
         }
     </script>
 {% endblock %}

@@ -23,7 +23,7 @@
             <svg id="svg_map" width="100%" height="100%"></svg>
         </div>
 
-              <div class="input">
+        <div class="input">
             <div class="scroll">
                 <div class="w3-card-4 data_input">
                     <header class="w3-container w3-teal">
@@ -46,12 +46,12 @@
                         <h2>Rendering</h2>
                     </header>
                     <div class="w3-container w3-white">
-                            <p>
-                            <div>
-                                <input class="w3-check" id="render_all_check" type="checkbox">
-                                <label>Render all Trajectories</label>
-                            </div>
-                            </p>
+                        <p>
+                        <div>
+                            <input class="w3-check" id="render_all_check" type="checkbox">
+                            <label>Render all Trajectories</label>
+                        </div>
+                        </p>
                     </div>
                 </div>
                 <P></P>
@@ -132,29 +132,30 @@
                             <input class="w3-button w3-teal" id="add_cluster" type="button" value="Add">
                     </div>
                     <p></p>
-                <div class="w3-card-4" id="kmeans_div">
-                    <header class="w3-container w3-teal">
-                        <h2>K-Means Cluster</h2>
-                    </header>
-                    <div class="w3-container w3-white">
-                        <P>
-                            <label>Number of clusters</label>
-                            <input class="w3-input" id="number_of_cluster" type="number" value=0>
-                        <P>
-                            <input class="w3-button w3-teal" id="add_cluster_kmeans" type="button" value="Add">
+                    <div class="w3-card-4" id="kmeans_div">
+                        <header class="w3-container w3-teal">
+                            <h2>K-Means Cluster</h2>
+                        </header>
+                        <div class="w3-container w3-white">
+                            <P>
+                                <label>Number of clusters</label>
+                                <input class="w3-input" id="number_of_cluster" type="number" value=0>
+                            <P>
+                                <input class="w3-button w3-teal" id="add_cluster_kmeans" type="button" value="Add">
+                        </div>
+
                     </div>
+                    <P></P>
+                    <ul class="w3-ul w3-border w3-white" id="stack">
+
+                    </ul>
+                    <p></p>
+                    <input class="w3-button w3-teal" id="calculate" type="button" value="Calculate">
+
 
                 </div>
-                <P></P>
-                <ul class="w3-ul w3-border w3-white" id="stack">
-
-                </ul>
-                <p></p>
-                <input class="w3-button w3-teal" id="calculate" type="button" value="Calculate" onclick="submitButtonStyle(this)">
-
-
             </div>
-            </div></div>
+        </div>
 
         <div class="output">
             <div class="scroll">
@@ -195,7 +196,7 @@
         const projection_ = d3.geoAzimuthalEqualArea().rotate([-lng, -lat]);
         const path = d3.geoPath().projection(projection_);
         const zoom = d3.zoom().scaleExtent([1, 9]).on('zoom', zoomed);
-        
+
         const svg = d3.select('#svg_map');
         let w = parseInt(svg.style("width"));
         const g = svg.append('g').call(d3.zoom().on("zoom", function () {
@@ -295,7 +296,7 @@
         }
 
 
-        function render_all_lines(mm, parse=true) {
+        function render_all_lines(mm, parse = true) {
 
             if (parse) {
                 mm = JSON.parse(mm);
@@ -310,14 +311,14 @@
             let lat_lng = [mm["lat"], mm["lon"]];
             // console.log(lat_lng);
             // steps in 10
-            let p=[];
-            for (let l = 0; l < lat_lng[0].length; l+=10) {
+            let p = [];
+            for (let l = 0; l < lat_lng[0].length; l += 10) {
                 p_ = [];
                 lats = lat_lng[0][l];
                 longs = lat_lng[1][l];
 
                 // steps in 10
-                for (let i = 0; i < lats.length; i+=10) {
+                for (let i = 0; i < lats.length; i += 10) {
                     p_.push([lats[i], longs[i]]);
                 }
                 p.push(p_);
