@@ -25,6 +25,10 @@ let process_stack = {
             this.function_array.sort(process_stack.stack_sort);
         }
 
+        clear(){
+            this.function_array = [];
+        }
+
         calculate() {
             for (let i = 0; i < this.function_array.length; i++) {
                 let prev = null;
@@ -46,7 +50,7 @@ let process_stack = {
         this.output = null;
         this.compute = function (previous) {
             // return "Sectoring with " + this.toString();
-            this.output = sector_trajecotory(data, this.s_angle, this.e_angle, this.d, this.thresh);
+            this.output = sector_utils.sector_trajecotory(data, this.s_angle, this.e_angle, this.d, this.thresh);
         };
         this.toString = function () {
             return "Start angle: " + this.s_angle + ", End angle: " + this.e_angle + ", Distance: " + this.d + ", Threshold: " + this.thresh;
@@ -60,11 +64,12 @@ let process_stack = {
         this.thresh = threshold;
         this.output = null;
         this.compute = function (previous) {
-            this.output = filter(data, this.type, this.min, this.max, this.thresh);
+            this.output = sector_utils.filter(data, this.type, this.min, this.max, this.thresh);
         };
         this.toString = function () {
         };
     },
+
     cluster: function (start_angle, end_angle, distance, threshold) {
         this.pos = 1;
         this.compute = function (previous) {

@@ -21,7 +21,7 @@ def home():
 @app.route('/station/<iid>')
 def station(iid):
     try:
-        path = 'static/stations/' + iid + "/"
+        path = "static/stations/" + iid + "/"
         file_ns = []
         for file in os.listdir(path):
             if file.startswith("info"):

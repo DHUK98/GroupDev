@@ -170,10 +170,14 @@
     <script src="{{ url_for('static', filename='javascript/station_utils.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/station_view_input.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/sector.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascript/data_utils.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/stack.js') }}"></script>
     <script>
         // Data files in the stations directory
-        let file_ns = "{{ file_ns }}";
+        let file_ns = [];
+        {% for f in file_ns %}
+            file_ns.push("{{ f }}");
+        {% endfor %}
 
         // Id of the stations
         let iid = "{{ id }}";
@@ -187,7 +191,11 @@
         let p_ = [];
         let trans = [0, 0, 1];
 
+        let data_manager = new data_utils.data_manager(iid, file_ns);
+        console.log(data_manager.names);
+
         let data = null;
+
         let pp = "{{ url_for('static', filename='stations/CGR/ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json') }}";
         $.getJSON(pp, function (j) {
             data = j;
@@ -195,9 +203,9 @@
 
             let s = new process_stack.stack();
             let sec_test = new process_stack.sector(0, 45, 100, 5);
-            let fil_tets = new process_stack.filter("height", 0, 1000, 5);
+            let fil_test = new process_stack.filter("height", 0, 1000, 5);
             s.add(sec_test);
-            s.add(fil_tets);
+            s.add(fil_test);
 
             console.log(s.calculate());
         });
@@ -306,7 +314,6 @@
 
 
         function render_all_lines(mm, parse = true) {
-
             if (parse) {
                 mm = JSON.parse(mm);
             }

@@ -14,7 +14,7 @@ function sortFunction(a, b) {
 function u_sector(data, start_ang, end_ang, dist, thresh) {
     console.log("sector");
     console.log("data", start_ang, end_ang, dist, thresh);
-    let out = sector_trajecotory(data, start_ang, end_ang, dist, thresh);
+    let out = sector_utils.sector_trajecotory(data, start_ang, end_ang, dist, thresh);
 
     return out;
 }
@@ -27,7 +27,7 @@ function u_filter(data, type, min, max, thresh) {
 }
 
 function u_cluster2_dbscan(min_samp, eps_val) {
-    let params = [min_samp, eps_val]
+    let params = [min_samp, eps_val];
     return params
 }
 
