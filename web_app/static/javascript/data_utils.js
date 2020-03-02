@@ -4,19 +4,24 @@ let data_utils = {
             this.id = id;
             this.names = names;
             this.data = [];
+            this.loaded = 0;
         }
 
         load() {
+            let p = [];
+            let l_data = [];
+
             for (let i = 0; i < this.names.length; i++) {
-                let path = this.get_path_for(id,this.names[i]);
-                $.getJSON(path, function (j) {
-                    data = j;
-                });
+                console.log(i);
+
+                p.push($.getJSON(this.names[i], function (d) {
+                    l_data.push(d);
+                }));
             }
+            return Promise.all(p).then(() => {
+                this.data = l_data;
+            });
         }
 
-        get_path_for(id, name) {
-            let p = "{{ url_for('static', filename='stations/1/2') }}".replace("1", id).replace("2", name);
-        }
-    }
+    },
 };

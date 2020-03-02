@@ -173,30 +173,37 @@
     <script src="{{ url_for('static', filename='javascript/data_utils.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/stack.js') }}"></script>
     <script>
-        // Data files in the stations directory
-        let file_ns = [];
-        {% for f in file_ns %}
-            file_ns.push("{{ f }}");
-        {% endfor %}
-
         // Id of the stations
         let iid = "{{ id }}";
+
+        // Data files in the stations directory
+        let file_ns = [];
+        let fn = "";
+        {% for f in file_ns %}
+            fn = "{{ url_for('static', filename='stations/1/2') }}".replace("1", iid).replace("2", "{{ f }}");
+            file_ns.push(fn);
+        {% endfor %}
+
+
 
         // Latitude and longitude of the station
         let lat = {{ lat }};
         let lng = {{ lng }};
+        let pp = "{{ url_for('static', filename='stations/CGR/ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json') }}";
 
         let lats = [], longs = [];
         let p = [];
         let p_ = [];
         let trans = [0, 0, 1];
-
-        let data_manager = new data_utils.data_manager(iid, file_ns);
-        console.log(data_manager.names);
-
         let data = null;
 
-        let pp = "{{ url_for('static', filename='stations/CGR/ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json') }}";
+        {#console.log("test", file_ns);#}
+        {#let data_manager = new data_utils.data_manager(iid, file_ns);#}
+        {#data_manager.load().then(function () {#}
+        {#    console.log(data_manager.data);#}
+        {#    data = data_manager.data[0];});#}
+        {#renderMap();#}
+
         $.getJSON(pp, function (j) {
             data = j;
             renderMap();
@@ -209,6 +216,7 @@
 
             console.log(s.calculate());
         });
+
 
         const projection_ = d3.geoAzimuthalEqualArea().rotate([-lng, -lat]);
         const path = d3.geoPath().projection(projection_);
@@ -282,7 +290,7 @@
             console.log(mm);
             g.selectAll(".traj").remove();
             let lat_lng = [mm["lat"], mm["lon"]];
-
+            let p = [];
             for (let l = 0; l < lat_lng[0].length; l++) {
                 p_ = [];
                 lats = lat_lng[0][l];
@@ -318,20 +326,18 @@
                 mm = JSON.parse(mm);
             }
 
-            console.log(mm["height"][74]);
-
             g.selectAll(".traj").remove();
             let lat_lng = [mm["lat"], mm["lon"]];
             // console.log(lat_lng);
             // steps in 10
             let p = [];
-            for (let l = 0; l < lat_lng[0].length; l += 10) {
+            for (let l = 0; l < lat_lng[0].length; l += 1) {
                 p_ = [];
                 lats = lat_lng[0][l];
                 longs = lat_lng[1][l];
 
                 // steps in 10
-                for (let i = 0; i < lats.length; i += 10) {
+                for (let i = 0; i < lats.length; i += 1) {
                     p_.push([lats[i], longs[i]]);
                 }
                 p.push(p_);
