@@ -36,6 +36,7 @@
     box-sizing: border-box;
 }
 
+
 .output {
     background-color: #555;
     grid-row: 2;
@@ -73,3 +74,29 @@
 .sphere {
     stroke: #333;
 }
+
+.collapsible{
+    cursor: pointer
+}
+
+/* Style the collapsible content. Note: hidden by default */
+.content {
+  padding: 0 18px;
+  background-color: white;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+}
+
+
+/*.collapsible:after {*/
+/*  content: '\02795'; !* Unicode character for "plus" sign (+) *!*/
+/*  font-size: 13px;*/
+/*  color: white;*/
+/*  float: right;*/
+/*  margin-left: 5px;*/
+/*}*/
+
+/*.active:after {*/
+/*  content: "\2796"; !* Unicode character for "minus" sign (-) *!*/
+/*}*/
