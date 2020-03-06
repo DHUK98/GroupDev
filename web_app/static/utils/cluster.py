@@ -140,7 +140,7 @@ def cluster_request_dbscan(json_msg, min_samples=70, eps=50):
     return json_msg
 
 
-# Handle all non-hierarchical cluster requests
+# Handle cluster requests except hierarchical
 def cluster_request(json_msg, cluster_no, cluster_type, min_samples=70, eps=50):
     # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon), and
     # number of clusters
@@ -153,32 +153,46 @@ def cluster_request(json_msg, cluster_no, cluster_type, min_samples=70, eps=50):
 
     X = toVector(dim1, dim2)
 
-    if cluster_type == 'kmeans':
-        model = KMeans(n_clusters=int(cluster_no)).fit(X)
-        # labels = model.labels_
+    try:
+        if cluster_type == 'kmeans':
+            model = KMeans(n_clusters=int(cluster_no)).fit(X)
+            # labels = model.labels_
 
-    elif cluster_type == 'spectral':
-        model = SpectralClustering(n_clusters=int(cluster_no)).fit(X)
-        # labels = model.labels_
+        elif cluster_type == 'spectral':
+            model = SpectralClustering(n_clusters=int(cluster_no)).fit(X)
+            # labels = model.labels_
 
-    elif cluster_type == 'dbscan':
-        model = DBSCAN(min_samples=min_samples, eps=eps).fit(X)
+        elif cluster_type == 'dbscan':
+            model = DBSCAN(min_samples=min_samples, eps=eps).fit(X)
 
-    labels = model.labels_
+        labels = model.labels_
 
-    # Convert to same labelling system as scipy: 1 -> N not 0 -> N-1
-    for i in range(len(labels)):
-        labels[i] += 1
+        # Convert to same labelling system as scipy: 1 -> N not 0 -> N-1
+        for i in range(len(labels)):
+            labels[i] += 1
 
-    centroids = get_centroids(X, labels)
+        centroids = get_centroids(X, labels)
 
-    json_dict = {'labels': labels.tolist(),
-                 'centroids': centroids
-                 }
-    json_msg = json.dumps(json_dict)
+        json_dict = {'labels': labels.tolist(),
+                     'centroids': centroids
+                     }
+        json_msg = json.dumps(json_dict)
 
-    return json_msg
+        return json_msg
 
+    # Error handling for empty trajectory list
+    except ValueError:
+        print('No trajectories found in that sector/filter')
+
+        json_dict = {'labels': [],
+                     'centroids': []
+                     }
+        json_msg = json.dumps(json_dict)
+
+        return json_msg
+
+
+# Eliminate noisy trajectories using DBSCAN then
 def dbscan_kmeans(json_msg, cluster_no, min_samples, eps):
     # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon), and
     # number of clusters
