@@ -141,10 +141,11 @@ def cluster_request_dbscan(json_msg, min_samples=70, eps=50):
 
 
 # Handle cluster requests except hierarchical
-def cluster_request(json_msg, cluster_no, cluster_type, min_samples=70, eps=50):
+def cluster_request(json_msg, cluster_type, cluster_no=5, min_samples=70, eps=50):
     # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon), and
     # number of clusters
-
+    print("CLuster type is " + str(cluster_type))
+    print(type(cluster_type))
     # Read json message
     loaded = json.loads(json_msg)
 

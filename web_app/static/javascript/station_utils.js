@@ -36,7 +36,7 @@ function u_cluster_dbscan(data_l, params) {
     let min_samp = params[0]
     let eps_val = params[1]
 
-    console.log("cluster");
+    console.log("clustering (DBScan)...");
     let out;
     $.ajax({
         url: '/cluster/req/' + iid + "/" + min_samp + "/" + eps_val,
@@ -44,9 +44,11 @@ function u_cluster_dbscan(data_l, params) {
         dataType: 'json',
         contentType: 'application/json',
         success: function (data__) {
+            console.log("Clustered sucessfully (DBScan)");
             out = JSON.parse(data__);
             console.log(out["labels"]);
             console.log(out["centroids"]);
+            let colours = out["colours"];
             let weight = [];
             for (let j = 1; j <= new Set(out["labels"]).size; j++) {
                 weight[j - 1] = out["labels"].filter(x => x == j).length;
@@ -54,7 +56,7 @@ function u_cluster_dbscan(data_l, params) {
             console.log("WWW", weight);
             let d = {"lat": out["centroids"][0], "lon": out["centroids"][1]};
             console.log(d);
-            renderLines(d, weight);
+            renderLines(d, weight, colours);
             console.log(applyMask2(out["labels"], data));
             console.log("cluster Success");
             document.getElementById("calculate").value = "";
@@ -69,7 +71,7 @@ function u_cluster2_kmeans(n) {
 
 
 function u_cluster(data_l, num_clust) {
-    console.log("cluster");
+    console.log("clustering K-means");
     let out;
     $.ajax({
         url: '/cluster/req/' + iid + "/" + num_clust,
@@ -80,6 +82,7 @@ function u_cluster(data_l, num_clust) {
             out = JSON.parse(data__);
             console.log(out["labels"]);
             console.log(out["centroids"]);
+            let colours = out["colours"];
             let weight = [];
             for (let j = 1; j <= new Set(out["labels"]).size; j++) {
                 weight[j - 1] = out["labels"].filter(x => x == j).length;
@@ -87,7 +90,7 @@ function u_cluster(data_l, num_clust) {
             console.log("WWW", weight);
             let d = {"lat": out["centroids"][0], "lon": out["centroids"][1]};
             console.log(d);
-            renderLines(d, weight);
+            renderLines(d, weight, colours);
             console.log(applyMask2(out["labels"], data));
             console.log("cluster Success");
             document.getElementById("calculate").value = "";
