@@ -72,7 +72,7 @@ document.getElementById("add_cluster").onclick = function () {
     let min_samp = document.getElementById("minimum_samples_for_cluster").value;
     let eps_val = document.getElementById("eps_value").value;
 
-    if(min_samp > 0 && Number.isInteger(min_samp) && eps_val > 0) {
+    if(min_samp > 0 && min_samp%1 === 0 && eps_val > 0) {
         z.innerHTML = "DBScan Cluster (" + min_samp + ", " + eps_val + ")";
         let stack = document.getElementById("stack");
         let element = $('#stack #zstack_cluster');
@@ -85,12 +85,18 @@ document.getElementById("add_cluster").onclick = function () {
             }, 100]);
             stack_f.sort(sortFunction)
         }
-    } else if(!(min_samp > 0 && Number.isInteger(min_samp))){
-        alert("Please enter a positive integer for Minimum Samples for Cluster");
-    } else if(eps_val <= 0){
-        alert("Please enter a positive value for the EPS Value.");
-    } else{
-        alert("Unexpected input.");
+    } else {
+        let alert_msg = "";
+        if (min_samp <= 0 || !(min_samp%1 === 0)) {
+            alert_msg = alert_msg.concat("Please enter a positive integer for Minimum Samples for Cluster\n");
+        }
+        if (eps_val <= 0) {
+            alert_msg = alert_msg.concat("Please enter a positive value for the EPS Value.\n");
+        }
+        if(alert_msg === ""){
+            alert_msg = alert_msg.concat("Unexpected input.");
+        }
+        alert(alert_msg);
     }
 };
 
