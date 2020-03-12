@@ -176,7 +176,6 @@ function calculate() {
     if (!has_been_clustered) {
         render_all_lines(d)
     }
-
 }
 
 

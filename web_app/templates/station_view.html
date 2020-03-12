@@ -221,7 +221,7 @@
             renderMap();
 
             let s = new process_stack.stack();
-            let sec_test = new process_stack.sector(0, 45, 100, 5);
+            let sec_test = new process_stack.sector(150, 270, 250, 5);
             let fil_test = new process_stack.filter("height", 0, 1000, 5);
             let clu_test = new process_stack.cluster();
             s.add(sec_test);
@@ -231,15 +231,6 @@
             console.log(s.calculate());
 
         });
-        {##}
-        {##}
-        {#$.getJSON(pp, function (j) {#}
-        {#    data = j;#}
-        {#    renderMap();#}
-        {##}
-        {##}
-        {#});#}
-
 
         const projection_ = d3.geoAzimuthalEqualArea().rotate([-lng, -lat]);
         const path = d3.geoPath().projection(projection_);
@@ -309,11 +300,45 @@
 
 
         function renderLines(mm, weight, colours) {
-            console.log("COLOURS ARE : ");
-            console.log(colours);
-            console.log("For render lines, mm is ");
-            console.log(mm);
             g.selectAll(".traj").remove();
+            let lat_lng = [mm["lat"], mm["lon"]];
+            console.log("latlng");
+            console.log(lat_lng);
+            let p = [];
+
+            // for each cluster
+            for (let l = 0; l < lat_lng[0].length; l++) {
+                p_ = [];
+                lats = lat_lng[0][l];
+                longs = lat_lng[1][l];
+
+                // for each traj in that cluster
+                for (let i = 0; i < lats.length; i++) {
+                    p_.push([lats[i], longs[i]]);
+                }
+                p.push(p_);
+            }
+
+            console.log(p);
+            let m = Math.max(...weight);
+            for (let i = 0; i < lat_lng[0].length; i++) {
+                let w = weight[i];
+                let hsl_string = "".concat("hsl(", colours[i], ", 50%, 50%)");
+                console.log(hsl_string);
+                g.append("path")
+                    .attr("class", "traj")
+                    .attr("d", lineFunction(p[i]))
+                    .attr("stroke", hsl_string)
+                    .attr("opacity", 0.7)
+                    .attr("stroke-width", (w / m) * 2.5)
+                    .attr("fill", "none")
+                    .attr("transform", "translate(" + trans[0] + "," + trans[1] + ")" + "scale(" + trans[2] + ")");
+            }
+        }
+
+
+        function new_renderLines(d) {
+            g.selectAll(".traj").remove(); // Remove all old trajs
             let lat_lng = [mm["lat"], mm["lon"]];
             let p = [];
 
@@ -340,9 +365,6 @@
                     .attr("class", "traj")
                     .attr("d", lineFunction(p[i]))
                     .attr("stroke", hsl_string)
-                    // .attr("stroke", function () {
-                    //     return "red";
-                    // })
                     .attr("opacity", 0.7)
                     .attr("stroke-width", (w / m) * 2.5)
                     .attr("fill", "none")
@@ -351,8 +373,8 @@
         }
 
         function render_all_lines2(mm) {
-            let lat_lng = [mm["lat"], mm["lon"]];
 
+            let lat_lng = [mm["lat"], mm["lon"]];
             let p = [];
             for (let l = 0; l < lat_lng[0].length; l += 100) {
                 lats = lat_lng[0][l];
@@ -367,6 +389,7 @@
             {#p = new Set(p);#}
             console.log(p);
         }
+
         function render_all_lines(mm, parse = true) {
             if (parse) {
                 mm = JSON.parse(mm);
@@ -374,6 +397,9 @@
 
             g.selectAll(".traj").remove();
             let lat_lng = [mm["lat"], mm["lon"]];
+            console.log("LATLNG");
+            console.log(lat_lng);
+
             // console.log(lat_lng);
             // steps in 10
             let p = [];
@@ -382,12 +408,12 @@
                 lats = lat_lng[0][l];
                 longs = lat_lng[1][l];
 
-                // steps in 10
                 for (let i = 0; i < lats.length; i += 1) {
                     p_.push([lats[i], longs[i]]);
                 }
                 p.push(p_);
             }
+            console.log("p");
             console.log(p);
             // let m = Math.max(...weight);
             for (let i = 0; i < lat_lng[0].length; i++) {
