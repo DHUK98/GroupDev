@@ -32,8 +32,8 @@ function u_cluster2_dbscan(min_samp, eps_val) {
 
 
 function u_cluster_dbscan(data_l, params) {
-    let min_samp = params[0]
-    let eps_val = params[1]
+    let min_samp = params[0];
+    let eps_val = params[1];
 
     console.log("clustering (DBScan)...");
     let out;
@@ -43,22 +43,38 @@ function u_cluster_dbscan(data_l, params) {
         dataType: 'json',
         contentType: 'application/json',
         success: function (data__) {
-            console.log("Clustered sucessfully (DBScan)");
+
+            console.log("Clustered successfully (DBScan)");
             out = JSON.parse(data__);
+
             console.log(out["labels"]);
             console.log(out["centroids"]);
+
             let colours = out["colours"];
             let weight = [];
+
             for (let j = 1; j <= new Set(out["labels"]).size; j++) {
                 weight[j - 1] = out["labels"].filter(x => x == j).length;
             }
-            console.log("WWW", weight);
+
+
             let d = {"lat": out["centroids"][0], "lon": out["centroids"][1]};
-            console.log(d);
+
+            // console.log("WWW", weight);
+            // console.log(d);
+            // console.log(applyMask2(out["labels"], data));
+
             renderLines(d, weight, colours);
-            console.log(applyMask2(out["labels"], data));
-            console.log("cluster Success");
+            console.log("data_l is ");
+            console.log(data_l);
+            // now render grey lines behind it
+            render_all_lines(data_l);
+
+
             document.getElementById("calculate").value = "";
+
+
+
         },
         data: JSON.stringify([JSON.stringify(data_l), "ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json"])
     })
@@ -186,6 +202,7 @@ if (typeof console != "undefined")
         console.olog = function () {
         };
 
+
 console.log = function (message) {
     console.olog(message);
     $('#debugDiv').append('<p>' + message + '</p>');
@@ -193,8 +210,28 @@ console.log = function (message) {
 console.error = console.debug = console.info = console.log;
 
 
+// used for creating a full mask for rendering all trajectories
+function fillArray(value, len) {
+  var arr = [];
+  for (var i = 0; i < len; i++) {
+    arr.push(value);
+  }
+  return arr;
+}
+
+
 function combine_mask(masks) {
     let combined = [];
+
+    // console.log("Masks is ");
+    // console.log(masks);
+
+    if (masks[0] === undefined) {
+        combined = fillArray(1, 8760);
+        console.log("masks was empty, so filling with 1s for rendering all trajs");
+        return combined;
+    }
+
     for (let i = 0; i < masks[0].length; i++) {
         let o = 0;
         for (let m = 0; m < masks.length; m++) {

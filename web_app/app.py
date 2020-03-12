@@ -40,6 +40,7 @@ def station(iid):
         return str(e)
 
 
+# DBSCAN
 @app.route('/cluster/req/<iid>/<min_samp>/<eps_val>', methods=['POST'])
 def cluster_dbscan(iid, min_samp, eps_val):
     data = request.get_json()

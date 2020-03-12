@@ -14,22 +14,27 @@ document.getElementById("add_sector").onclick = function () {
         let d_s = document.getElementById("sec_dist_val").value * 2.5;
         let t_h = document.getElementById("sec_threshold_val").value;
 
-        //Check inputs are of right type
-        if( (s_a >= 0 && s_a <= 360)
-            && (e_a >= 0 && e_a <= 360)
-            && (d_s > 0 && d_s <= 0)
-            && (t_h > 0 && t_h%1 === 0)){
-           let url = "/sector/" + iid +
-            "/" + s_a + "/" + e_a +
-            "/" + d_s + "/" + t_h;
-            if (url.includes("//"))
+        console.log("VALUES: ");
+        console.log(s_a);
+        console.log(e_a);
+        console.log(d_s);
+        console.log(t_h);
+
+        // Check inputs are of right type
+        if( (s_a >= 0 && s_a <= 360) && (e_a >= 0 && e_a <= 360) && (d_s > 0 && d_s <= 250) && (t_h > 0 && t_h%1 === 0)){
+            let url = "/sector/" + iid + "/" + s_a + "/" + e_a + "/" + d_s + "/" + t_h;
+
+            if (url.includes("//")) {
                 return;
+            }
+
             renderSector(s_a, e_a, d_s);
 
             stack.appendChild(z);
             stack_f.push([function () {
                 return u_sector(data, s_a, e_a, d_s, t_h);
             }, 1]);
+
             stack_f.sort(sortFunction);
         } else{
             let alert_msg = "";

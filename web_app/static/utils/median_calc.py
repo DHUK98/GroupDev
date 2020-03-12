@@ -1,7 +1,4 @@
 # calculate average of certain field over list of trajectories
-#
-
-import json
 
 
 def average(lst):
@@ -59,9 +56,9 @@ def avg_to_hsl(n_avg):
 
 
 
-if __name__ == "__main__":
-    with open("../stations/CGR/ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json", "r") as f:
-        trajs = json.load(f)
-
-
-    get_median_averages(trajs, [], "height")
+# if __name__ == "__main__":
+#     with open("../stations/CGR/ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json", "r") as f:
+#         trajs = json.load(f)
+#
+#
+#     get_median_averages(trajs, [], "height")
