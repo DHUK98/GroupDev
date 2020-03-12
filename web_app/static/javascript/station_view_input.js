@@ -12,7 +12,9 @@ document.getElementById("add_sector").onclick = function () {
         let e_a = document.getElementById("end_angle_val").value;
         let d_s = document.getElementById("sec_dist_val").value * 2.5;
         let t_h = document.getElementById("sec_threshold_val").value;
-        let url = "/sector/" + iid +
+
+        if(s_a > 0 && e_a > 0  && d_s > 0 && t_h > 0 && t_h%1 === 0){
+           let url = "/sector/" + iid +
             "/" + s_a + "/" + e_a +
             "/" + d_s + "/" + t_h;
         if (url.includes("//"))
@@ -24,6 +26,25 @@ document.getElementById("add_sector").onclick = function () {
             return u_sector(data, s_a, e_a, d_s, t_h);
         }, 1]);
         stack_f.sort(sortFunction);
+        } else{
+            let alert_msg = "";
+            if(s_a <= 0){
+                alert_msg = alert_msg.concat("Please enter a positive value for the start angle.\n")
+            }
+            if(e_a <= 0){
+                alert_msg = alert_msg.concat("Please enter a positive value for the end angle.\n")
+            }
+            if(d_s <= 0){
+                alert_msg = alert_msg.concat("Please enter a positive value for the distance.\n")
+            }
+            if(!(t_h > 0 && t_h%1 === 0)){
+                alert_msg = alert_msg.concat("Please enter a positive integer for the threshold.\n")
+            }
+            if(alert_msg === ""){
+                alert_msg = alert_msg.concat("Unexpected input.");
+        }
+        alert(alert_msg);
+        }
     }
 };
 
@@ -89,7 +110,7 @@ document.getElementById("add_cluster").onclick = function () {
         }
     } else {
         let alert_msg = "";
-        if (min_samp <= 0 || !(min_samp%1 === 0)) {
+        if (min_samp <= 0 || min_samp%1 !== 0) {
             alert_msg = alert_msg.concat("Please enter a positive integer for Minimum Samples for Cluster\n");
         }
         if (eps_val <= 0) {
