@@ -10,11 +10,15 @@ document.getElementById("add_sector").onclick = function () {
     } else {
         let s_a = document.getElementById("start_angle_val").value;
         let e_a = document.getElementById("end_angle_val").value;
+        // Scale up percantage input to units of distance in projection
         let d_s = document.getElementById("sec_dist_val").value * 2.5;
         let t_h = document.getElementById("sec_threshold_val").value;
 
         //Check inputs are of right type
-        if(s_a > 0 && e_a > 0  && d_s > 0 && t_h > 0 && t_h%1 === 0){
+        if( (s_a >= 0 && s_a <= 360)
+            && (e_a >= 0 && e_a <= 360)
+            && (d_s > 0 && d_s <= 0)
+            && (t_h > 0 && t_h%1 === 0)){
            let url = "/sector/" + iid +
             "/" + s_a + "/" + e_a +
             "/" + d_s + "/" + t_h;
