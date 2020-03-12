@@ -122,7 +122,6 @@ def cluster_request_dbscan(json_msg, min_samples=70, eps=50):
     dim2 = loaded.get('lon')
 
     X = toVector(dim1, dim2)
-
     model = DBSCAN(min_samples=min_samples, eps=eps).fit(X)
     labels = model.labels_
 
