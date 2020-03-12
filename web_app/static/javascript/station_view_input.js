@@ -13,19 +13,20 @@ document.getElementById("add_sector").onclick = function () {
         let d_s = document.getElementById("sec_dist_val").value * 2.5;
         let t_h = document.getElementById("sec_threshold_val").value;
 
+        //Check inputs are of right type
         if(s_a > 0 && e_a > 0  && d_s > 0 && t_h > 0 && t_h%1 === 0){
            let url = "/sector/" + iid +
             "/" + s_a + "/" + e_a +
             "/" + d_s + "/" + t_h;
-        if (url.includes("//"))
-            return;
-        renderSector(s_a, e_a, d_s);
+            if (url.includes("//"))
+                return;
+            renderSector(s_a, e_a, d_s);
 
-        stack.appendChild(z);
-        stack_f.push([function () {
-            return u_sector(data, s_a, e_a, d_s, t_h);
-        }, 1]);
-        stack_f.sort(sortFunction);
+            stack.appendChild(z);
+            stack_f.push([function () {
+                return u_sector(data, s_a, e_a, d_s, t_h);
+            }, 1]);
+            stack_f.sort(sortFunction);
         } else{
             let alert_msg = "";
             if(s_a <= 0){
@@ -59,7 +60,7 @@ document.getElementById("add_cluster_kmeans").onclick = function () {
     //  Assign variable for cluster number (user input)
     let c_nu = document.getElementById("number_of_cluster").value;
 
-    //  Check value is of correct type
+    //  Check input is of correct type
     if (c_nu > 0 && c_nu%1 === 0) {
         z.innerHTML = "K-means Cluster (" + c_nu + ")";
         let stack = document.getElementById("stack");
@@ -94,7 +95,7 @@ document.getElementById("add_cluster").onclick = function () {
     let min_samp = document.getElementById("minimum_samples_for_cluster").value;
     let eps_val = document.getElementById("eps_value").value;
 
-    //Check values are of correct type
+    //Check inputs are of correct type
     if(min_samp > 0 && min_samp%1 === 0 && eps_val > 0) {
         z.innerHTML = "DBScan Cluster (" + min_samp + ", " + eps_val + ")";
         let stack = document.getElementById("stack");
@@ -156,6 +157,9 @@ document.getElementById("add_filter").onclick = function () {
     let max = document.getElementById("filter_max_val").value;
     let min = document.getElementById("filter_min_val").value;
     let thresh = document.getElementById("filter_thresh_val").value;
+
+    //INPUT CHECKING FOR FILTERING WILL DEPEND ON TYPE - ONE TO LOOK AT LATER
+
     z.innerHTML = "Filter by " + type_f + "<br/><br/>[min/max/thresh : " + min + "/" + max + "/" + thresh + "]";
     let stack = document.getElementById("stack");
     let element = $('#stack #stack_filter');
@@ -168,6 +172,7 @@ document.getElementById("add_filter").onclick = function () {
 
 
 document.getElementById("calculate").onclick = function () {
+    localStorage.clear();
     calculate()
 };
 
