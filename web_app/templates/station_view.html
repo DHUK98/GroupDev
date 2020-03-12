@@ -219,21 +219,26 @@
             console.log(data_manager.data);
             data = data_manager.data[0];
             renderMap();
-        });
-
-
-        $.getJSON(pp, function (j) {
-            data = j;
-            renderMap();
 
             let s = new process_stack.stack();
             let sec_test = new process_stack.sector(0, 45, 100, 5);
             let fil_test = new process_stack.filter("height", 0, 1000, 5);
+            let clu_test = new process_stack.cluster();
             s.add(sec_test);
             s.add(fil_test);
-
+            s.add(clu_test);
+            console.log("TESTING STACK");
             console.log(s.calculate());
+
         });
+        {##}
+        {##}
+        {#$.getJSON(pp, function (j) {#}
+        {#    data = j;#}
+        {#    renderMap();#}
+        {##}
+        {##}
+        {#});#}
 
 
         const projection_ = d3.geoAzimuthalEqualArea().rotate([-lng, -lat]);
