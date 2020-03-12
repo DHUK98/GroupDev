@@ -302,6 +302,7 @@
 
 
         function renderLines(mm, weight, colours) {
+            let hsl_string;
             console.log("COLOURS ARE : ");
             console.log(colours);
             console.log("For render lines, mm is ");
@@ -327,7 +328,12 @@
             let m = Math.max(...weight);
             for (let i = 0; i < lat_lng[0].length; i++) {
                 let w = weight[i];
-                let hsl_string = "".concat("hsl(", colours[i], ", 50%, 50%)");
+                if (colours !== undefined) {
+                    hsl_string = "".concat("hsl(", colours[i], ", 50%, 50%)");
+                } else {
+                    hsl_string = "hsl(0, 100%, 50%)";  // red
+                }
+
                 console.log(hsl_string);
                 g.append("path")
                     .attr("class", "traj")

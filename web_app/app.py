@@ -106,6 +106,15 @@ def cluster(iid, n):
 
     print(len(cluster_json["labels"]))
     print(len(data[0]))
+
+
+    # currently for height, not parameter
+    c_colours = get_median_colours(traj, cluster_json['labels'], "height")
+    print(c_colours)
+
+    cluster_json["colours"] = c_colours
+    # cluster = json.dumps(cluster_json)
+
     return jsonify(cluster)
 
 
