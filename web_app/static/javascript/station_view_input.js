@@ -35,21 +35,27 @@ document.getElementById("add_cluster_kmeans").onclick = function () {
     z.setAttribute("id", "zstack_cluster");
 
 
+    //  Assign variable for cluster number (user input)
     let c_nu = document.getElementById("number_of_cluster").value;
+    //  Check it is of correct type
+    if (c_nu > 0 && Number.isInteger(c_nu)) {
+        z.innerHTML = "K-means Cluster (" + c_nu + ")";
+        let stack = document.getElementById("stack");
+        let element = $('#stack #zstack_cluster');
 
-    z.innerHTML = "K-means Cluster (" + c_nu + ")";
-    let stack = document.getElementById("stack");
-    let element = $('#stack #zstack_cluster');
+        if (!element.length > 0) {
+            stack.appendChild(z);
 
-    if (!element.length > 0) {
-        stack.appendChild(z);
-
-        stack_f.push([function () {
-            return u_cluster2_kmeans(c_nu);
-        }, 100]);
-        stack_f.sort(sortFunction)
+            stack_f.push([function () {
+                return u_cluster2_kmeans(c_nu);
+            }, 100]);
+            stack_f.sort(sortFunction)
+        }
+    //  Alert user to incorrect type
+    } else {
+        alert("Please enter a positive integer for the cluster number.");
     }
-};
+}
 
 
 // CLUSTERING DBSCAN
@@ -61,20 +67,36 @@ document.getElementById("add_cluster").onclick = function () {
     // REDUNDANT LINE IF WE'RE USING DBSCAN
     // let c_nu = document.getElementById("number_of_cluster").value;
 
+    //  Assign variables for eps (max distance between 2 points to be considered in same cluster)
+    //  and min cluster size (user input)
     let min_samp = document.getElementById("minimum_samples_for_cluster").value;
     let eps_val = document.getElementById("eps_value").value;
 
-    z.innerHTML = "DBScan Cluster (" + min_samp + ", " + eps_val + ")";
-    let stack = document.getElementById("stack");
-    let element = $('#stack #zstack_cluster');
+    if(min_samp > 0 && min_samp%1 === 0 && eps_val > 0) {
+        z.innerHTML = "DBScan Cluster (" + min_samp + ", " + eps_val + ")";
+        let stack = document.getElementById("stack");
+        let element = $('#stack #zstack_cluster');
 
-    if (!element.length > 0) {
-        stack.appendChild(z);
+        if (!element.length > 0) {
+            stack.appendChild(z);
 
-        stack_f.push([function () {
-            return u_cluster2_dbscan(min_samp, eps_val);
-        }, 100]);
-        stack_f.sort(sortFunction)
+            stack_f.push([function () {
+                return u_cluster2_dbscan(min_samp, eps_val);
+            }, 100]);
+            stack_f.sort(sortFunction)
+        }
+    } else {
+        let alert_msg = "";
+        if (min_samp <= 0 || !(min_samp%1 === 0)) {
+            alert_msg = alert_msg.concat("Please enter a positive integer for Minimum Samples for Cluster\n");
+        }
+        if (eps_val <= 0) {
+            alert_msg = alert_msg.concat("Please enter a positive value for the EPS Value.\n");
+        }
+        if(alert_msg === ""){
+            alert_msg = alert_msg.concat("Unexpected input.");
+        }
+        alert(alert_msg);
     }
 };
 
