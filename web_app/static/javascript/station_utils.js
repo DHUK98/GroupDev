@@ -4,8 +4,7 @@ let stack_f = [];
 function sortFunction(a, b) {
     if (a[0] === b[0]) {
         return 0;
-    }
-    else {
+    } else {
         return (a[0] > b[0]) ? -1 : 1;
     }
 }
@@ -69,6 +68,24 @@ function u_cluster2_kmeans(n) {
     return n;
 }
 
+function test_u_cluster(data_l, num_clust) {
+    console.log("clustering K-means");
+    let out;
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: '/cluster/req/' + iid + "/" + num_clust,
+            type: 'post',
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (data__) {
+                out = JSON.parse(data__);
+                let d = {"lat": out["centroids"][0], "lon": out["centroids"][1], "labels":out["labels"]};
+                resolve(d);
+            },
+            data: JSON.stringify([JSON.stringify(data_l), "ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json"])
+        })
+    });
+}
 
 function u_cluster(data_l, num_clust) {
     console.log("clustering K-means");
@@ -108,7 +125,7 @@ function calculate() {
     let render_all = document.getElementById("render_all_check").checked;
     if (render_all) {
         console.log("RENDER ALL IS CHECKED");
-        render_all_lines(data, false);
+        render_all_lines2(data);
     }
 
     console.log(stack_f);
@@ -163,13 +180,14 @@ function calculate() {
 }
 
 
-if (typeof console  != "undefined")
+if (typeof console != "undefined")
     if (typeof console.log != 'undefined')
         console.olog = console.log;
     else
-        console.olog = function() {};
+        console.olog = function () {
+        };
 
-console.log = function(message) {
+console.log = function (message) {
     console.olog(message);
     $('#debugDiv').append('<p>' + message + '</p>');
 };
