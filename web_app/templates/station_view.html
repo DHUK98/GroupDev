@@ -303,35 +303,42 @@
             });
 
 
-        function renderLines(mm, weight) {
+        function renderLines(mm, weight, colours) {
+            console.log("COLOURS ARE : ");
+            console.log(colours);
             console.log("For render lines, mm is ");
             console.log(mm);
             g.selectAll(".traj").remove();
             let lat_lng = [mm["lat"], mm["lon"]];
             let p = [];
+
+            // for each cluster
             for (let l = 0; l < lat_lng[0].length; l++) {
                 p_ = [];
                 lats = lat_lng[0][l];
                 longs = lat_lng[1][l];
 
+                // for each traj in that cluster
                 for (let i = 0; i < lats.length; i++) {
                     p_.push([lats[i], longs[i]]);
                 }
                 p.push(p_);
             }
 
-
             console.log(p);
             let m = Math.max(...weight);
             for (let i = 0; i < lat_lng[0].length; i++) {
                 let w = weight[i];
+                let hsl_string = "".concat("hsl(", colours[i], ", 50%, 50%)");
+                console.log(hsl_string);
                 g.append("path")
                     .attr("class", "traj")
                     .attr("d", lineFunction(p[i]))
-
-                    .attr("stroke", function () {
-                        return "red";
-                    })
+                    .attr("stroke", hsl_string)
+                    // .attr("stroke", function () {
+                    //     return "red";
+                    // })
+                    .attr("opacity", 0.7)
                     .attr("stroke-width", (w / m) * 2.5)
                     .attr("fill", "none")
                     .attr("transform", "translate(" + trans[0] + "," + trans[1] + ")" + "scale(" + trans[2] + ")");
@@ -389,7 +396,7 @@
                     }).attr("id", i)
                     .attr("stroke-width", 0.5)
                     .attr("fill", "none")
-                    .attr("opacity", 0.3)
+                    .attr("opacity", 0.2)
                     .attr("transform", "translate(" + trans[0] + "," + trans[1] + ")" + "scale(" + trans[2] + ")")
                     .on("click", function () {
                         console.log(d3.select(this).attr("id"));
