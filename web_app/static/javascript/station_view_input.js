@@ -37,8 +37,9 @@ document.getElementById("add_cluster_kmeans").onclick = function () {
 
     //  Assign variable for cluster number (user input)
     let c_nu = document.getElementById("number_of_cluster").value;
-    //  Check it is of correct type
-    if (c_nu > 0 && Number.isInteger(c_nu)) {
+
+    //  Check value is of correct type
+    if (c_nu > 0 && c_nu%1 === 0) {
         z.innerHTML = "K-means Cluster (" + c_nu + ")";
         let stack = document.getElementById("stack");
         let element = $('#stack #zstack_cluster');
@@ -72,6 +73,7 @@ document.getElementById("add_cluster").onclick = function () {
     let min_samp = document.getElementById("minimum_samples_for_cluster").value;
     let eps_val = document.getElementById("eps_value").value;
 
+    //Check values are of correct type
     if(min_samp > 0 && min_samp%1 === 0 && eps_val > 0) {
         z.innerHTML = "DBScan Cluster (" + min_samp + ", " + eps_val + ")";
         let stack = document.getElementById("stack");
