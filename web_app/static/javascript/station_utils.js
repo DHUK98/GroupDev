@@ -105,7 +105,7 @@ function calculate() {
     let render_all = document.getElementById("render_all_check").checked;
     if (render_all) {
         console.log("RENDER ALL IS CHECKED");
-        render_all_lines(data, false);
+        render_all_lines2(data);
     }
 
     console.log(stack_f);

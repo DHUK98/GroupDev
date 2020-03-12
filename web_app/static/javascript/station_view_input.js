@@ -133,6 +133,7 @@ function Delete(currentEl) {
 
 let download_button = document.getElementById('export_data_button').onclick = function () {
     zip_files();
+    console.log("TEEEEE");
 };
 
 

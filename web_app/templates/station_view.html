@@ -171,6 +171,7 @@
     <script src="{{ url_for('static', filename='javascript/sector.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/data_utils.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/stack.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascript/simpleheat.js') }}"></script>
     <script>
 
 
@@ -214,11 +215,12 @@
 
         console.log("test", file_ns);
         let data_manager = new data_utils.data_manager(iid, file_ns);
-        data_manager.load().then(function () {
+        data_manager.load(0).then(function () {
             console.log(data_manager.data);
             data = data_manager.data[0];
+            renderMap();
         });
-        renderMap();
+
 
         $.getJSON(pp, function (j) {
             data = j;
@@ -336,7 +338,23 @@
             }
         }
 
+        function render_all_lines2(mm) {
+            let lat_lng = [mm["lat"], mm["lon"]];
 
+            let p = [];
+            for (let l = 0; l < lat_lng[0].length; l += 100) {
+                lats = lat_lng[0][l];
+                longs = lat_lng[1][l];
+
+                // steps in 10
+                for (let i = 0; i < lats.length; i += 1) {
+                    p_.push([parseInt(lats[i]), parseInt(longs[i])]);
+                }
+                p.push(p_);
+            }
+            {#p = new Set(p);#}
+            console.log(p);
+        }
         function render_all_lines(mm, parse = true) {
             if (parse) {
                 mm = JSON.parse(mm);
