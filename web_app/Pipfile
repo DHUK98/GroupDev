@@ -12,6 +12,7 @@ request = "*"
 scipy = "*"
 scikit-learn = "*"
 matplotlib = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.6"

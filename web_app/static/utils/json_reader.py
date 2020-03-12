@@ -16,7 +16,12 @@ def json_from_netcdf_file(filepath):
     """
 
     f = Dataset(filepath, "r", format="NETCDF4")
-    print(f.dimensions)
+    # # print(f.dimensions)
+    # vars_ = []
+    # for name, variable in f.variables.items():
+    #     for attrname in variable.ncattrs():
+    #         if attrname == "standard_name":
+    #             vars_.append(getattr(variable, attrname))
 
     # # read in variables
     mt = f.variables['time']
@@ -66,4 +71,5 @@ if __name__ == "__main__":
 
     print(data)
 
+# json_from_netcdf_file("../stations/CGR/UKESM_1degree_CapeGrim_100m_2012_hourly.nc")
 
