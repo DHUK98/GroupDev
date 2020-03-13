@@ -47,7 +47,15 @@ def get_median_colours(trajs, labels, field):
 def avg_to_hsl(n_avg):
 
     # for red - green-ish
-    n_avg = n_avg * 100
+    # n_avg = n_avg * 100
+
+    # red to turquoise
+    n_avg = n_avg * 170
+
+    # full spectrum
+    # n_avg = n_avg * 359
+
+
 
     # hue, set saturation=100 and lightness=50 in CSS
     return n_avg
