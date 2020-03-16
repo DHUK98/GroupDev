@@ -135,6 +135,8 @@ def zip_netcdf():
 
 
 def applyMask(mask, d):
+    print("Applying Mask")
+    print("Mask: " + str(mask))
     d = json.loads(json.dumps(d))
 
     lat = d["lat"]
@@ -142,6 +144,22 @@ def applyMask(mask, d):
     time = d["time"]
     height = d["height"]
     pressure = d["pressure"]
+    
+    all_1s = all(elem == 1 for elem in mask)
+    if all_1s:
+        print("They are all 1 so returning early")
+
+        out = {"lat": lat,
+               "lon": lon,
+               "time": time,
+               "height": height,
+               "pressure": pressure}
+
+        return out
+
+
+
+
 
     n_lat = []
     n_lon = []
