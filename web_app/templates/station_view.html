@@ -110,42 +110,35 @@
                         <P></P>
                     </div>
 
-                </div>
-                <p></p>
-                <div class="w3-card-4" id="dbscan_div">
+                <P></P>
+                <div class="w3-card-4" id="cluster_div">
                     <header class="w3-container w3-teal collapsible">
-                        <h2>DBScan Cluster</h2>
-                    </header>
-                    <div class="w3-container w3-white content">
-                        <P>
-                            <!--
-                            Old K-means style menu
-                            <label>Number of clusters</label>
-                            <input class="w3-input" id="number_of_cluster" type="number" value=0>
-                             -->
-
-                            <label>Minimum Samples for Cluster</label>
-                            <input class="w3-input" id="minimum_samples_for_cluster" type="number" value="10">
-
-                            <label>EPS Value (neighbourhood point radius)</label>
-                            <input class="w3-input" id="eps_value" type="number" value="50">
-                        <P>
-                            <input class="w3-button w3-teal" id="add_cluster" type="button" value="Add">
-                    </div>
-                    <p></p>
-                    <div class="w3-card-4" id="kmeans_div">
-                        <header class="w3-container w3-teal collapsible">
-                            <h2>K-Means Cluster</h2>
-                        </header>
-                        <div class="w3-container w3-white content">
-                            <P>
-                                <label>Number of clusters</label>
-                                <input class="w3-input" id="number_of_cluster" type="number" value=0>
-                            <P>
-                                <input class="w3-button w3-teal" id="add_cluster_kmeans" type="button" value="Add">
+                        <div class="w3-row-padding">
+                            <div class="w3-half">
+                                <h2>Cluster</h2>
+                            </div>
+                            <div class="w3-half">
+                                <P></P>
+                                <select id="cluster_option" class="w3-select" name="cluster_select" selected="kmeans" onchange=chooseClusterType()>
+                                    <option value="kmeans">KMeans</option>
+                                    <option value="dbscan">DBSCAN</option>
+                                    <option value="dbscan_kmeans">DBSCAN and KMeans</option>
+                                </select>
+                            </div>
                         </div>
-
+                    </header>
+                    <div id="cluster_container" class="w3-container w3-white content" onload="chooseClusterType()">
+                        <P>
+                        <div id="cluster_inputs">
+                            <label>Cluster number</label>
+                            <input class="w3-input" id="input_k" type="text">
+                        </div>
+                        <P>
+                        <input class="w3-button w3-teal" id="add_cluster" type="button" value="Add">
+                        <P></P>
                     </div>
+                </div>
+
                     <P></P>
                     <ul class="w3-ul w3-border w3-white" id="stack">
 
@@ -496,6 +489,69 @@
             g.selectAll('.arc').attr("transform", "translate(" + ll[0] * d3.event.transform.k + "," + ll[1] * d3.event.transform.k + ")" + d3.event.transform);
         }
 
+        function downloadObjectAsJson(exportObj, exportName) {
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
+    let downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", exportName + ".json");
+    document.body.appendChild(downloadAnchorNode); // required for firefox
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
+
+
+function chooseClusterType(){
+	var cluster_type = document.getElementById("cluster_option").value;
+	var container = document.getElementById("cluster_inputs");
+	while (container.hasChildNodes()) {
+    container.removeChild(container.lastChild);
+	}
+    container.appendChild(document.createElement("br"));
+  if(cluster_type=="kmeans"){
+    container.appendChild(document.createTextNode("Cluster number:"));
+    var input_k = document.createElement("input");
+    input_k.type = "text";
+    input_k.className = "w3-input";
+    container.appendChild(input_k);
+    container.appendChild(document.createElement("br"));
+  } else if(cluster_type=="dbscan"){
+    container.appendChild(document.createTextNode("Minimum Samples for cluster"));
+    var input_minsamp = document.createElement("input");
+    input_minsamp.type = "text";
+    input_minsamp.className = "w3-input";
+    container.appendChild(input_minsamp);
+    container.appendChild(document.createElement("br"));
+
+    container.appendChild(document.createTextNode("EPS Value (neighbourhood point radius)"));
+    var input_eps = document.createElement("input");
+    input_eps.type = "text";
+    input_eps.className = "w3-input";
+    container.appendChild(input_eps);
+    container.appendChild(document.createElement("br"));
+  } else if(cluster_type=="dbscan_kmeans"){
+  	container.appendChild(document.createTextNode("Cluster number:"));
+    var input_k = document.createElement("input");
+    input_k.type = "text";
+    input_k.className = "w3-input";
+    container.appendChild(input_k);
+    container.appendChild(document.createElement("br"));
+
+    container.appendChild(document.createTextNode("Minimum Samples for cluster"));
+    var input_minsamp = document.createElement("input");
+    input_minsamp.type = "text";
+    input_minsamp.className = "w3-input";
+    container.appendChild(input_minsamp);
+    container.appendChild(document.createElement("br"));
+
+    container.appendChild(document.createTextNode("EPS Value (neighbourhood point radius)"));
+    var input_eps = document.createElement("input");
+    input_eps.type = "text";
+    input_eps.className = "w3-input";
+    container.appendChild(input_eps);
+    container.appendChild(document.createElement("br"));
+
+  }
+}
 
     </script>
 {% endblock %}

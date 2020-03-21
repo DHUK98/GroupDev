@@ -3,7 +3,7 @@ import json
 from flask import jsonify
 import os
 from collections import Counter
-from static.utils.cluster import linkage_request, cluster_request, cluster_request_dbscan, dbscan_kmeans
+from static.utils.cluster import linkage_request, cluster_request
 from static.utils.json_to_netcdf import json_to_netcdf
 from static.utils.zip_netcdf import zip_netcdf_exports, delete_nc_exports
 from static.utils.median_calc import get_median_colours

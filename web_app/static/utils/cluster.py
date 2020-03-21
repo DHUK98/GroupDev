@@ -11,7 +11,7 @@ import numpy as np
 from collections import Counter
 
 '''
-General utility functions
+Functions for all clustering of data
 '''
 
 
@@ -28,6 +28,7 @@ def get_trajectory_array(dimensionArray, n):
 
 
 def toVector(dimensionArray1, dimensionArray2):
+    # Convert arrays of data for 2 dimensions into single clusterable vector
     data = []
 
     for i in range(len(dimensionArray1)):
@@ -71,6 +72,8 @@ def open_linkage():
 
 
 def centroid(cluster):
+    # Function to calculate the centroid (mean) of a cluster
+
     # Check for empty cluster
     if len(cluster[0]) == 0:
         return []
@@ -90,7 +93,7 @@ def centroid(cluster):
 
 
 def get_centroids(X, labels):
-    # banter
+    # Find centroids of all clustered data
     centroids = [[], []]
 
     N = max(labels)
@@ -109,42 +112,13 @@ def get_centroids(X, labels):
 
     return centroids
 
-
-# separate request function for dbscan
-def cluster_request_dbscan(json_msg, min_samples=70, eps=50):
-
-    # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon), and
-    # number of clusters
-    # Read json message
-    loaded = json.loads(json_msg)
-
-    dim1 = loaded.get('lat')
-    dim2 = loaded.get('lon')
-
-    X = toVector(dim1, dim2)
-    model = DBSCAN(min_samples=min_samples, eps=eps).fit(X)
-    labels = model.labels_
-
-    # Convert to same labelling system as scipy: 1 -> N not 0 -> N-1
-    for i in range(len(labels)):
-        labels[i] += 1
-
-    centroids = get_centroids(X, labels)
-
-    json_dict = {'labels': labels.tolist(),
-                 'centroids': centroids
-                 }
-    json_msg = json.dumps(json_dict)
-
-    return json_msg
-
-
-# Handle cluster requests except hierarchical
+# Function to handle both Kmeans and DBSCAN clustering, with potential to expand
 def cluster_request(json_msg, cluster_type, cluster_no=5, min_samples=70, eps=50):
     # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon), and
     # number of clusters
+
     print("Cluster type is " + str(cluster_type))
-    print(type(cluster_type))
+
     # Read json message
     loaded = json.loads(json_msg)
 
@@ -158,12 +132,24 @@ def cluster_request(json_msg, cluster_type, cluster_no=5, min_samples=70, eps=50
             model = KMeans(n_clusters=int(cluster_no)).fit(X)
             # labels = model.labels_
 
-        elif cluster_type == 'spectral':
-            model = SpectralClustering(n_clusters=int(cluster_no)).fit(X)
-            # labels = model.labels_
-
         elif cluster_type == 'dbscan':
             model = DBSCAN(min_samples=min_samples, eps=eps).fit(X)
+
+        elif cluster_type == 'dbscan_kmeans':
+            model_dbscan = DBSCAN(min_samples=min_samples, eps=eps).fit(X)
+
+            # Filter out trajectories that were judged as noise by DBSCAN
+            X_noise_free = []
+            noisy = []
+
+            for i in range(len(X)):
+                if model_dbscan.labels_[i] != -1:
+                    X_noise_free.append(X[i])
+                else:
+                    noisy.append(X[i])
+
+            # Cluster remaining data using kmeans
+            model= KMeans(n_clusters=int(cluster_no)).fit(X_noise_free)
 
         labels = model.labels_
 
@@ -192,75 +178,7 @@ def cluster_request(json_msg, cluster_type, cluster_no=5, min_samples=70, eps=50
         return json_msg
 
 
-# Eliminate noisy trajectories using DBSCAN then
-def dbscan_kmeans(json_msg, cluster_no, min_samples, eps):
-    # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon), and
-    # number of clusters
-    # Read json message
-    loaded = json.loads(json_msg)
-
-    dim1 = loaded.get('lat')
-    dim2 = loaded.get('lon')
-
-    X = toVector(dim1, dim2)
-
-    model_dbscan = DBSCAN(min_samples=min_samples, eps=eps).fit(X)
-
-    # Filter out trajectories that were judged as noise by DBSCAN
-    X_noise_free = []
-    noisy = []
-
-    for i in range(len(X)):
-        if model_dbscan.labels_[i] != -1:
-            X_noise_free.append(X[i])
-        else:
-            noisy.append(X[i])
-
-    print(len(noisy))
-
-    model_kmeans = KMeans(n_clusters=int(cluster_no)).fit(X_noise_free)
-
-    centroids_kmeans = get_centroids(X, model_kmeans.labels_)
-
-    json_dict = {'labels': model_kmeans.labels_.tolist(),
-                 'centroids': centroids_kmeans
-                 }
-
-    json_msg = json.dumps(json_dict)
-
-    return json_msg
-
-# Function to handle request for kmeans clustering of a sector
-def kmeans_request(json_msg, cluster_no):
-    # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon), and
-    # number of clusters
-
-    # Read json message
-    loaded = json.loads(json_msg)
-
-    dim1 = loaded.get('lat')
-    dim2 = loaded.get('lon')
-
-    X = toVector(dim1, dim2)
-
-    model = KMeans(n_clusters=int(cluster_no)).fit(X)
-
-    labels = model.labels_
-
-    # Convert to same labelling system as scipy: 1 -> N not 0 -> N-1
-    for i in range(len(labels)):
-        labels[i] += 1
-
-    centroids = get_centroids(X, labels)
-
-    json_dict = {'labels': labels.tolist(),
-                 'centroids': centroids
-                 }
-    json_msg = json.dumps(json_dict)
-
-    return json_msg
-
-
+# UNUSED HIERARCHICAL FUNCTION
 def linkage_request(json_data):
     # Take input of json message containing nested array containing data for dimension 1,
     # nested array containing data for dimension 2 (usually lat and lon)
@@ -279,7 +197,7 @@ def linkage_request(json_data):
 
     return json_msg
 
-
+# UNUSED HIERARCHICAL FUNCTION
 def h_cluster_request(json_data, json_Z, cluster_no):
     # Take input of json message containing linkage matrix Z and no. of clusters
 
