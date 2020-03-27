@@ -13,6 +13,10 @@ scipy = "*"
 scikit-learn = "*"
 matplotlib = "*"
 gunicorn = "*"
+pyproj = "*"
+ijson = "*"
+flask-session = "*"
+ujson = "*"
 
 [requires]
 python_version = "3.6"

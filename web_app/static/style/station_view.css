@@ -26,6 +26,15 @@
 
 }
 
+.map svg, .map canvas {
+    position: absolute;
+    top: 0;
+}
+
+.map canvas {
+    pointer-events: none;
+}
+
 .input {
     background-color: #555;
     grid-row: 2;
@@ -77,28 +86,34 @@
     stroke: #333;
 }
 
-.collapsible{
+.collapsible {
     cursor: pointer
 }
 
 /* Style the collapsible content. Note: hidden by default */
 .content {
-  padding: 0 18px;
-  background-color: white;
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.2s ease-out;
+    padding: 0 18px;
+    background-color: white;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+}
+
+.stack_item {
+    transition: background-color 0.5s ease;
+    cursor: pointer
+}
+
+.stack_item:hover {
+    background: #aa3839;
+}
+
+.stack_item:hover > * {
+    color: #aa3839;
+}
+
+.stack_item:hover > img {
+    visibility: visible;
 }
 
 
-/*.collapsible:after {*/
-/*  content: '\02795'; !* Unicode character for "plus" sign (+) *!*/
-/*  font-size: 13px;*/
-/*  color: white;*/
-/*  float: right;*/
-/*  margin-left: 5px;*/
-/*}*/
-
-/*.active:after {*/
-/*  content: "\2796"; !* Unicode character for "minus" sign (-) *!*/
-/*}*/

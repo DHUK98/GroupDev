@@ -25,8 +25,22 @@
 
         <div class="input">
             <div class="scroll">
-                <div class="w3-card-4 data_input">
 
+                <div class="w3-card-4">
+                    <header class="w3-container w3-blue-grey ">
+                        <h2>Process stack</h2>
+                    </header>
+                    <div id="stack_list">
+                        <ul class="w3-ul w3-border w3-white list"></ul>
+                    </div>
+                </div>
+                <p></p>
+
+                <input class="w3-button w3-blue-grey" id="calculate" type="button" value="Calculate">
+                <hr>
+                <p></p>
+
+                <div class="w3-card-4 data_input">
                     <header class="w3-container w3-teal collapsible">
                         <h2>Data</h2>
                     </header>
@@ -41,6 +55,8 @@
                         {% endfor %}
                     </div>
                 </div>
+
+
                 <P></P>
                 <div class="w3-card-4 render_all">
                     <header class="w3-container w3-teal collapsible">
@@ -55,6 +71,7 @@
                         </p>
                     </div>
                 </div>
+
                 <P></P>
                 <div class="w3-card-4">
                     <header class="w3-container w3-teal collapsible">
@@ -63,13 +80,14 @@
                     <div class="w3-container w3-white content">
                         <P>
                             <label>Start angle</label>
-                            <input class="w3-input" id="start_angle_val" type="number" value=150>
+                            <input class="w3-input" id="start_angle_val" type="number" min="-360" max="360" value=150>
                         <P>
                             <label>End angle</label>
                             <input class="w3-input" id="end_angle_val" type="number" value=270>
                         <P>
-                            <label>Distance</label>
-                            <input class="w3-input" id="sec_dist_val" type="number" value=50>
+                            <label id="distance_label">Distance: 10,000km</label>
+                            <input class="w3-input" id="sec_dist_val" type="range" min="0" max="20000" value=10000
+                                   oninput="updateRangeSlider(this.value);" onchange="updateRangeSlider(this.value);">
                         <P>
                             <label>Threshold (time outside sector)</label>
                             <input class="w3-input" id="sec_threshold_val" type="number" value=5>
@@ -86,16 +104,14 @@
                             <div class="w3-half">
                                 <h2>Filter</h2>
                             </div>
-                            <div class="w3-half">
-                                <P></P>
-                                <select id="filter_option" class="w3-select" name="option">
-                                    <option value="height">Height</option>
-                                    <option value="pressure">Pressure</option>
-                                </select>
-                            </div>
                         </div>
                     </header>
                     <div class="w3-container w3-white content">
+                        <P></P>
+                        <select id="filter_option" class="w3-select" name="option">
+                            <option value="height">Height</option>
+                            <option value="pressure">Pressure</option>
+                        </select>
                         <P></P>
                         <label>Min</label>
                         <input class="w3-input" id="filter_min_val" type="number" value=0>
@@ -112,61 +128,47 @@
 
                 </div>
                 <p></p>
-                <div class="w3-card-4" id="dbscan_div">
+                <div class="w3-card-4" id="cluster_div">
                     <header class="w3-container w3-teal collapsible">
-                        <h2>DBScan Cluster</h2>
+                        <div class="w3-row-padding">
+                            <div class="w3-half">
+                                <h2>Cluster</h2>
+                            </div>
+                        </div>
                     </header>
-                    <div class="w3-container w3-white content">
+                    <div id="cluster_container" class="w3-container w3-white content">
+                        <P></P>
+                        <label>Clustering method</label>
+                        <select id="cluster_option" class="w3-select" name="cluster_select" selected="kmeans"
+                                onchange='chooseClusterType()'>
+                            <option value="kmeans">KMeans</option>
+                            <option value="dbscan">DBSCAN</option>
+                            <option value="dbscan_kmeans">DBSCAN and KMeans</option>
+                        </select>
                         <P>
-                            <!--
-                            Old K-means style menu
-                            <label>Number of clusters</label>
-                            <input class="w3-input" id="number_of_cluster" type="number" value=0>
-                             -->
-
-                            <label>Minimum Samples for Cluster</label>
-                            <input class="w3-input" id="minimum_samples_for_cluster" type="number" value="10">
-
-                            <label>EPS Value (neighbourhood point radius)</label>
-                            <input class="w3-input" id="eps_value" type="number" value="50">
+                        <div id="cluster_inputs">
+                            <label>Cluster number</label>
+                            <input class="w3-input" id="input_k" type="text">
+                        </div>
                         <P>
                             <input class="w3-button w3-teal" id="add_cluster" type="button" value="Add">
+                        <P></P>
                     </div>
-                    <p></p>
-                    <div class="w3-card-4" id="kmeans_div">
-                        <header class="w3-container w3-teal collapsible">
-                            <h2>K-Means Cluster</h2>
-                        </header>
-                        <div class="w3-container w3-white content">
-                            <P>
-                                <label>Number of clusters</label>
-                                <input class="w3-input" id="number_of_cluster" type="number" value=0>
-                            <P>
-                                <input class="w3-button w3-teal" id="add_cluster_kmeans" type="button" value="Add">
-                        </div>
-
-                    </div>
-                    <P></P>
-                    <ul class="w3-ul w3-border w3-white" id="stack">
-
-                    </ul>
-                    <p></p>
-                    <input class="w3-button w3-teal" id="calculate" type="button" value="Calculate">
-
-
                 </div>
             </div>
         </div>
 
+
         <div class="output">
             <div class="scroll">
                 <a id="export_data_button" class="w3-button w3-teal">Export Output</a>
-                <div id="debugDiv"></div>
             </div>
         </div>
 
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
     <script src="{{ url_for('static', filename='javascript/station_utils.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascript/List.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/station_view_input.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/sector.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/data_utils.js') }}"></script>
@@ -177,7 +179,6 @@
 
         var coll = document.getElementsByClassName("collapsible");
         var i;
-
         for (i = 0; i < coll.length; i++) {
             coll[i].addEventListener("click", function () {
                 this.classList.toggle("active");
@@ -203,9 +204,14 @@
 
 
         // Latitude and longitude of the station
+        let proc_stack = new process_stack.stack();
+
         let lat = {{ lat }};
         let lng = {{ lng }};
-        let pp = "{{ url_for('static', filename='stations/CGR/ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json') }}";
+        {#let pp = "{{ url_for('static', filename='stations/CGR/ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json') }}";#}
+        console.log(lat);
+        console.log(lng);
+
 
         let lats = [], longs = [];
         let p = [];
@@ -213,38 +219,33 @@
         let trans = [0, 0, 1];
         let data = null;
 
-        console.log("test", file_ns);
-        let data_manager = new data_utils.data_manager(iid, file_ns);
-        data_manager.load(0).then(function () {
-            console.log(data_manager.data);
-            data = data_manager.data[0];
-            renderMap();
 
-            let s = new process_stack.stack();
-            let sec_test = new process_stack.sector(150, 270, 250, 5);
-            let fil_test = new process_stack.filter("height", 0, 1000, 5);
-            let clu_test = new process_stack.cluster();
-            s.add(sec_test);
-            s.add(fil_test);
-            s.add(clu_test);
-            console.log("TESTING STACK");
-            console.log(s.calculate());
-
-        });
-
-        const projection_ = d3.geoAzimuthalEqualArea().rotate([-lng, -lat]);
+        const projection_ = d3.geoAzimuthalEquidistant().rotate([-lng, -lat]);
         const path = d3.geoPath().projection(projection_);
         const zoom = d3.zoom().scaleExtent([1, 9]).on('zoom', zoomed);
 
         const svg = d3.select('#svg_map');
         let w = parseInt(svg.style("width"));
+        let h = parseInt(svg.style("height"));
+        const div = d3.select(".map");
+        const canvasLayer = div.append('canvas').attr('id', 'heatmap').attr('width', w).attr('height', h);
+        let canvas = canvasLayer.node(),
+            context = canvas.getContext("2d");
         const g = svg.append('g').call(d3.zoom().on("zoom", function () {
             svg.attr("transform", d3.event.transform)
         }));
 
-        d3.select('g').attr('transform', 'translate(-' + (w / 2) + ' 0)scale(' + (w / 600) + ')');
         svg.style("width", "100%");
         g.call(zoom);
+
+        console.log("test", file_ns);
+        {#let data_manager = new data_utils.data_manager(iid, file_ns);#}
+        {#data_manager.load(1).then(function () {#}
+        {#    console.log(data_manager.data);#}
+        {#    data = data_manager.data[0];#}
+        renderMap();
+
+        //});
 
         function renderMap() {
             d3.json("{{ url_for('static', filename='world-110m2.json') }}")
@@ -263,16 +264,16 @@
                         .datum(topojson.mesh(world, world.objects.countries, (a, b) => a !== b))
                         .attr('class', 'boundary')
                         .attr('d', path);
-
                     g.append("circle")
                         .attr("cx", projection_([lng, lat])[0])
                         .attr("cy", projection_([lng, lat])[1])
                         .attr("r", 2.5)
                         .style("fill", "white");
                 });
+
         }
 
-        let ll = projection_([lng, lat]);
+        let center_point = projection_([lng, lat]);
 
         function renderSector(start, end, dist) {
             g.select(".arc").remove();
@@ -284,7 +285,7 @@
             g.append("path")
                 .attr("class", "arc")
                 .attr("d", arc)
-                .attr("transform", "translate(" + ll[0] * trans[2] + "," + ll[1] * trans[2] + ")" + "translate(" + trans[0] + "," + trans[1] + ")" + "scale(" + trans[2] + ")")
+                .attr("transform", "translate(" + center_point[0] * trans[2] + "," + center_point[1] * trans[2] + ")" + "translate(" + trans[0] + "," + trans[1] + ")" + "scale(" + trans[2] + ")")
                 .attr("fill-opacity", "0.3")
                 .style("fill", "#8b0000");
         }
@@ -302,8 +303,6 @@
         function renderLines(mm, weight, colours) {
             g.selectAll(".traj").remove();
             let lat_lng = [mm["lat"], mm["lon"]];
-            console.log("latlng");
-            console.log(lat_lng);
             let p = [];
 
             // for each cluster
@@ -319,12 +318,10 @@
                 p.push(p_);
             }
 
-            console.log(p);
             let m = Math.max(...weight);
             for (let i = 0; i < lat_lng[0].length; i++) {
                 let w = weight[i];
                 let hsl_string = "".concat("hsl(", colours[i], ", 50%, 50%)");
-                console.log(hsl_string);
                 g.append("path")
                     .attr("class", "traj")
                     .attr("d", lineFunction(p[i]))
@@ -336,72 +333,14 @@
             }
         }
 
-
-        function new_renderLines(d) {
-            g.selectAll(".traj").remove(); // Remove all old trajs
-            let lat_lng = [mm["lat"], mm["lon"]];
-            let p = [];
-
-            // for each cluster
-            for (let l = 0; l < lat_lng[0].length; l++) {
-                p_ = [];
-                lats = lat_lng[0][l];
-                longs = lat_lng[1][l];
-
-                // for each traj in that cluster
-                for (let i = 0; i < lats.length; i++) {
-                    p_.push([lats[i], longs[i]]);
-                }
-                p.push(p_);
-            }
-
-            console.log(p);
-            let m = Math.max(...weight);
-            for (let i = 0; i < lat_lng[0].length; i++) {
-                let w = weight[i];
-                let hsl_string = "".concat("hsl(", colours[i], ", 50%, 50%)");
-                console.log(hsl_string);
-                g.append("path")
-                    .attr("class", "traj")
-                    .attr("d", lineFunction(p[i]))
-                    .attr("stroke", hsl_string)
-                    .attr("opacity", 0.7)
-                    .attr("stroke-width", (w / m) * 2.5)
-                    .attr("fill", "none")
-                    .attr("transform", "translate(" + trans[0] + "," + trans[1] + ")" + "scale(" + trans[2] + ")");
-            }
-        }
-
-        function render_all_lines2(mm) {
-
-            let lat_lng = [mm["lat"], mm["lon"]];
-            let p = [];
-            for (let l = 0; l < lat_lng[0].length; l += 100) {
-                lats = lat_lng[0][l];
-                longs = lat_lng[1][l];
-
-                // steps in 10
-                for (let i = 0; i < lats.length; i += 1) {
-                    p_.push([parseInt(lats[i]), parseInt(longs[i])]);
-                }
-                p.push(p_);
-            }
-            {#p = new Set(p);#}
-            console.log(p);
-        }
-
-        function render_all_lines(mm, parse = true) {
+        function render_all_lines(mm, parse = false) {
             if (parse) {
                 mm = JSON.parse(mm);
             }
 
             g.selectAll(".traj").remove();
             let lat_lng = [mm["lat"], mm["lon"]];
-            console.log("LATLNG");
-            console.log(lat_lng);
 
-            // console.log(lat_lng);
-            // steps in 10
             let p = [];
             for (let l = 0; l < lat_lng[0].length; l += 1) {
                 p_ = [];
@@ -413,8 +352,6 @@
                 }
                 p.push(p_);
             }
-            console.log("p");
-            console.log(p);
             // let m = Math.max(...weight);
             for (let i = 0; i < lat_lng[0].length; i++) {
                 // let w = weight[i];
@@ -428,10 +365,7 @@
                     .attr("stroke-width", 0.5)
                     .attr("fill", "none")
                     .attr("opacity", 0.2)
-                    .attr("transform", "translate(" + trans[0] + "," + trans[1] + ")" + "scale(" + trans[2] + ")")
-                    .on("click", function () {
-                        console.log(d3.select(this).attr("id"));
-                    });
+                    .attr("transform", "translate(" + trans[0] + "," + trans[1] + ")" + "scale(" + trans[2] + ")");
             }
 
         }
@@ -443,7 +377,14 @@
                 .attr('transform', d3.event.transform);
             g.selectAll('circle')
                 .attr('transform', d3.event.transform);
-            g.selectAll('.arc').attr("transform", "translate(" + ll[0] * d3.event.transform.k + "," + ll[1] * d3.event.transform.k + ")" + d3.event.transform);
+            g.selectAll('.arc').attr("transform", "translate(" + center_point[0] * d3.event.transform.k + "," + center_point[1] * d3.event.transform.k + ")" + d3.event.transform);
+            {#context.save();#}
+            {#context.clearRect(0, 0, w, h);#}
+            {#context.translate(d3.event.transform.x, d3.event.transform.y);#}
+            {#context.scale(d3.event.transform.k, d3.event.transform.k);#}
+            {#draw_heat();#}
+            {#context.fill();#}
+            {#context.restore();#}
         }
 
 

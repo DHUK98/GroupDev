@@ -1,152 +1,102 @@
 let el = document.getElementById('stack');
-
-document.getElementById("add_sector").onclick = function () {
-    let z = document.createElement('li'); // is a node
-    z.setAttribute("id", "stack_sector");
-    z.innerHTML = "Sector";
-    let stack = document.getElementById("stack");
-    let element = $('#stack #stack_sector');
-    if (element.length > 0) {
-    } else {
-        let s_a = document.getElementById("start_angle_val").value;
-        let e_a = document.getElementById("end_angle_val").value;
-        let d_s = document.getElementById("sec_dist_val").value * 2.5;
-        let t_h = document.getElementById("sec_threshold_val").value;
-
-        //Check inputs are of right type
-        if(s_a > 0 && e_a > 0  && d_s > 0 && t_h > 0 && t_h%1 === 0){
-           let url = "/sector/" + iid +
-            "/" + s_a + "/" + e_a +
-            "/" + d_s + "/" + t_h;
-            if (url.includes("//"))
-                return;
-            renderSector(s_a, e_a, d_s);
-
-            stack.appendChild(z);
-            stack_f.push([function () {
-                return u_sector(data, s_a, e_a, d_s, t_h);
-            }, 1]);
-            stack_f.sort(sortFunction);
-        } else{
-            let alert_msg = "";
-            if(s_a <= 0){
-                alert_msg = alert_msg.concat("Please enter a positive value for the start angle.\n")
-            }
-            if(e_a <= 0){
-                alert_msg = alert_msg.concat("Please enter a positive value for the end angle.\n")
-            }
-            if(d_s <= 0){
-                alert_msg = alert_msg.concat("Please enter a positive value for the distance.\n")
-            }
-            if(!(t_h > 0 && t_h%1 === 0)){
-                alert_msg = alert_msg.concat("Please enter a positive integer for the threshold.\n")
-            }
-            if(alert_msg === ""){
-                alert_msg = alert_msg.concat("Unexpected input.");
-        }
-        alert(alert_msg);
-        }
-    }
+let options = {
+    valueNames: ['id', 'type', 'info'],
+    item: '<li class="stack_item"><p class="id" style="display:none;"><h3 class="type"></h3><p class="info"></p>'
 };
 
-
-// CLUSTERING KMEANS
-
-document.getElementById("add_cluster_kmeans").onclick = function () {
-    let z = document.createElement('li'); // is a node
-    z.setAttribute("id", "zstack_cluster");
+let stackList = new List("stack_list", options);
 
 
-    //  Assign variable for cluster number (user input)
-    let c_nu = document.getElementById("number_of_cluster").value;
-
-    //  Check input is of correct type
-    if (c_nu > 0 && c_nu%1 === 0) {
-        z.innerHTML = "K-means Cluster (" + c_nu + ")";
-        let stack = document.getElementById("stack");
-        let element = $('#stack #zstack_cluster');
-
-        if (!element.length > 0) {
-            stack.appendChild(z);
-
-            stack_f.push([function () {
-                return u_cluster2_kmeans(c_nu);
-            }, 100]);
-            stack_f.sort(sortFunction)
-        }
-    //  Alert user to incorrect type
-    } else {
-        alert("Please enter a positive integer for the cluster number.");
+function update_stack_html() {
+    stackList.clear();
+    for (let i = 0; i < proc_stack.function_array.length; i++) {
+        stackList.add({
+            id: proc_stack.function_array[i].id,
+            type: proc_stack.function_array[i].name(),
+            info: proc_stack.function_array[i].toString(),
+        });
     }
+    let stack_items = $('.stack_item');
+
+    stack_items.click(function () {
+        let itemId = $(this).closest('li').find('.id').text();
+        stackList.remove('id', itemId);
+        $(this).css('cursor', 'pointer');
+        proc_stack.remove(parseInt(itemId));
+    });
 }
 
+document.getElementById("add_sector").onclick = function () {
+    let s_a = $('#start_angle_val').val(),
+        e_a = $('#end_angle_val').val(),
+        d_s = $('#sec_dist_val').val() * 1000,
+        t_h = $('#sec_threshold_val').val();
 
-// CLUSTERING DBSCAN
+    if (d_s > 0 && t_h >= 0 && t_h % 1 === 0) {
+        let url = "/sector/" + iid +
+            "/" + s_a + "/" + e_a +
+            "/" + d_s + "/" + t_h;
+        if (url.includes("//"))
+            return;
+        renderSector(s_a, e_a, d_s / (20000 * 1000) * 250);
 
-document.getElementById("add_cluster").onclick = function () {
-    let z = document.createElement('li'); // is a node
-    z.setAttribute("id", "zstack_cluster");
-
-    // REDUNDANT LINE IF WE'RE USING DBSCAN
-    // let c_nu = document.getElementById("number_of_cluster").value;
-
-    //  Assign variables for eps (max distance between 2 points to be considered in same cluster)
-    //  and min cluster size (user input)
-    let min_samp = document.getElementById("minimum_samples_for_cluster").value;
-    let eps_val = document.getElementById("eps_value").value;
-
-    //Check inputs are of correct type
-    if(min_samp > 0 && min_samp%1 === 0 && eps_val > 0) {
-        z.innerHTML = "DBScan Cluster (" + min_samp + ", " + eps_val + ")";
-        let stack = document.getElementById("stack");
-        let element = $('#stack #zstack_cluster');
-
-        if (!element.length > 0) {
-            stack.appendChild(z);
-
-            stack_f.push([function () {
-                return u_cluster2_dbscan(min_samp, eps_val);
-            }, 100]);
-            stack_f.sort(sortFunction)
-        }
+        let sec_test = new process_stack.sector(s_a, e_a, d_s, t_h);
+        proc_stack.add(sec_test);
+        update_stack_html();
     } else {
         let alert_msg = "";
-        if (min_samp <= 0 || min_samp%1 !== 0) {
-            alert_msg = alert_msg.concat("Please enter a positive integer for Minimum Samples for Cluster\n");
+        if (d_s <= 0) {
+            alert_msg = alert_msg.concat("Please enter a positive value for the distance.\n")
         }
-        if (eps_val <= 0) {
-            alert_msg = alert_msg.concat("Please enter a positive value for the EPS Value.\n");
+        if (!(t_h >= 0 && t_h % 1 === 0)) {
+            alert_msg = alert_msg.concat("Please enter a positive integer for the threshold.\n")
         }
-        if(alert_msg === ""){
+        if (alert_msg === "") {
             alert_msg = alert_msg.concat("Unexpected input.");
         }
         alert(alert_msg);
     }
 };
 
+
+// CLUSTERING KMEANS
+//
 // document.getElementById("add_cluster_kmeans").onclick = function () {
 //     let z = document.createElement('li'); // is a node
-//     z.setAttribute("id", "zstack_cluster_2");
+//     z.setAttribute("id", "zstack_cluster");
 //
+//
+//     //  Assign variable for cluster number (user input)
 //     let c_nu = document.getElementById("number_of_cluster").value;
 //
-//     // let min_samp = document.getElementById("minimum_samples_for_cluster").value;
-//     // let eps_val = document.getElementById("eps_value").value;
-//
-//     z.innerHTML = "Cluster (" + c_nu + ")";
-//     let stack = document.getElementById("stack");
-//     let element = $('#stack #zstack_cluster');
-//
-//     if (!element.length > 0) {
-//         stack.appendChild(z)
-// ;
-//         stack_f.push([function () {
-//             return u_cluster2_dbscan(c_nu);
-//         }, 100]);
-//         stack_f.sort(sortFunction)
+//     //  Check input is of correct type
+//     if (c_nu > 0 && c_nu % 1 === 0) {
+//         let clu_test = new process_stack.k_means_cluster(c_nu);
+//         proc_stack.add(clu_test);
+//         update_stack_gui();
+//         //  Alert user to incorrect type
+//     } else {
+//         alert("Please enter a positive integer for the cluster number.");
 //     }
 // };
 
+
+// CLUSTERING DBSCAN
+
+document.getElementById("add_cluster").onclick = function () {
+    let cluster_type = document.getElementById("cluster_option").value;
+    if (cluster_type === "kmeans") {
+        let c_nu = document.getElementById("input_k").value;
+        let clu_test = new process_stack.k_means_cluster(c_nu);
+        proc_stack.add(clu_test);
+    } else if (cluster_type === "dbscan") {
+        let min_samp = document.getElementById("minimum_samples_for_cluster").value;
+        let eps_val = document.getElementById("eps_value").value;
+        let clu_test = new process_stack.k_means_cluster(c_nu);
+        proc_stack.add(clu_test);
+    }
+    update_stack_html();
+};
 
 document.getElementById("add_filter").onclick = function () {
     let z = document.createElement('li'); // is a node
@@ -158,32 +108,23 @@ document.getElementById("add_filter").onclick = function () {
     let min = document.getElementById("filter_min_val").value;
     let thresh = document.getElementById("filter_thresh_val").value;
 
-    //INPUT CHECKING FOR FILTERING WILL DEPEND ON TYPE - ONE TO LOOK AT LATER
 
-    z.innerHTML = "Filter by " + type_f + "<br/><br/>[min/max/thresh : " + min + "/" + max + "/" + thresh + "]";
-    let stack = document.getElementById("stack");
-    let element = $('#stack #stack_filter');
-    stack.appendChild(z);
-    stack_f.push([function () {
-        return u_filter(data, type_f, min, max, thresh);
-    }, 1]);
-    stack_f.sort(sortFunction);
+    proc_stack.add(new process_stack.filter(type_f, min, max, thresh));
+    update_stack_html();
 };
 
 
 document.getElementById("calculate").onclick = function () {
-    localStorage.clear();
-    calculate()
+    proc_stack.calculate();
 };
 
-
-function Delete(currentEl) {
+function Delete(currentEl, name) {
+    proc_stack.remove(name);
     currentEl.parentNode.parentNode.removeChild(currentEl.parentNode);
 }
 
 let download_button = document.getElementById('export_data_button').onclick = function () {
     zip_files();
-    console.log("TEEEEE");
 };
 
 
@@ -200,4 +141,58 @@ function zip_files() {
         },
         data: ""
     });
+}
+
+function chooseClusterType() {
+    let cluster_type = document.getElementById("cluster_option").value;
+    let container = document.getElementById("cluster_inputs");
+    while (container.hasChildNodes()) {
+        container.removeChild(container.lastChild);
+    }
+    container.appendChild(document.createElement("br"));
+    if (cluster_type === "kmeans") {
+        container.appendChild(document.createTextNode("Cluster number:"));
+        let input_k = document.createElement("input");
+        input_k.type = "number";
+        input_k.id = "input_k";
+        input_k.className = "w3-input";
+        container.appendChild(input_k);
+        container.appendChild(document.createElement("br"));
+    } else if (cluster_type === "dbscan" || cluster_type === "dbscan_kmeans") {
+        if (cluster_type === "dbscan_kmeans") {
+            container.appendChild(document.createTextNode("Cluster number:"));
+            let input_k = document.createElement("input");
+            input_k.type = "number";
+            input_k.id = "input_k";
+            input_k.className = "w3-input";
+            container.appendChild(input_k);
+            container.appendChild(document.createElement("br"));
+        }
+        container.appendChild(document.createTextNode("Minimum Samples for cluster"));
+        let input_minsamp = document.createElement("input");
+        input_minsamp.type = "number";
+        input_minsamp.id = "minimum_samples_for_cluster";
+        input_minsamp.className = "w3-input";
+        container.appendChild(input_minsamp);
+        container.appendChild(document.createElement("br"));
+
+        container.appendChild(document.createTextNode("EPS Value (neighbourhood point radius)"));
+        let input_eps = document.createElement("input");
+        input_eps.type = "number";
+        input_eps.id = "eps_value";
+        input_eps.className = "w3-input";
+        container.appendChild(input_eps);
+        container.appendChild(document.createElement("br"));
+    }
+    let content = document.getElementById('cluster_container');
+    let val = content.scrollHeight + "px";
+    content.style.maxHeight = val;
+}
+
+function updateRangeSlider(val) {
+    document.getElementById('distance_label').innerHTML = "Distance: " + numberWithCommas(val) + "km";
+}
+
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }

@@ -1,20 +1,32 @@
-from flask import Flask, render_template, request
-import json
-from flask import jsonify
+import gzip
 import os
 from collections import Counter
-from static.utils.cluster import linkage_request, cluster_request, cluster_request_dbscan, dbscan_kmeans
-from static.utils.json_to_netcdf import json_to_netcdf
-from static.utils.zip_netcdf import zip_netcdf_exports, delete_nc_exports
-from static.utils.median_calc import get_median_colours
+from os.path import join, dirname, realpath
+
+import ujson as json
+from flask import Flask, render_template, request, session
+from flask import jsonify, make_response
+from flask_session import Session
+
+import utils.sector as sec
+from utils.cluster import cluster_request
+from utils.data_manager import apply_mask, get_data as gd
+from utils.json_to_netcdf import json_to_netcdf
+from utils.median_calc import get_median_colours
+from utils.zip_netcdf import zip_netcdf_exports, delete_nc_exports
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = '\ni-\x9e\xd2\xc2\xf4%\xa8\xa0\x99\xa1\xd5z\x05\xb9\xca\x0fQ\x04\xa0\xe6v\x81'
+app.config['SESSION_TYPE'] = 'filesystem'
+
+Session(app)
+
+STATIC_PATH = join(dirname(realpath(__file__)), 'static')
 
 
 @app.route('/')
 def home():
-    site_root = os.path.realpath(os.path.dirname(__file__))
-    json_url = os.path.join(site_root, 'static', 'stations.json')
+    json_url = join(STATIC_PATH,'stations.json')
     data = json.load(open(json_url))
     return render_template('station_selector.html', stations=data)
 
@@ -22,7 +34,8 @@ def home():
 @app.route('/station/<iid>')
 def station(iid):
     try:
-        path = "static/stations/" + iid + "/"
+        path = join(STATIC_PATH, "stations/" + iid + "/")
+        print(path)
         file_ns = []
         for file in os.listdir(path):
             if file.startswith("info"):
@@ -35,6 +48,8 @@ def station(iid):
             lat = data["lat"]
             lng = data["lon"]
             name = data["Station"]
+        session["data"] = json.dumps(gd(path,1))
+        print("done")
         return render_template('station_view.html', id=iid, lat=lat, lng=lng, name=name, file_ns=file_ns)
     except Exception as e:
         return str(e)
@@ -44,32 +59,13 @@ def station(iid):
 def cluster_dbscan(iid, min_samp, eps_val):
     data = request.get_json()
     filepath = data[1]
-    print("DATA FILEPATH IS ", end="")
-    print(filepath)
 
     mask = json.loads(data[0])
     f_name = data[1]
 
     with open("static/stations/" + iid + "/" + f_name, "r") as f:
         traj_full = json.load(f)
-    traj = applyMask(mask, traj_full)
-
-    print("Sample Traj_Full:")
-    for i in range(5):
-        print(traj_full["lat"][i])
-    # print(traj_full)
-    print("Of length: " + str(len(traj_full["lat"])))
-
-    print("Sample Traj:")
-    for i in range(5):
-        print(traj["lat"][i])
-    # print(traj)
-    print("Of length: " + str(len(traj["lat"])))
-
-    print("There are this many of traj: " + str(len(traj['lat'])))
-
-    # cluster = cluster_request_dbscan(json_msg=json.dumps(traj), min_samples=int(min_samp), eps=float(eps_val))
-    # cluster = dbscan_kmeans(json.dumps(traj), 10, 10, 150)
+    traj = apply_mask(mask, traj_full)
 
     cluster = cluster_request(json.dumps(traj), cluster_type='dbscan', min_samples=int(min_samp), eps=int(eps_val))
     cluster_json = json.loads(cluster)
@@ -90,22 +86,17 @@ def cluster_dbscan(iid, min_samp, eps_val):
 # K-Means
 @app.route('/cluster/req/<iid>/<n>', methods=['POST'])
 def cluster(iid, n):
-    data = request.get_json()
+    mask = request.get_json()
     # print(data)
-    mask = json.loads(data[0])
-    f_name = data[1]
-    # print(data)
-    with open("static/stations/" + iid + "/" + f_name, "r") as f:
-        traj = json.load(f)
-    traj = applyMask(mask, traj)
+    data = json.loads(session.get("data"))
+    data = apply_mask(mask, data)
 
     # K-means request
-    cluster = cluster_request(json.dumps(traj), cluster_type="kmeans", cluster_no=n)
+    cluster = cluster_request(json.dumps(data), cluster_type="kmeans", cluster_no=n)
     cluster_json = json.loads(cluster)
     print(cluster_json["labels"])
 
     print(len(cluster_json["labels"]))
-    print(len(data[0]))
     return jsonify(cluster)
 
 
@@ -118,42 +109,44 @@ def convert_to_netcdf(index_json):
 
 @app.route('/zip_netcdf_exports', methods=['POST'])
 def zip_netcdf():
-    print("ZIP NETCDF APP FUNCTION")
     zip_netcdf_exports()
     delete_nc_exports()
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
-def applyMask(mask, d):
-    d = json.loads(json.dumps(d))
+@app.route('/sector/<id>/<int:i>/<int:start_ang>/<int:end_ang>/<int:dist>/<int:thresh>')
+def sector(id, i, start_ang, end_ang, dist, thresh):
+    return jsonify(sec.sector(id, i, start_ang, end_ang, dist, thresh))
 
-    lat = d["lat"]
-    lon = d["lon"]
-    time = d["time"]
-    height = d["height"]
-    pressure = d["pressure"]
 
-    n_lat = []
-    n_lon = []
-    n_time = []
-    n_height = []
-    n_pressure = []
+@app.route('/filter/<id>/<int:i>/<var>/<int:min>/<int:max>/<int:thresh>')
+def filter(id, i, var, min, max, thresh):
+    return jsonify(sec.filter(id, i, var, min, max, thresh))
 
-    for i in range(len(mask)):
-        if mask[i] == 1:
-            n_lat.append(lat[i])
-            n_lon.append(lon[i])
-            n_time.append(time[i])
-            n_height.append(height[i])
-            n_pressure.append(pressure[i])
 
-    out = {"lat": n_lat,
-           "lon": n_lon,
-           "time": n_time,
-           "height": n_height,
-           "pressure": n_pressure}
-
-    return out
+@app.route('/getdata/<id>/<int:i>', methods=['POST'])
+def get_data(id, i):
+    print("get data")
+    mask = request.get_json()[0]
+    keys = []
+    if request.get_data()[1]:
+        keys = request.get_json()[1]
+    print("mask loaded")
+    data = json.loads(session.get("data"))
+    rem = []
+    for d in data.keys():
+        if d not in keys:
+            rem.append(d)
+    for r in rem:
+        del data[r]
+    out = json.dumps(apply_mask(mask, data))
+    print("get data done")
+    content = gzip.compress(out.encode('utf8'), 5)
+    response = make_response(content)
+    response.headers['Content-length'] = len(content)
+    response.headers['Content-Encoding'] = 'gzip'
+    print(response)
+    return response
 
 
 if __name__ == '__main__':

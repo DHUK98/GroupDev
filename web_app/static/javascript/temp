@@ -1,0 +1,93 @@
+
+        function foo(arr) {
+            var a = [], b = [], prev;
+
+            arr.sort(function (aa, bb) {
+                //sort by x, secondary by y
+                return aa[0] == bb[0] ? aa[1] - bb[1] : aa[0] - bb[0];
+            });
+            console.log(arr);
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i] !== prev) {
+                    a.push(arr[i]);
+                    b.push(1);
+                } else {
+                    b[b.length - 1]++;
+                }
+                prev = arr[i];
+            }
+            let temp = [];
+            for (let j = 0; j < a.length; j++) {
+                temp.push([a[j][0], a[j][1], b[j]]);
+            }
+
+            return temp;
+        }
+
+        function foo2(arr) {
+            var result = [];
+            let max = 0;
+            let p0 = arr[0];
+
+            arr.forEach(function (e) {
+                if (!this[e]) {
+                    this[e] = [e[0], e[1], 0];
+                    result.push(this[e])
+                }
+                this[e][2]++
+                if (this[e][2] > max) {
+                    max = this[e][2];
+                }
+            }, {});
+            return [result, max];
+        }
+
+        function round_to_precision(x, precision) {
+            var y = +x + (precision === undefined ? 0.5 : precision / 2);
+            return y - (y % (precision === undefined ? 1 : +precision));
+        }
+
+        let heat = simpleheat(canvas);
+
+        function draw_heat() {
+            heat.draw(0.05);
+        }
+
+        function render_all_lines2(mm) {
+            let lat_lng = [mm["lat"], mm["lon"]];
+            let p = [];
+            for (let l = 0; l < lat_lng[0].length; l += 1) {
+                lats = lat_lng[0][l];
+                longs = lat_lng[1][l];
+
+                // steps in 10
+                for (let i = 0; i < lats.length; i += 1) {
+                    let pp = projection_([longs[i], lats[i]]);
+                    p.push([round_to_precision(parseInt(pp[0]), 3), round_to_precision(parseInt(pp[1]), 3)]);
+                }
+            }
+            console.log(p);
+            {#console.log(p[0]);#}
+            let t = foo2(p);
+            let heat_a = t[0];
+            let max = t[1];
+            console.log(heat_a);
+
+            // set data of [[x, y, value], ...] format
+            heat.data(heat_a);
+
+            // set point radius and blur radius (25 and 15 by default)
+            heat.radius(4, 0);
+
+            // optionally customize gradient colors, e.g. below
+            // (would be nicer if d3 color scale worked here)
+            // heat.gradient({0: '#0000ff', 0.5: '#00ff00', 1: '#ff0000'});
+
+            {#heat.gradient({0: '#0000ff', 0.5: '#00ff00', 1: '#ff0000'});#}
+            // set maximum for domain
+            heat.max(2500);
+
+            // draw into canvas, with minimum opacity threshold
+            draw_heat();
+
+        }

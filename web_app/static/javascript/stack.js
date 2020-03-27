@@ -8,49 +8,117 @@ let process_stack = {
     },
 
     stack: class {
+        /**
+         *
+         */
         constructor() {
             this.function_array = [];
         }
 
+        /**
+         *
+         * @param f
+         */
         add(f) {
             this.function_array.push(f);
             this.sort();
         }
 
-        remove(f) {
+        /**
+         *
+         * @param f
+         */
+        remove(id) {
+            for (let i = this.function_array.length - 1; i >= 0; --i) {
+                if (this.function_array[i].id === id) {
+                    this.function_array.splice(i, 1);
+                }
+            }
+            // this.function_array.splice(this.function_array.indexOf(f), 1);
             this.sort();
         }
 
+        /**
+         *
+         */
         sort() {
             this.function_array.sort(process_stack.stack_sort);
         }
 
+        /**
+         *
+         */
         clear() {
             this.function_array = [];
         }
 
+        /**
+         *
+         * @returns {Promise<[]|*[]>}
+         */
         async calculate() {
-            let acc = [];
-            for (let i = 0; i < this.function_array.length; i++) {
-                let prev = null;
-                if (i >= 1) {
-                    prev = this.function_array[i - 1];
-                }
-                await this.function_array[i].compute(prev);
-                acc = process_stack.combine_output(acc,this.function_array[i].mask);
+            console.log(this.function_array);
+            let accumulated_mask = [];
+            let num_funcs = this.function_array.length;
+            for (let i = 0; i < num_funcs; i++) {
+                console.log(this.function_array[i].name() + " started");
+
+                let item = $('.stack_item').eq(i);
+                console.log(item);
+                item.LoadingOverlay("show");
+
+                await this.function_array[i].compute(accumulated_mask);
+                item.LoadingOverlay("hide");
+                item.css("background-color","#567D46");
+
+                accumulated_mask = process_stack.combine_output(accumulated_mask, this.function_array[i].mask);
+
                 console.log(this.function_array[i].name() + " finished");
                 console.log(this.function_array[i].output);
             }
-            console.log(acc.filter(x => x!=0).length);
+            if (this.function_array[num_funcs - 1].output["lat"]) {
+                render_all_lines(this.function_array[num_funcs - 1].output);
+            } else {
+                await process_stack.get_data(accumulated_mask).then(data => {
+                    console.log("data back");
+                    console.log(data);
+                    render_all_lines(data);
+                });
+            }
             return this.function_array;
         }
     },
 
+    /**
+     *
+     * @param mask
+     * @returns {Promise<unknown>}
+     */
+    get_data: function (mask) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: '/getdata/' + iid + "/2",
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function (d) {
+                    resolve(d);
+                },
+                data: JSON.stringify([mask, ["lat", "lon"]])
+            });
+        });
+    },
 
+    /**
+     *
+     * @param a
+     * @param b
+     * @returns {[]|*}
+     */
     combine_output: function (a, b) {
         let out = [];
         let b_i = 0;
-        if(a.length === 0){
+        if (a.length === 0) {
             return b;
         }
         for (let i = 0; i < a.length; i++) {
@@ -67,18 +135,29 @@ let process_stack = {
         return out;
     },
 
+    /**
+     *
+     * @param start_angle
+     * @param end_angle
+     * @param distance
+     * @param threshold
+     */
     sector: function (start_angle, end_angle, distance, threshold) {
         this.pos = 100;
+        this.id = Math.floor(Math.random() * 110000);
         this.s_angle = start_angle;
         this.e_angle = end_angle;
         this.d = distance;
         this.thresh = threshold;
         this.output = null;
-        this.compute = function (previous) {
+        this.mask = [];
+        this.compute = function (acc) {
             return new Promise((resolve, reject) => {
-                this.output = sector_utils.sector_trajecotory(data, this.s_angle, this.e_angle, this.d, this.thresh);
-                this.mask = this.output;
-                resolve("Finished");
+                $.get(["/sector", iid, "2", this.s_angle, this.e_angle, this.d, this.thresh].join("/"), function (data) {
+                    resolve(data);
+                });
+            }).then(data => {
+                this.output = this.mask = data;
             });
         };
         this.name = function () {
@@ -89,42 +168,107 @@ let process_stack = {
         };
     },
 
+    /**
+     *
+     * @param type
+     * @param min
+     * @param max
+     * @param threshold
+     */
     filter: function (type, min, max, threshold) {
         this.pos = 100;
+        this.id = Math.floor(Math.random() * 110000);
         this.type = type;
         this.min = min;
         this.max = max;
         this.thresh = threshold;
         this.output = null;
         this.mask = [];
-        this.compute = function (previous) {
+        this.compute = function (acc) {
             return new Promise((resolve, reject) => {
-                this.output = sector_utils.filter(data, this.type, this.min, this.max, this.thresh);
-                this.mask = this.output;
-                resolve("Finished");
+                $.get(["/filter", iid, "2",this.type, this.min, this.max, this.thresh].join("/"), function (data) {
+                    resolve(data);
+                });
+            }).then(data => {
+                this.output = this.mask = data;
             });
         };
         this.name = function () {
-            return "filtering";
+            return "filtering_by_" + this.type;
         };
         this.toString = function () {
         };
     },
 
-    cluster: function () {
+    /**
+     *
+     * @param num_clusters
+     */
+    k_means_cluster: function (num_clusters) {
         this.pos = 1;
-        this.compute = function (previous) {
-            return test_u_cluster(previous.output, 4).then(
-                result => {this.output = result; this.mask = this.output["labels"];});
+        this.id = Math.floor(Math.random() * 110000);
+        this.mask = [];
+        this.n = num_clusters;
+        /**
+         *
+         * @param acc
+         * @returns {Promise<T>}
+         */
+        this.compute = function (acc) {
+            return kmeans_cluster_func(acc, this.n).then(
+                result => {
+                    this.output = result;
+                    this.mask = this.output["labels"];
+                });
         };
+
+        /**
+         *
+         * @returns {string}
+         */
         this.name = function () {
-            return "clustering";
+            return "Cluster (K-means)";
         };
+
+        /**
+         *
+         */
         this.toString = function () {
+            return "N: " + this.n;
         };
     },
+     dbscan_cluster : function (num_clusters) {
+        this.pos = 1;
+        this.id = Math.floor(Math.random() * 110000);
+        this.mask = [];
+        this.n = num_clusters;
 
-    render: function (data) {
+        /**
+         *
+         * @param acc
+         * @returns {Promise<T>}
+         */
+        this.compute = function (acc) {
+            return kmeans_cluster_func(acc, this.n).then(
+                result => {
+                    this.output = result;
+                    this.mask = this.output["labels"];
+                });
+        };
 
-    }
+        /**
+         *
+         * @returns {string}
+         */
+        this.name = function () {
+            return "Cluster (K-means)";
+        };
+
+        /**
+         *
+         */
+        this.toString = function () {
+            return "N: " + this.n;
+        };
+    },
 };
