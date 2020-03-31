@@ -6,3 +6,7 @@ data/
 *.pyc
 /web_app/static/utils/sandbox.py
 /web_app/.idea/
+/web_app/flask_session/*
+
+__pycache__/
+utils/__pycache__/

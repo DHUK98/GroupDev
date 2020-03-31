@@ -48,27 +48,13 @@
                         {% for segment in file_ns %}
                             <p>
                             <div>
-                                <input class="w3-check" type="checkbox">
-                                <label>{{ segment }}</label>
+                                <input class="w3-check data_tickbox" id="{{ loop.index - 1 }}"type="checkbox">
+                                <label >{{ segment }}</label>
                             </div>
                             </p>
                         {% endfor %}
-                    </div>
-                </div>
-
-
-                <P></P>
-                <div class="w3-card-4 render_all">
-                    <header class="w3-container w3-teal collapsible">
-                        <h2>Rendering</h2>
-                    </header>
-                    <div class="w3-container w3-white content">
-                        <p>
-                        <div>
-                            <input class="w3-check" id="render_all_check" type="checkbox">
-                            <label>Render all Trajectories</label>
-                        </div>
-                        </p>
+                        <P></P>
+                        <input class="w3-button w3-teal" id="load_data_button" type="button" value="Add">
                     </div>
                 </div>
 
@@ -192,26 +178,10 @@
         }
         // Id of the stations
         let iid = "{{ id }}";
+        let file_ns = {{ file_ns|tojson }};
 
-        // Data files in the stations directory
-        let file_ns = [];
-        let fn = "";
-        {% for f in file_ns %}
-            fn = "{{ url_for('static', filename='stations/1/2') }}".replace("1", iid).replace("2", "{{ f }}");
-            file_ns.push(fn);
-        {% endfor %}
+        console.log(file_ns);
 
-
-        $.ajax({
-            url: '/load_data/' + iid + "/",
-            type: 'post',
-            dataType: 'json',
-            contentType: 'application/json',
-            success: function (d) {
-                console.log("data loaded")
-            },
-            data: JSON.stringify([2x])
-        });
 
         // Latitude and longitude of the station
         let proc_stack = new process_stack.stack();
@@ -248,14 +218,8 @@
         svg.style("width", "100%");
         g.call(zoom);
 
-        console.log("test", file_ns);
-        {#let data_manager = new data_utils.data_manager(iid, file_ns);#}
-        {#data_manager.load(1).then(function () {#}
-        {#    console.log(data_manager.data);#}
-        {#    data = data_manager.data[0];#}
         renderMap();
 
-        //});
 
         function renderMap() {
             d3.json("{{ url_for('static', filename='world-110m2.json') }}")

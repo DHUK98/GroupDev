@@ -57,30 +57,6 @@ document.getElementById("add_sector").onclick = function () {
         alert(alert_msg);
     }
 };
-
-
-// CLUSTERING KMEANS
-//
-// document.getElementById("add_cluster_kmeans").onclick = function () {
-//     let z = document.createElement('li'); // is a node
-//     z.setAttribute("id", "zstack_cluster");
-//
-//
-//     //  Assign variable for cluster number (user input)
-//     let c_nu = document.getElementById("number_of_cluster").value;
-//
-//     //  Check input is of correct type
-//     if (c_nu > 0 && c_nu % 1 === 0) {
-//         let clu_test = new process_stack.k_means_cluster(c_nu);
-//         proc_stack.add(clu_test);
-//         update_stack_gui();
-//         //  Alert user to incorrect type
-//     } else {
-//         alert("Please enter a positive integer for the cluster number.");
-//     }
-// };
-
-
 // CLUSTERING DBSCAN
 
 document.getElementById("add_cluster").onclick = function () {
@@ -111,6 +87,39 @@ document.getElementById("add_filter").onclick = function () {
 
     proc_stack.add(new process_stack.filter(type_f, min, max, thresh));
     update_stack_html();
+};
+// $('input[type=checkbox]').on('click', function(event) {
+//   if(!$('input[type=checkbox]:checked').length) {
+//     $(this).prop('checked', true);
+//   }
+// });
+document.getElementById("load_data_button").onclick = function () {
+    let boxes = $(".data_tickbox");
+    let ticked = [];
+    console.log(boxes);
+    boxes.each(function () {
+        //if statement here
+        // use $(this) to reference the current div in the loop
+        //you can try something like...
+
+        let x = $(this).prop('checked');
+        let id = $(this).attr('id');
+        console.log(id)
+        console.log(x);
+        if (x) {
+            ticked.push(parseInt(id));
+        }
+    });
+    $.ajax({
+        url: '/load_data/' + iid + "/",
+        type: 'post',
+        dataType: 'json',
+        contentType: 'application/json',
+        success: function (d) {
+            console.log("data loaded")
+        },
+        data: JSON.stringify([ticked])
+    });
 };
 
 

@@ -17,6 +17,7 @@ pyproj = "*"
 flask-session = "*"
 ujson = "*"
 werkzeug = "==0.16.1"
+jsonmerge = "*"
 
 [requires]
 python_version = "3.6"

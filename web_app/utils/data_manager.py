@@ -11,13 +11,34 @@ def list_files(path):
     return output
 
 
-def get_data(path,i):
+def get_data(path, i):
     files = list_files(path)
     print(files[i])
     with open(files[i]) as json_file:
         data = json.load(json_file)
     print("loaded")
     return data
+
+
+def get_datas(path, iis):
+    files = list_files(path)
+    data = []
+    for i in iis:
+        with open(files[i]) as json_file:
+            print("loaded: " + files[i])
+            data.append(json.load(json_file))
+    acc = None
+    for d in data:
+        if not acc:
+            acc = d
+        else:
+            print("merge")
+            for k in acc.keys():
+                acc[k].extend(d[k])
+
+            print("merging done")
+            print(len(acc["lat"]))
+    return acc
 
 
 def apply_mask(mask, d):

@@ -31,6 +31,7 @@ def sector_point(x, y, start_ang, end_ang, dist):
 
 
 def sector(id, i, start_ang, end_ang, dist, thresh):
+
     print("sector.py sector start")
     output = []
     # data = get_data(id, i)
@@ -40,6 +41,8 @@ def sector(id, i, start_ang, end_ang, dist, thresh):
     transformer = Transformer.from_crs({"proj": "longlat", "datum": 'WGS84'},
                                        {"proj": 'aeqd', "lon_0": str(lon[0][0]), "lat_0": str(lat[0][0]),
                                         "datum": 'WGS84'}, skip_equivalent=True)
+    if start_ang == 0 and end_ang == 360:
+        return list(np.ones(len(lat)))
 
     print("start loop")
     for j in range(len(lat)):

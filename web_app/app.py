@@ -10,7 +10,7 @@ from flask_session import Session
 
 import utils.sector as sec
 from utils.cluster import cluster_request
-from utils.data_manager import apply_mask, get_data as gd
+from utils.data_manager import apply_mask, get_datas as gds
 from utils.json_to_netcdf import json_to_netcdf
 from utils.median_calc import get_median_colours
 from utils.zip_netcdf import zip_netcdf_exports, delete_nc_exports
@@ -37,8 +37,7 @@ def load_data(id):
     data = request.get_json()
     path = join(STATIC_PATH, "stations/" + id + "/")
     data = data[0]
-    session["data"] = json.dumps(gd(path, data))
-    print(data)
+    session["data"] = json.dumps(gds(path, data))
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
