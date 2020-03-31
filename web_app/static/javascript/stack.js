@@ -97,7 +97,7 @@ let process_stack = {
     get_data: function (mask) {
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: '/getdata/' + iid + "/2",
+                url: '/getdata/' + iid ,
                 type: 'post',
                 dataType: 'json',
                 contentType: 'application/json',

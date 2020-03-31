@@ -26,9 +26,20 @@ STATIC_PATH = join(dirname(realpath(__file__)), 'static')
 
 @app.route('/')
 def home():
-    json_url = join(STATIC_PATH,'stations.json')
+    json_url = join(STATIC_PATH, 'stations.json')
     data = json.load(open(json_url))
     return render_template('station_selector.html', stations=data)
+
+
+@app.route("/load_data/<id>/", methods=['POST'])
+def load_data(id):
+    print("LOAD DATA")
+    data = request.get_json()
+    path = join(STATIC_PATH, "stations/" + id + "/")
+    data = data[0]
+    session["data"] = json.dumps(gd(path, data))
+    print(data)
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
 @app.route('/station/<iid>')
@@ -48,7 +59,7 @@ def station(iid):
             lat = data["lat"]
             lng = data["lon"]
             name = data["Station"]
-        session["data"] = json.dumps(gd(path,1))
+        # session["data"] = json.dumps(gd(path,0))
         print("done")
         return render_template('station_view.html', id=iid, lat=lat, lng=lng, name=name, file_ns=file_ns)
     except Exception as e:
@@ -124,8 +135,8 @@ def filter(id, i, var, min, max, thresh):
     return jsonify(sec.filter(id, i, var, min, max, thresh))
 
 
-@app.route('/getdata/<id>/<int:i>', methods=['POST'])
-def get_data(id, i):
+@app.route('/getdata/<id>', methods=['POST'])
+def get_data(id):
     print("get data")
     mask = request.get_json()[0]
     keys = []

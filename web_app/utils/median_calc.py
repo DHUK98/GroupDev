@@ -55,13 +55,13 @@ def avg_to_hsl(n_avg):
     # hue, set saturation=100 and lightness=50 in CSS
     return n_avg
 
-
-
-
-
-if __name__ == "__main__":
-    with open("../static/stations/CGR/ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json", "r") as f:
-        trajs = json.load(f)
-
-
-    get_median_averages(trajs, [], "height")
+#
+#
+#
+#
+# if __name__ == "__main__":
+#     with open("../static/stations/CGR/ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json", "r") as f:
+#         trajs = json.load(f)
+#
+#
+#     get_median_averages(trajs, [], "height")

@@ -4,7 +4,7 @@ Use various cluster algorithms to cluster trajectories
 
 import json
 from scipy.cluster.hierarchy import linkage, fcluster
-from sklearn.cluster import KMeans, DBSCAN
+from sklearn.cluster import KMeans, DBSCAN,MiniBatchKMeans
 from . import vector
 import pickle
 import numpy as np
@@ -125,6 +125,7 @@ def cluster_request(json_msg, cluster_type, cluster_no=5, min_samples=70, eps=50
     try:
         if cluster_type == 'kmeans':
             model = KMeans(n_clusters=int(cluster_no)).fit(X)
+            # model = MiniBatchKMeans(n_clusters=int(cluster_no), random_state=0, batch_size=10).fit(X)
             # labels = model.labels_
 
         elif cluster_type == 'dbscan':

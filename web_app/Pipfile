@@ -14,9 +14,9 @@ scikit-learn = "*"
 matplotlib = "*"
 gunicorn = "*"
 pyproj = "*"
-ijson = "*"
 flask-session = "*"
 ujson = "*"
+werkzeug = "==0.16.1"
 
 [requires]
 python_version = "3.6"

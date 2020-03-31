@@ -177,8 +177,8 @@
     <script>
 
 
-        var coll = document.getElementsByClassName("collapsible");
-        var i;
+        let coll = document.getElementsByClassName("collapsible");
+        let i;
         for (i = 0; i < coll.length; i++) {
             coll[i].addEventListener("click", function () {
                 this.classList.toggle("active");
@@ -202,6 +202,16 @@
         {% endfor %}
 
 
+        $.ajax({
+            url: '/load_data/' + iid + "/",
+            type: 'post',
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (d) {
+                console.log("data loaded")
+            },
+            data: JSON.stringify([2x])
+        });
 
         // Latitude and longitude of the station
         let proc_stack = new process_stack.stack();

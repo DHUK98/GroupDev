@@ -1,16 +1,8 @@
-import pyproj
+from pyproj import Transformer
 import math
 from flask import session
 import json
-
-
-def proj(lat, lng):
-    return pyproj.Proj(proj="aeqd +lon_0=" + str(lng) + " +lat_0=" + str(lat) + " +unit=m", preserve_units=True)
-
-
-def latlon_to_xy(P, lon, lat):
-    temp = P(lon, lat)
-    return [temp[0], temp[1]]
+import numpy as np
 
 
 def angle_between_points(p1_x, p1_y, p2_x, p2_y):
@@ -39,20 +31,24 @@ def sector_point(x, y, start_ang, end_ang, dist):
 
 
 def sector(id, i, start_ang, end_ang, dist, thresh):
+    print("sector.py sector start")
     output = []
     # data = get_data(id, i)
     data = json.loads(session.get('data'))
     lat = data["lat"]
     lon = data["lon"]
-    p = proj(lat[0][0], lon[0][0])
+    transformer = Transformer.from_crs({"proj": "longlat", "datum": 'WGS84'},
+                                       {"proj": 'aeqd', "lon_0": str(lon[0][0]), "lat_0": str(lat[0][0]),
+                                        "datum": 'WGS84'}, skip_equivalent=True)
+
+    print("start loop")
     for j in range(len(lat)):
         outside = 0
         for k in range(len(lat[j])):
             if outside > thresh:
                 break
-            t_traj = latlon_to_xy(p, lon[j][k], lat[j][k])
-            sec = sector_point(t_traj[0], t_traj[1], start_ang, end_ang, dist)
-
+            test = transformer.transform(np.array(lon[j][k]), np.array(lat[j][k]))
+            sec = sector_point(test[0], test[1], start_ang, end_ang, dist)
             if not sec:
                 outside += 1
 
@@ -61,7 +57,8 @@ def sector(id, i, start_ang, end_ang, dist, thresh):
         else:
             output.append(0)
 
-    print("sector done")
+    print("sector.py sector done")
+
     return output
 
 
