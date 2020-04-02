@@ -25,7 +25,30 @@
 
         <div class="input">
             <div class="scroll">
+                <div class="w3-card-4 data_input">
+                    <header class="w3-container w3-teal collapsible">
+                        <h2>Data</h2>
+                    </header>
+                    <div class="w3-container w3-white content">
+                        {% for segment in file_ns %}
+                            <p>
+                                <input class="w3-check data_tickbox" type="checkbox">
+                                <label>{{ segment }}</label>
+                            <p></p>
+                            <ul>
+                                {% for k in keys[loop.index - 1] %}
+                                    <li>{{ k }}</li>
+                                {% endfor %}
+                            </ul>
+                            <hr>
+                        {% endfor %}
+                        <P></P>
+                        <input class="w3-button w3-teal" id="load_data_button" type="button" value="Load">
+                        <p></p>
+                    </div>
+                </div>
 
+                <P></P>
                 <div class="w3-card-4">
                     <header class="w3-container w3-blue-grey ">
                         <h2>Process stack</h2>
@@ -39,26 +62,6 @@
                 <input class="w3-button w3-blue-grey" id="calculate" type="button" value="Calculate">
                 <hr>
                 <p></p>
-
-                <div class="w3-card-4 data_input">
-                    <header class="w3-container w3-teal collapsible">
-                        <h2>Data</h2>
-                    </header>
-                    <div class="w3-container w3-white content">
-                        {% for segment in file_ns %}
-                            <p>
-                            <div>
-                                <input class="w3-check data_tickbox" id="{{ loop.index - 1 }}"type="checkbox">
-                                <label >{{ segment }}</label>
-                            </div>
-                            </p>
-                        {% endfor %}
-                        <P></P>
-                        <input class="w3-button w3-teal" id="load_data_button" type="button" value="Add">
-                    </div>
-                </div>
-
-                <P></P>
                 <div class="w3-card-4">
                     <header class="w3-container w3-teal collapsible">
                         <h2>Sector</h2>
@@ -156,7 +159,6 @@
     <script src="{{ url_for('static', filename='javascript/station_utils.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/List.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/station_view_input.js') }}"></script>
-    <script src="{{ url_for('static', filename='javascript/sector.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/data_utils.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/stack.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/simpleheat.js') }}"></script>

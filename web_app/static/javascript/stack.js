@@ -69,7 +69,7 @@ let process_stack = {
 
                 await this.function_array[i].compute(accumulated_mask);
                 item.LoadingOverlay("hide");
-                item.css("background-color","#567D46");
+                item.css("background-color", "#567D46");
 
                 accumulated_mask = process_stack.combine_output(accumulated_mask, this.function_array[i].mask);
 
@@ -97,7 +97,7 @@ let process_stack = {
     get_data: function (mask) {
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: '/getdata/' + iid ,
+                url: '/getdata/' + iid,
                 type: 'post',
                 dataType: 'json',
                 contentType: 'application/json',
@@ -186,7 +186,7 @@ let process_stack = {
         this.mask = [];
         this.compute = function (acc) {
             return new Promise((resolve, reject) => {
-                $.get(["/filter", iid, "2",this.type, this.min, this.max, this.thresh].join("/"), function (data) {
+                $.get(["/filter", iid, "2", this.type, this.min, this.max, this.thresh].join("/"), function (data) {
                     resolve(data);
                 });
             }).then(data => {
@@ -237,7 +237,7 @@ let process_stack = {
             return "N: " + this.n;
         };
     },
-     dbscan_cluster : function (num_clusters) {
+    dbscan_cluster: function (num_clusters) {
         this.pos = 1;
         this.id = Math.floor(Math.random() * 110000);
         this.mask = [];

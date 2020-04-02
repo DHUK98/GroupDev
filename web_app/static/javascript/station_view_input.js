@@ -88,35 +88,27 @@ document.getElementById("add_filter").onclick = function () {
     proc_stack.add(new process_stack.filter(type_f, min, max, thresh));
     update_stack_html();
 };
-// $('input[type=checkbox]').on('click', function(event) {
-//   if(!$('input[type=checkbox]:checked').length) {
-//     $(this).prop('checked', true);
-//   }
-// });
+
 document.getElementById("load_data_button").onclick = function () {
     let boxes = $(".data_tickbox");
+    let key_ticked = [];
     let ticked = [];
     console.log(boxes);
-    boxes.each(function () {
-        //if statement here
-        // use $(this) to reference the current div in the loop
-        //you can try something like...
-
+    boxes.each(function (index) {
         let x = $(this).prop('checked');
-        let id = $(this).attr('id');
-        console.log(id)
-        console.log(x);
+        let id = index;
         if (x) {
             ticked.push(parseInt(id));
         }
     });
+    console.log(ticked);
     $.ajax({
         url: '/load_data/' + iid + "/",
         type: 'post',
         dataType: 'json',
         contentType: 'application/json',
         success: function (d) {
-            console.log("data loaded")
+            console.log("data loaded");
         },
         data: JSON.stringify([ticked])
     });

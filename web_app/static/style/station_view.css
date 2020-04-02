@@ -77,11 +77,6 @@
     width: 100%;
 }
 
-
-.data_input label {
-    font-size: 10px;
-}
-
 .sphere {
     stroke: #333;
 }
@@ -117,3 +112,4 @@
 }
 
 
+.key_div { border:2px solid #ccc; height: 75px; overflow-y: scroll; }

@@ -10,7 +10,7 @@ from flask_session import Session
 
 import utils.sector as sec
 from utils.cluster import cluster_request
-from utils.data_manager import apply_mask, get_datas as gds
+from utils.data_manager import apply_mask, get_datas as gds, list_files, get_keys
 from utils.json_to_netcdf import json_to_netcdf
 from utils.median_calc import get_median_colours
 from utils.zip_netcdf import zip_netcdf_exports, delete_nc_exports
@@ -45,22 +45,23 @@ def load_data(id):
 def station(iid):
     try:
         path = join(STATIC_PATH, "stations/" + iid + "/")
-        print(path)
-        file_ns = []
-        for file in os.listdir(path):
-            if file.startswith("info"):
-                continue
-            if file.endswith(".json"):
-                file_ns.append(file)
+        file_ns = list_files(path,with_path=False)
+
+        for f in range(len(file_ns)):
+            temp = file_ns[f]
+            split = temp.split("_")
+            file_ns[f] = split[0] + " " + split[-2]
+
+        keys = get_keys(path)
+        print(keys)
 
         with open(path + "info.json") as json_file:
             data = json.load(json_file)
             lat = data["lat"]
             lng = data["lon"]
             name = data["Station"]
-        # session["data"] = json.dumps(gd(path,0))
-        print("done")
-        return render_template('station_view.html', id=iid, lat=lat, lng=lng, name=name, file_ns=file_ns)
+
+        return render_template('station_view.html', id=iid, lat=lat, lng=lng, name=name, file_ns=file_ns,keys=keys)
     except Exception as e:
         return str(e)
 
