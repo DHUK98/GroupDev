@@ -22,6 +22,11 @@ let process_stack = {
         add(f) {
             this.function_array.push(f);
             this.sort();
+            for (let i = 0; i < this.function_array.length; i++) {
+                if (this.function_array[i].pos <= f.pos) {
+                    this.function_array[i].output = null;
+                }
+            }
         }
 
         /**
@@ -61,9 +66,14 @@ let process_stack = {
             let accumulated_mask = [];
             let num_funcs = this.function_array.length;
             for (let i = 0; i < num_funcs; i++) {
+                let item = $('.stack_item').eq(i);
+                if (this.function_array[i].output != null) {
+                    item.css("background-color", "#567D46");
+                    continue;
+                }
                 console.log(this.function_array[i].name() + " started");
 
-                let item = $('.stack_item').eq(i);
+
                 console.log(item);
                 item.LoadingOverlay("show");
 

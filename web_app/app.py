@@ -15,15 +15,13 @@ from utils.json_to_netcdf import json_to_netcdf
 from utils.median_calc import get_median_colours
 from utils.zip_netcdf import zip_netcdf_exports, delete_nc_exports
 
-from pathlib import Path
-
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '\ni-\x9e\xd2\xc2\xf4%\xa8\xa0\x99\xa1\xd5z\x05\xb9\xca\x0fQ\x04\xa0\xe6v\x81'
 app.config['SESSION_TYPE'] = 'filesystem'
 
 Session(app)
 
-STATIC_PATH = Path(join(dirname(realpath(__file__)), 'static'))
+STATIC_PATH = join(dirname(realpath(__file__)), 'static')
 
 
 @app.route('/')
@@ -37,7 +35,7 @@ def home():
 def load_data(id):
     print("LOAD DATA")
     data = request.get_json()
-    path = join(STATIC_PATH, "stations/" + id + "/")
+    path = join(STATIC_PATH, "stations", id)
     data = data[0]
     session["data"] = json.dumps(gds(path, data))
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
@@ -45,7 +43,7 @@ def load_data(id):
 
 @app.route('/station/<iid>')
 def station(iid):
-    path = STATIC_PATH / "stations" / iid
+    path = join(STATIC_PATH , "stations" , iid)
     file_ns = list_files(path, with_path=False)
 
     for f in range(len(file_ns)):
@@ -56,7 +54,7 @@ def station(iid):
     keys = get_keys(path)
     print(keys)
 
-    with open(path / "info.json") as json_file:
+    with open(join(path, "info.json")) as json_file:
         data = json.load(json_file)
         lat = data["lat"]
         lng = data["lon"]
