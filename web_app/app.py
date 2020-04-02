@@ -24,6 +24,7 @@ Session(app)
 STATIC_PATH = join(dirname(realpath(__file__)), 'static')
 
 
+
 @app.route('/')
 def home():
     json_url = join(STATIC_PATH, 'stations.json')
@@ -45,7 +46,7 @@ def load_data(id):
 def station(iid):
     try:
         path = join(STATIC_PATH, "stations/" + iid + "/")
-        file_ns = list_files(path,with_path=False)
+        file_ns = list_files(path, with_path=False)
 
         for f in range(len(file_ns)):
             temp = file_ns[f]
