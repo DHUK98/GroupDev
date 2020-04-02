@@ -26,7 +26,7 @@ def get_data(path, i):
 
 def get_keys(path):
     files = list_files(path, with_path=False)
-    files = [path + "/keys_" + s for s in files]
+    files = [path / ("keys_" + s) for s in files]
     data = []
     for f in files:
         with open(f) as json_file:
