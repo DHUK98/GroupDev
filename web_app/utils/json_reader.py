@@ -29,7 +29,6 @@ def json_from_netcdf_file(filepath, with_keys=False):
     return data_json
 
 
-
 if __name__ == "__main__":
     path = '../static/stations/CGR/'
     files = []
