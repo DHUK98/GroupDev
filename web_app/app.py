@@ -1,16 +1,14 @@
 import gzip
-import os
 from collections import Counter
 from os.path import join, dirname, realpath
 
 import ujson as json
-from flask import Flask, render_template, request, session
-from flask import jsonify, make_response
+from flask import Flask, render_template, request, session, jsonify, make_response
 from flask_session import Session
 
 import utils.sector as sec
 from utils.cluster import cluster_request
-from utils.data_manager import apply_mask, get_datas as gds, list_files, get_keys
+from utils.data_manager import apply_mask, get_datas, list_files, get_keys
 from utils.json_to_netcdf import json_to_netcdf
 from utils.median_calc import get_median_colours
 from utils.zip_netcdf import zip_netcdf_exports, delete_nc_exports
@@ -24,71 +22,68 @@ Session(app)
 STATIC_PATH = join(dirname(realpath(__file__)), 'static')
 
 
+# Station selector
 @app.route('/')
 def home():
     json_url = join(STATIC_PATH, 'stations.json')
-    data = json.load(open(json_url))
-    return render_template('station_selector.html', stations=data)
+    station_data = json.load(open(json_url))
+    return render_template('station_selector.html', stations=station_data)
 
 
+# Load data by station id and index's of files to load
 @app.route("/load_data/<id>/", methods=['POST'])
 def load_data(id):
-    print("LOAD DATA")
-    data = request.get_json()
-    path = join(STATIC_PATH, "stations", id)
-    data = data[0]
-    session["data"] = json.dumps(gds(path, data))
+    indexs = request.get_json()[0]
+    path_to_station = join(STATIC_PATH, "stations", id)
+
+    data, keys = get_datas(path_to_station, indexs)
+    session["data"] = json.dumps(data)
+    session["keys"] = json.dumps(keys)
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
 @app.route('/station/<iid>')
 def station(iid):
-    path = join(STATIC_PATH , "stations" , iid)
-    file_ns = list_files(path, with_path=False)
+    path_to_station = join(STATIC_PATH, "stations", iid)
 
-    for f in range(len(file_ns)):
-        temp = file_ns[f]
-        split = temp.split("_")
-        file_ns[f] = split[0] + " " + split[-2]
+    file_names = list_files(path_to_station, with_path=False)
 
-    keys = get_keys(path)
-    print(keys)
+    # Filter file name to just source and year
+    for file in range(len(file_names)):
+        file_name = file_names[file]
+        split = file_name.split("_")
+        file_names[file] = split[0] + " " + split[-2]
 
-    with open(join(path, "info.json")) as json_file:
+    data_keys = get_keys(path_to_station)
+
+    # Load information about current station
+    with open(join(path_to_station, "info.json")) as json_file:
         data = json.load(json_file)
         lat = data["lat"]
         lng = data["lon"]
         name = data["Station"]
 
-    return render_template('station_view.html', id=iid, lat=lat, lng=lng, name=name, file_ns=file_ns, keys=keys)
+    return render_template('station_view.html', id=iid, lat=lat, lng=lng, name=name, file_ns=file_names, keys=data_keys)
 
 
 @app.route('/cluster/req/<iid>/<min_samp>/<eps_val>', methods=['POST'])
 def cluster_dbscan(iid, min_samp, eps_val):
-    data = request.get_json()
-    filepath = data[1]
+    mask = request.get_json()
 
-    mask = json.loads(data[0])
-    f_name = data[1]
+    full_data = json.loads(session.get("data"))
+    masked_data = apply_mask(mask, full_data)
 
-    with open("static/stations/" + iid + "/" + f_name, "r") as f:
-        traj_full = json.load(f)
-    traj = apply_mask(mask, traj_full)
+    clustered_data = cluster_request(json.dumps(masked_data), cluster_type='dbscan', min_samples=int(min_samp),
+                                     eps=int(eps_val))
+    cluster_json = json.loads(clustered_data)
 
-    cluster = cluster_request(json.dumps(traj), cluster_type='dbscan', min_samples=int(min_samp), eps=int(eps_val))
-    cluster_json = json.loads(cluster)
-    centroid_sizes = Counter(cluster_json['labels'])
-    print("\n\nThere are " + str(len(centroid_sizes) - 1) + " centroid trajectories")
-    print("\nWeights: ")
-    print(sorted(centroid_sizes.items()))
+    # centroid_sizes = Counter(cluster_json['labels'])
+    # c_colours = get_median_colours(masked_data, cluster_json['labels'], "height")
+    # cluster_json["colours"] = c_colours
 
-    # currently for height, not parameter
-    c_colours = get_median_colours(traj, cluster_json['labels'], "height")
-    print(c_colours)
+    clustered_data = json.dumps(cluster_json)
 
-    cluster_json["colours"] = c_colours
-    cluster = json.dumps(cluster_json)
-    return jsonify(cluster)
+    return jsonify(clustered_data)
 
 
 # K-Means
@@ -96,16 +91,14 @@ def cluster_dbscan(iid, min_samp, eps_val):
 def cluster(iid, n):
     mask = request.get_json()
     # print(data)
-    data = json.loads(session.get("data"))
-    data = apply_mask(mask, data)
+    full_data = json.loads(session.get("data"))
+    masked_data = apply_mask(mask, full_data)
 
     # K-means request
-    cluster = cluster_request(json.dumps(data), cluster_type="kmeans", cluster_no=n)
-    cluster_json = json.loads(cluster)
-    print(cluster_json["labels"])
+    clustered_data = cluster_request(json.dumps(masked_data), cluster_type="kmeans", cluster_no=n)
+    cluster_json = json.loads(clustered_data)
 
-    print(len(cluster_json["labels"]))
-    return jsonify(cluster)
+    return jsonify(clustered_data)
 
 
 @app.route('/convert_to_netcdf/<index_json>', methods=['POST'])

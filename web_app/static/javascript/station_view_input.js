@@ -68,7 +68,7 @@ document.getElementById("add_cluster").onclick = function () {
     } else if (cluster_type === "dbscan") {
         let min_samp = document.getElementById("minimum_samples_for_cluster").value;
         let eps_val = document.getElementById("eps_value").value;
-        let clu_test = new process_stack.k_means_cluster(c_nu);
+        let clu_test = new process_stack.dbscan_cluster(min_samp,eps_val);
         proc_stack.add(clu_test);
     }
     update_stack_html();
