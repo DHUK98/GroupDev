@@ -8,7 +8,7 @@ def list_files(path, with_path=True):
     for file in os.listdir(path):
         if file.endswith(".json") and not file.startswith("info") and not file.startswith("keys"):
             if with_path:
-                output.append(path + file)
+                output.append(os.path.join(path , file))
             else:
                 output.append(file)
     output.sort()
