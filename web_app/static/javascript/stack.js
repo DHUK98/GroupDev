@@ -66,7 +66,7 @@ let process_stack = {
             let accumulated_mask = [];
             let num_funcs = this.function_array.length;
             for (let i = 0; i < num_funcs; i++) {
-                let item = $('.stack_item').eq(i);      
+                let item = $('.stack_item').eq(i);
                 if (this.function_array[i].output != null) {
                     item.css("background-color", "#567D46");
                     continue;
