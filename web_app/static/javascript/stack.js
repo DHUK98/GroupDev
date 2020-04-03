@@ -23,9 +23,7 @@ let process_stack = {
             this.function_array.push(f);
             this.sort();
             for (let i = 0; i < this.function_array.length; i++) {
-                if (this.function_array[i].pos <= f.pos) {
-                    this.function_array[i].output = null;
-                }
+                this.function_array[i].output = null;
             }
         }
 
@@ -67,10 +65,6 @@ let process_stack = {
             let num_funcs = this.function_array.length;
             for (let i = 0; i < num_funcs; i++) {
                 let item = $('.stack_item').eq(i);
-                if (this.function_array[i].output != null) {
-                    item.css("background-color", "#567D46");
-                    continue;
-                }
                 console.log(this.function_array[i].name() + " started");
 
 
@@ -225,7 +219,20 @@ let process_stack = {
          * @returns {Promise<T>}
          */
         this.compute = function (acc) {
-            return kmeans_cluster_func(acc, this.n).then(
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    url: '/cluster/req/' + iid + "/" + this.n,
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    success: function (data__) {
+                        let out = JSON.parse(data__);
+                        let d = {"lat": out["centroids"][0], "lon": out["centroids"][1], "labels": out["labels"]};
+                        resolve(d);
+                    },
+                    data: JSON.stringify(JSON.stringify(acc))
+                })
+            }).then(
                 result => {
                     this.output = result;
                     this.mask = this.output["labels"];
@@ -247,11 +254,12 @@ let process_stack = {
             return "N: " + this.n;
         };
     },
-    dbscan_cluster: function (num_clusters) {
+    dbscan_cluster: function (min_samp, eps) {
         this.pos = 1;
         this.id = Math.floor(Math.random() * 110000);
         this.mask = [];
-        this.n = num_clusters;
+        this.min_samp = min_samp;
+        this.eps = eps;
 
         /**
          *
@@ -259,7 +267,22 @@ let process_stack = {
          * @returns {Promise<T>}
          */
         this.compute = function (acc) {
-            return kmeans_cluster_func(acc, this.n).then(
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    url: '/cluster/req/' + iid + "/" + this.min_samp + "/" + this.eps,
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    success: function (data__) {
+                        console.log("Clustered sucessfully (DBScan)");
+                        out = JSON.parse(data__);
+
+                        let d = {"lat": out["centroids"][0], "lon": out["centroids"][1], "labels": out["labels"]};
+                        resolve(d);
+                    },
+                    data: JSON.stringify(acc)
+                })
+            }).then(
                 result => {
                     this.output = result;
                     this.mask = this.output["labels"];
@@ -271,14 +294,14 @@ let process_stack = {
          * @returns {string}
          */
         this.name = function () {
-            return "Cluster (K-means)";
+            return "Cluster (DBSCAN)";
         };
 
         /**
          *
          */
         this.toString = function () {
-            return "N: " + this.n;
+            return "Minimum Samples for cluster " + this.min_samp + ", EPS: " + this.eps;
         };
     },
 };

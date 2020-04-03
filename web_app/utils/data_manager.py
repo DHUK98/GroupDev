@@ -64,7 +64,7 @@ def get_datas(path, iis):
             print(len(acc["lat"]))
     print(ommitted)
     print(acc.keys())
-    return acc
+    return acc, list(acc.keys())
 
 
 def apply_mask(mask, d):
