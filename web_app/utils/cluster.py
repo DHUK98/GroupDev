@@ -13,7 +13,6 @@ import numpy as np
 Functions for all clustering of data
 '''
 
-
 def get_trajectory_array(dimensionArray, n):
     # Return a 241 point array of the different data points for a particular dimension dimension should be a string of
     # either time, latitude, longitude, height, or pressure n is which trajectory - from 0 to 8756. Each one is a

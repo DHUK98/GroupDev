@@ -60,10 +60,10 @@ def station(iid):
     with open(join(path_to_station, "info.json")) as json_file:
         data = json.load(json_file)
         lat = data["lat"]
-        lng = data["lon"]
+        lon = data["lon"]
         name = data["Station"]
 
-    return render_template('station_view.html', id=iid, lat=lat, lng=lng, name=name, file_ns=file_names, keys=data_keys)
+    return render_template('station_view.html', id=iid, lat=lat, lon=lon, name=name, file_ns=file_names, keys=data_keys)
 
 
 @app.route('/cluster/req/<iid>/<min_samp>/<eps_val>', methods=['POST'])
@@ -75,13 +75,6 @@ def cluster_dbscan(iid, min_samp, eps_val):
 
     clustered_data = cluster_request(json.dumps(masked_data), cluster_type='dbscan', min_samples=int(min_samp),
                                      eps=int(eps_val))
-    cluster_json = json.loads(clustered_data)
-
-    # centroid_sizes = Counter(cluster_json['labels'])
-    # c_colours = get_median_colours(masked_data, cluster_json['labels'], "height")
-    # cluster_json["colours"] = c_colours
-
-    clustered_data = json.dumps(cluster_json)
 
     return jsonify(clustered_data)
 
@@ -92,11 +85,11 @@ def cluster(iid, n):
     mask = request.get_json()
     # print(data)
     full_data = json.loads(session.get("data"))
+    print(mask)
     masked_data = apply_mask(mask, full_data)
 
     # K-means request
     clustered_data = cluster_request(json.dumps(masked_data), cluster_type="kmeans", cluster_no=n)
-    cluster_json = json.loads(clustered_data)
 
     return jsonify(clustered_data)
 

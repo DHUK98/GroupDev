@@ -35,7 +35,7 @@
                                 <input class="w3-check data_tickbox" type="checkbox">
                                 <label>{{ segment }}</label>
                             <p></p>
-                            <ul>
+                            <ul class="key_list">
                                 {% for k in keys[loop.index - 1] %}
                                     <li>{{ k }}</li>
                                 {% endfor %}
@@ -151,66 +151,94 @@
         <div class="output">
             <div class="scroll">
                 <a id="export_data_button" class="w3-button w3-teal">Export Output</a>
-
-                <!--                % charts and stuff %-->
-
-                <canvas id="OutputCanvas"></canvas>
-
-
-                <!--                <script>
-
-                                    // var ctx = document.getElementById('OutputCanvas');
-                                    //
-                                    // var myChart = new Chart(ctx, {
-                                    //     type: 'bar',
-                                    //     data: {
-                                    //         labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                                    //         datasets: [{
-                                    //             label: '# of Votes',
-                                    //             data: [12, 19, 3, 5, 2, 3],
-                                    //             backgroundColor: [
-                                    //                 'rgba(255, 99, 132, 0.2)',
-                                    //                 'rgba(54, 162, 235, 0.2)',
-                                    //                 'rgba(255, 206, 86, 0.2)',
-                                    //                 'rgba(75, 192, 192, 0.2)',
-                                    //                 'rgba(153, 102, 255, 0.2)',
-                                    //                 'rgba(255, 159, 64, 0.2)'
-                                    //             ],
-                                    //             borderColor: [
-                                    //                 'rgba(255, 99, 132, 1)',
-                                    //                 'rgba(54, 162, 235, 1)',
-                                    //                 'rgba(255, 206, 86, 1)',
-                                    //                 'rgba(75, 192, 192, 1)',
-                                    //                 'rgba(153, 102, 255, 1)',
-                                    //                 'rgba(255, 159, 64, 1)'
-                                    //             ],
-                                    //             borderWidth: 1
-                                    //         }]
-                                    //     },
-                                    //     options: {
-                                    //         scales: {
-                                    //             yAxes: [{
-                                    //                 ticks: {
-                                    //                     beginAtZero: true
-                                    //                 }
-                                    //             }]
-                                    //         }
-                                    //     }
-                                    // });
-                                  </script>  -->
-
-
+                {#                <canvas id="OutputCanvas"></canvas>#}
+                <div id="my_dataviz"></div>
             </div>
         </div>
 
     </div>
     <script src="{{ url_for('static', filename='javascript/station_utils.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/station_view_input.js') }}"></script>
-    <script src="{{ url_for('static', filename='javascript/station_view_output.js') }}"></script>
+    {#    <script src="{{ url_for('static', filename='javascript/station_view_output.js') }}"></script>#}
     <script src="{{ url_for('static', filename='javascript/data_utils.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/stack.js') }}"></script>
     <script>
+        // 2. Use the margin convention practice
+        var margin = {top: 50, right: 50, bottom: 50, left: 50}
+            , width = 300 - margin.left - margin.right // Use the window's width
+            , height = 250 - margin.top - margin.bottom; // Use the window's height
 
+        // The number of datapoints
+        var n = 40;
+
+        // 5. X scale will use the index of our data
+        var xScale = d3.scaleLinear()
+            .domain([0, n - 1]) // input
+            .range([0, width]); // output
+
+        // 6. Y scale will use the randomly generate number
+        var yScale = d3.scaleLinear()
+            .domain([0, 1]) // input
+            .range([height, 0]); // output
+
+        // 7. d3's line generator
+        var line = d3.line()
+            .x(function (d, i) {
+                return xScale(i);
+            }) // set the x values for the line generator
+            .y(function (d) {
+                return yScale(d.y);
+            }) // set the y values for the line generator
+            .curve(d3.curveMonotoneX) // apply smoothing to the line
+
+        // 8. An array of objects of length N. Each object has key -> value pair, the key being "y" and the value is a random number
+        var dataset = d3.range(n).map(function (d) {
+            return {"y": d3.randomUniform(1)()}
+        })
+
+        // 1. Add the SVG to the page and employ #2
+        var svg2 = d3.select("#my_dataviz").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+            .attr("class", "graph-svg-component");
+
+        // 3. Call the x axis in a group tag
+        svg2.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(xScale)); // Create an axis component with d3.axisBottom
+
+        // 4. Call the y axis in a group tag
+        svg2.append("g")
+            .attr("class", "y axis")
+            .call(d3.axisLeft(yScale)); // Create an axis component with d3.axisLeft
+
+        // 9. Append the path, bind the data, and call the line generator
+        svg2.append("path")
+            .datum(dataset) // 10. Binds data to the line
+            .attr("class", "line") // Assign a class for styling
+            .attr("d", line); // 11. Calls the line generator
+
+        // 12. Appends a circle for each datapoint
+        svg2.selectAll(".dot")
+            .data(dataset)
+            .enter().append("circle") // Uses the enter().append() method
+            .attr("class", "dot") // Assign a class for styling
+            .attr("cx", function (d, i) {
+                return xScale(i)
+            })
+            .attr("cy", function (d) {
+                return yScale(d.y)
+            })
+            .attr("r", 3)
+            .on("mouseover", function (a, b, c) {
+                console.log(a)
+                this.attr('class', 'focus')
+            })
+            .on("mouseout", function () {
+            });
 
         let coll = document.getElementsByClassName("collapsible");
         let i;
@@ -225,41 +253,29 @@
                 }
             });
         }
+
+
         // Id of the stations
         let iid = "{{ id }}";
         let file_ns = {{ file_ns|tojson }};
-
-        console.log(file_ns);
-
-
-        // Latitude and longitude of the station
         let proc_stack = new process_stack.stack();
-
         let lat = {{ lat }};
-        let lng = {{ lng }};
-        {#let pp = "{{ url_for('static', filename='stations/CGR/ERA-Interim_1degree_CapeGrim_100m_2016_hourly.json') }}";#}
-        console.log(lat);
-        console.log(lng);
+        let lon = {{ lon }};
 
 
-        let lats = [], longs = [];
-        let p = [];
-        let p_ = [];
         let trans = [0, 0, 1];
-        let data = null;
 
-
-        const projection_ = d3.geoAzimuthalEquidistant().rotate([-lng, -lat]);
-        const path = d3.geoPath().projection(projection_);
+        const projection = d3.geoAzimuthalEquidistant().rotate([-lon, -lat]);
+        const path = d3.geoPath().projection(projection);
         const zoom = d3.zoom().scaleExtent([1, 9]).on('zoom', zoomed);
 
         const svg = d3.select('#svg_map');
         let w = parseInt(svg.style("width"));
         let h = parseInt(svg.style("height"));
         const div = d3.select(".map");
-        const canvasLayer = div.append('canvas').attr('id', 'heatmap').attr('width', w).attr('height', h);
-        let canvas = canvasLayer.node(),
-            context = canvas.getContext("2d");
+        {#const canvasLayer = div.append('canvas').attr('id', 'heatmap').attr('width', w).attr('height', h);#}
+        {#let canvas = canvasLayer.node(),#}
+        {#    context = canvas.getContext("2d");#}
         const g = svg.append('g').call(d3.zoom().on("zoom", function () {
             svg.attr("transform", d3.event.transform)
         }));
@@ -267,10 +283,10 @@
         svg.style("width", "100%");
         g.call(zoom);
 
-        renderMap();
+        renderMap(projection, path, lat, lon);
 
 
-        function renderMap() {
+        function renderMap(proj, path, lat, lon) {
             d3.json("{{ url_for('static', filename='world-110m2.json') }}")
                 .then(world => {
                     g.append('path')
@@ -288,15 +304,16 @@
                         .attr('class', 'boundary')
                         .attr('d', path);
                     g.append("circle")
-                        .attr("cx", projection_([lng, lat])[0])
-                        .attr("cy", projection_([lng, lat])[1])
+                        .attr("cx", proj([lon, lat])[0])
+                        .attr("cy", proj([lon, lat])[1])
                         .attr("r", 2.5)
                         .style("fill", "white");
                 });
 
+
         }
 
-        let center_point = projection_([lng, lat]);
+        let center_point = projection([lon, lat]);
 
         function renderSector(start, end, dist) {
             g.select(".arc").remove();
@@ -316,10 +333,10 @@
 
         let lineFunction = d3.line()
             .x(function (d) {
-                return projection_([d[1], d[0]])[0];
+                return projection([d[1], d[0]])[0];
             })
             .y(function (d) {
-                return projection_([d[1], d[0]])[1];
+                return projection([d[1], d[0]])[1];
             });
 
 
@@ -401,13 +418,6 @@
             g.selectAll('circle')
                 .attr('transform', d3.event.transform);
             g.selectAll('.arc').attr("transform", "translate(" + center_point[0] * d3.event.transform.k + "," + center_point[1] * d3.event.transform.k + ")" + d3.event.transform);
-            {#context.save();#}
-            {#context.clearRect(0, 0, w, h);#}
-            {#context.translate(d3.event.transform.x, d3.event.transform.y);#}
-            {#context.scale(d3.event.transform.k, d3.event.transform.k);#}
-            {#draw_heat();#}
-            {#context.fill();#}
-            {#context.restore();#}
         }
 
 

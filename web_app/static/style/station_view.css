@@ -111,5 +111,34 @@
     visibility: visible;
 }
 
+.key_list {
+    height: 100px;
+    width: 100%;
+    overflow-y: scroll;
+    list-style: none;
+    padding-left: 0;
+}
+.key_list li {
+    position: relative;
+    padding-left: 20px;
+}
+.key_list li:before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    background-image: url('../images/favicon.ico');
+    background-size: cover;
+    background-position: center;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
 
-.key_div { border:2px solid #ccc; height: 75px; overflow-y: scroll; }
+.output .scroll > * {
+    margin: 20px 0;
+}
+
+.output .scroll > *:first-child {
+    margin-top: 0px;
+}

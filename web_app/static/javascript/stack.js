@@ -81,6 +81,7 @@ let process_stack = {
                 console.log(this.function_array[i].output);
             }
             if (this.function_array[num_funcs - 1].output["lat"]) {
+                console.log(accumulated_mask);
                 render_all_lines(this.function_array[num_funcs - 1].output);
             } else {
                 await process_stack.get_data(accumulated_mask).then(data => {
@@ -230,7 +231,7 @@ let process_stack = {
                         let d = {"lat": out["centroids"][0], "lon": out["centroids"][1], "labels": out["labels"]};
                         resolve(d);
                     },
-                    data: JSON.stringify(JSON.stringify(acc))
+                    data: JSON.stringify(acc)
                 })
             }).then(
                 result => {
