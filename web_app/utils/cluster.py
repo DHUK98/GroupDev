@@ -143,7 +143,7 @@ def cluster_request(json_msg, keys, cluster_type, cluster_no=5, min_samples=70, 
         for i in range(len(labels)):
             labels[i] += 1
 
-        centroids = get_centroids(X, labels)
+        centroids = get_centroids(X, labels, len(keys))
 
         json_dict = {'labels': labels.tolist(),
                      'centroids': centroids,
