@@ -87,7 +87,7 @@ def get_centroids(X, labels, N):
 
         cent = calculate_centroid(cluster)
 
-        dimensions = vector.vecToTraj(cent)
+        dimensions = vector.vec_to_traj(cent, N)
 
         for n in range(N):
             centroids[n].append(dimensions[n])
