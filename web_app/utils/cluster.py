@@ -2,7 +2,7 @@
 Use various cluster algorithms to cluster trajectories
 """
 
-import json
+import ujson as json
 from scipy.cluster.hierarchy import linkage, fcluster
 from sklearn.cluster import KMeans, DBSCAN,MiniBatchKMeans
 from . import vector
