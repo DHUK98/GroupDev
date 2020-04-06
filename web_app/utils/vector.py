@@ -56,9 +56,7 @@ def vecToTraj(vec):
     # Convert vector (numpy array) into 2 trajectory dimensions
     # E.g. array [0,1,2,3,4,5] -> [0,1,2] and [3,4,5]
 
-
     dim1 = vec[:len(vec) // 2]
     dim2 = vec[len(vec) // 2:]
 
     return dim1, dim2
-

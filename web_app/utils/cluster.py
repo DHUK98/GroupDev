@@ -5,7 +5,7 @@ Use various cluster algorithms to cluster trajectories
 import ujson as json
 from scipy.cluster.hierarchy import linkage, fcluster
 from sklearn.cluster import KMeans, DBSCAN, MiniBatchKMeans
-from . import vector
+import utils.vector as vector
 import pickle
 import numpy as np
 
@@ -48,7 +48,20 @@ def get_cluster_points(data, data_labels, target_label):
 #     Z = pickle.load(file)
 #
 #     return Z
+def toVector(dims):
+    # Convert arrays of data for 2 dimensions into single clusterable vector
+    data = []
 
+    for i in range(len(dims[0])):
+        templists = []
+        for d in dims:
+            templists.append(d[i])
+
+        data.append(vector.traj_to_vec(templists))
+
+    X = np.array(data)
+
+    return X
 
 def calculate_centroid(cluster):
     # Function to calculate the centroid (mean) of a cluster
@@ -110,7 +123,7 @@ def cluster_request(json_msg, keys, cluster_type, cluster_no=5, min_samples=70, 
     for k in keys:
         dimensions.append(loaded.get(k))
 
-    X = vector.traj_to_vec(dimensions)
+    X = toVector(dimensions)
 
     try:
         if cluster_type == 'kmeans':
@@ -164,4 +177,3 @@ def cluster_request(json_msg, keys, cluster_type, cluster_no=5, min_samples=70, 
         json_msg = json.dumps(json_dict)
 
         return json_msg
-
