@@ -110,9 +110,9 @@ def cluster_request(json_msg, cluster_type, cluster_no=5, min_samples=70, eps=50
     for k in keys:
         dimensions.append(loaded.get(k))
 
-    # X = vector.traj_to_vec(dimensions)
+    X = vector.traj_to_vec(dimensions)
 
-    X = vector.trajToVec(dimensions[0], dimensions[1])
+    # X = vector.trajToVec(dimensions[0], dimensions[1])
 
 
     try:
