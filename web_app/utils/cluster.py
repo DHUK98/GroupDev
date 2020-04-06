@@ -96,7 +96,7 @@ def get_centroids(X, labels, N):
 
 
 # Function to handle both Kmeans and DBSCAN clustering, with potential to expand
-def cluster_request(json_msg, keys, cluster_type, cluster_no=5, min_samples=70, eps=50):
+def cluster_request(json_msg, cluster_type, cluster_no=5, min_samples=70, eps=50, keys=('lat','lon')):
     # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon), and
     # number of clusters
 
@@ -110,7 +110,10 @@ def cluster_request(json_msg, keys, cluster_type, cluster_no=5, min_samples=70, 
     for k in keys:
         dimensions.append(loaded.get(k))
 
-    X = vector.traj_to_vec(dimensions)
+    # X = vector.traj_to_vec(dimensions)
+
+    X = vector.trajToVec(dimensions[0], dimensions[1])
+
 
     try:
         if cluster_type == 'kmeans':
@@ -144,6 +147,8 @@ def cluster_request(json_msg, keys, cluster_type, cluster_no=5, min_samples=70, 
             labels[i] += 1
 
         centroids = get_centroids(X, labels, len(keys))
+
+        print(len(centroids), 'centroids')
 
         json_dict = {'labels': labels.tolist(),
                      'centroids': centroids,
