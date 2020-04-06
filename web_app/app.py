@@ -89,7 +89,7 @@ def cluster(iid, n):
     masked_data = apply_mask(mask, full_data)
 
     # K-means request
-    clustered_data = cluster_request(json.dumps(masked_data), cluster_type="kmeans", cluster_no=n)
+    clustered_data = cluster_request(json.dumps(masked_data),["lat","lon"], cluster_type="kmeans", cluster_no=n)
 
     return jsonify(clustered_data)
 
