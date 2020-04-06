@@ -1,9 +1,9 @@
 import gzip
-from collections import Counter
+import io
 from os.path import join, dirname, realpath
 
 import ujson as json
-from flask import Flask, render_template, request, session, jsonify, make_response
+from flask import Flask, render_template, request, session, jsonify, make_response, Response
 from flask_session import Session
 
 import utils.sector as sec
@@ -12,6 +12,8 @@ from utils.data_manager import apply_mask, get_datas, list_files, get_keys
 from utils.json_to_netcdf import json_to_netcdf
 from utils.median_calc import get_median_colours
 from utils.zip_netcdf import zip_netcdf_exports, delete_nc_exports
+from matplotlib.backends.backend_svg import FigureCanvasSVG
+import utils.plotter as plotter
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '\ni-\x9e\xd2\xc2\xf4%\xa8\xa0\x99\xa1\xd5z\x05\xb9\xca\x0fQ\x04\xa0\xe6v\x81'
@@ -41,6 +43,12 @@ def load_data(id):
     session["keys"] = json.dumps(keys)
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
+@app.route("/test_figure")
+def test_figure():
+    fig = plotter.plot_svg()
+    output = io.BytesIO()
+    FigureCanvasSVG(fig).print_svg(output)
+    return Response(output.getvalue(), mimetype="image/svg+xml")
 
 @app.route('/station/<iid>')
 def station(iid):
