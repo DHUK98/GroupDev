@@ -31,11 +31,10 @@ def sector_point(x, y, start_ang, end_ang, dist):
 
 
 def sector(id, i, start_ang, end_ang, dist, thresh):
-
     print("sector.py sector start")
     output = []
     # data = get_data(id, i)
-    data = json.loads(session.get('data'))
+    data = session.get('data')
     lat = data["lat"]
     lon = data["lon"]
     transformer = Transformer.from_crs({"proj": "longlat", "datum": 'WGS84'},
@@ -66,7 +65,7 @@ def sector(id, i, start_ang, end_ang, dist, thresh):
 
 
 def filter(id, i, var, min, max, thresh):
-    data = json.loads(session.get('data'))[var]
+    data = session.get('data')[var]
     r = []
     for j in range(len(data)):
         cur_traj = data[j]

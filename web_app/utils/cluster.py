@@ -8,6 +8,7 @@ from sklearn.cluster import KMeans, DBSCAN, MiniBatchKMeans
 import utils.vector as vector
 import pickle
 import numpy as np
+from collections import Counter
 
 '''
 Functions for all clustering of data
@@ -62,6 +63,7 @@ def toVector(dims):
     X = np.array(data)
 
     return X
+
 
 def calculate_centroid(cluster):
     # Function to calculate the centroid (mean) of a cluster
@@ -160,7 +162,8 @@ def cluster_request(json_msg, keys, cluster_type, cluster_no=5, min_samples=70, 
 
         json_dict = {'labels': labels.tolist(),
                      'centroids': centroids,
-                     'keys': keys
+                     'keys': keys,
+                     'count': list(Counter(labels).values())
                      }
         json_msg = json.dumps(json_dict)
 
