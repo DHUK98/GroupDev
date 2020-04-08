@@ -1,10 +1,10 @@
 import gzip
 import io
 from os.path import join, dirname, realpath
-from mpl_toolkits.mplot3d import Axes3D
 
 import ujson as json
-from flask import Flask, render_template, request, session, jsonify, make_response, Response
+from copy import copy
+from flask import Flask, render_template, request, session, jsonify, make_response, Response, send_file
 from flask_session import Session
 
 import utils.sector as sec
@@ -42,25 +42,46 @@ def load_data(id):
     data, keys = get_datas(path_to_station, indexs)
     session["data"] = data
     session["keys"] = json.dumps(keys)
-    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    return jsonify(session.get("keys"))
 
-@app.route("/test_figure")
-def test_figure():
-    full_data = session.get("data")
-    clustered_data = cluster_request(json.dumps(full_data), ["pressure"], cluster_type="kmeans", cluster_no=6)
-    data = json.loads(clustered_data)
-    centroids = list(data["centroids"])
-    count = list(data["count"])
 
-    fig = plotter.plot_svg(centroids)
-    output = io.BytesIO()
-    FigureCanvasSVG(fig).print_svg(output)
+@app.route("/keys")
+def getkeys():
+    return jsonify(session.get("keys"))
 
-    return Response(output.getvalue(), mimetype="image/svg+xml")
 
 @app.route("/plot_figure", methods=["POST"])
+def plot_figure():
     data = request.get_json()
+
+    keys = list(data[0])
+    num_clusters = int(data[1])
+    mask = list(data[2])
+    print((mask))
+
     full_data = session.get("data")
+    centroids = []
+    counts = []
+    for m in mask:
+        masked_data = apply_mask(m, full_data)
+        clustered_data = cluster_request(masked_data, keys, cluster_type="kmeans", cluster_no=num_clusters)
+        centroids.append(list(clustered_data["centroids"]))
+        counts.append(len(m) - m.count(0))
+    print(counts)
+    # count = list(clustered_data["count"])
+
+    if len(keys) <= 2:
+        fig = plotter.plot_svg(centroids, keys, counts)
+    else:
+        fig = plotter.plot_svg3d(centroids, keys, counts)
+
+    output = io.StringIO()
+    fig.savefig(output, format='svg')
+    output.seek(0)  # rewind the data
+    val = '<svg' + output.getvalue().split('<svg')[1]
+    r = Response(val, mimetype="html")
+    return r
+
 
 @app.route('/station/<iid>')
 def station(iid):
@@ -93,7 +114,8 @@ def cluster_dbscan(iid, min_samp, eps_val):
     full_data = session.get("data")
     masked_data = apply_mask(mask, full_data)
 
-    clustered_data = cluster_request(json.dumps(masked_data),["lat","lon"], cluster_type='dbscan', min_samples=int(min_samp),
+    clustered_data = cluster_request(json.dumps(masked_data), ["lat", "lon"], cluster_type='dbscan',
+                                     min_samples=int(min_samp),
                                      eps=int(eps_val))
 
     return jsonify(clustered_data)
@@ -105,12 +127,11 @@ def cluster(iid, n):
     mask = request.get_json()
     # print(data)
     full_data = session.get("data")
-    print(mask)
     masked_data = apply_mask(mask, full_data)
 
     # K-means request
-    clustered_data = cluster_request(json.dumps(masked_data),["lat","lon"], cluster_type="kmeans", cluster_no=n)
-
+    clustered_data = cluster_request(masked_data, ["lat", "lon"], cluster_type="kmeans", cluster_no=n)
+    clustered_data = json.dumps(clustered_data)
     return jsonify(clustered_data)
 
 

@@ -68,7 +68,7 @@ document.getElementById("add_cluster").onclick = function () {
     } else if (cluster_type === "dbscan") {
         let min_samp = document.getElementById("minimum_samples_for_cluster").value;
         let eps_val = document.getElementById("eps_value").value;
-        let clu_test = new process_stack.dbscan_cluster(min_samp,eps_val);
+        let clu_test = new process_stack.dbscan_cluster(min_samp, eps_val);
         proc_stack.add(clu_test);
     }
     update_stack_html();
@@ -109,6 +109,16 @@ document.getElementById("load_data_button").onclick = function () {
         contentType: 'application/json',
         success: function (d) {
             console.log("data loaded");
+            let keys = JSON.parse(d);
+            console.log(keys);
+            let opt = $("#filter_option");
+            opt.empty();
+            for (let i = 0; i < keys.length; i++) {
+                let elem = document.createElement("option");
+                elem.value = keys[i];
+                elem.innerHTML = keys[i];
+                opt.append(elem);
+            }
         },
         data: JSON.stringify([ticked])
     });
@@ -124,9 +134,9 @@ function Delete(currentEl, name) {
     currentEl.parentNode.parentNode.removeChild(currentEl.parentNode);
 }
 
-let download_button = document.getElementById('export_data_button').onclick = function () {
-    zip_files();
-};
+// let download_button = document.getElementById('export_data_button').onclick = function () {
+//     zip_files();
+// };
 
 
 function zip_files() {
