@@ -5,6 +5,7 @@ let options = {
 };
 
 let stackList = new List("stack_list", options);
+var data_load = false;
 
 
 function update_stack_html() {
@@ -90,6 +91,7 @@ document.getElementById("add_filter").onclick = function () {
 };
 
 document.getElementById("load_data_button").onclick = function () {
+    $('body').addClass('wait');
     let boxes = $(".data_tickbox");
     let key_ticked = [];
     let ticked = [];
@@ -109,6 +111,7 @@ document.getElementById("load_data_button").onclick = function () {
         contentType: 'application/json',
         success: function (d) {
             console.log("data loaded");
+            data_load = true;
             let keys = JSON.parse(d);
             console.log(keys);
             let opt = $("#filter_option");
@@ -119,6 +122,7 @@ document.getElementById("load_data_button").onclick = function () {
                 elem.innerHTML = keys[i];
                 opt.append(elem);
             }
+            $('body').removeClass('wait');
         },
         data: JSON.stringify([ticked])
     });
@@ -126,7 +130,14 @@ document.getElementById("load_data_button").onclick = function () {
 
 
 document.getElementById("calculate").onclick = function () {
-    proc_stack.calculate();
+    if (data_load) {
+        $('body').addClass('wait');
+        proc_stack.calculate();
+        $('body').removeClass('wait');
+    } else {
+        alert("Please load 1 or more data files before calculating.");
+    }
+
 };
 
 function Delete(currentEl, name) {
