@@ -57,23 +57,18 @@ def plot_figure():
     keys = list(data[0])
     num_clusters = int(data[1])
     mask = list(data[2])
-    print((mask))
 
     full_data = session.get("data")
     centroids = []
-    counts = []
-    for m in mask:
-        masked_data = apply_mask(m, full_data)
-        clustered_data = cluster_request(masked_data, keys, cluster_type="kmeans", cluster_no=num_clusters)
-        centroids.append(list(clustered_data["centroids"]))
-        counts.append(len(m) - m.count(0))
-    print(counts)
-    # count = list(clustered_data["count"])
+    masked_data = apply_mask(mask, full_data)
+    clustered_data = cluster_request(masked_data, keys, cluster_type="kmeans", cluster_no=num_clusters)
+    centroids.append(list(clustered_data["centroids"]))
+    count = list(clustered_data["count"])
 
     if len(keys) <= 2:
-        fig = plotter.plot_svg(centroids, keys, counts)
+        fig = plotter.plot_svg(centroids, keys, count)
     else:
-        fig = plotter.plot_svg3d(centroids, keys, counts)
+        fig = plotter.plot_svg3d(centroids, keys, count)
 
     output = io.StringIO()
     fig.savefig(output, format='svg')

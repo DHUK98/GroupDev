@@ -197,9 +197,7 @@
             let k = parseInt($("#k_cluster").val());
             let clust = parseInt($("#nu_clust").val());
             let mask = [];
-            for (let j = 0; j < 6; j++) {
-                mask.push(get_cluster_from_mask(proc_stack.mask, j + 1));
-            }
+            mask = get_cluster_from_mask(proc_stack.mask,clust);
             $.ajax({
                 url: '/plot_figure',
                 type: 'post',
