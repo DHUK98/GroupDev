@@ -6,6 +6,11 @@
     height: 100vh;
 }
 
+body.wait *, body.wait
+{
+    cursor: progress !important;
+}
+
 .head {
     grid-column: 1;
 }
