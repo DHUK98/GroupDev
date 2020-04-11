@@ -1,7 +1,6 @@
 from pyproj import Transformer
 import math
 from flask import session
-import json
 import numpy as np
 
 

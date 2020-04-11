@@ -1,7 +1,8 @@
 import os
 
 import ujson as json
-
+from copy import deepcopy
+import ujson as json
 
 def list_files(path, with_path=True):
     output = []
@@ -68,8 +69,12 @@ def get_datas(path, iis):
 
 
 def apply_mask(mask, d):
+    # do not remove json.load(json.dumps( it may look weird but its much faster than deepcopy
+    data = json.loads(json.dumps(d))
+    if not mask:
+        return data
     for i, keep in enumerate(mask):
         if not keep:
-            for key in d:
-                del d[key][i - len(mask)]
-    return d
+            for key in data:
+                del data[key][i - len(mask)]
+    return data

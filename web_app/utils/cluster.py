@@ -114,11 +114,10 @@ def get_centroids(X, labels, N):
 def cluster_request(json_msg, cluster_type, cluster_no=5, min_samples=70, eps=50, keys=('lat','lon')):
     # Take input of json message containing array of dimension 1, array of dimension 2 (generally lat and lon), and
     # number of clusters
-
     print("Cluster type is " + str(cluster_type))
 
     # Read json message
-    loaded = json.loads(json_msg)
+    loaded = json_msg
 
     dimensions = []
 
@@ -172,16 +171,16 @@ def cluster_request(json_msg, cluster_type, cluster_no=5, min_samples=70, eps=50
                      }
         json_msg = json.dumps(json_dict)
 
-        return json_msg
+        return json_dict
 
     # Error handling for empty trajectory list
-    except ValueError:
-        print('No trajectories found in that sector/filter')
-
+    except Exception as e:
+        print(e)
         json_dict = {'labels': [],
                      'centroids': [],
-                     'keys': keys
+                     'keys': keys,
+                     'count': []
                      }
         json_msg = json.dumps(json_dict)
 
-        return json_msg
+        return json_dict

@@ -5,6 +5,7 @@ let options = {
 };
 
 let stackList = new List("stack_list", options);
+var data_load = false;
 
 
 function update_stack_html() {
@@ -68,7 +69,7 @@ document.getElementById("add_cluster").onclick = function () {
     } else if (cluster_type === "dbscan") {
         let min_samp = document.getElementById("minimum_samples_for_cluster").value;
         let eps_val = document.getElementById("eps_value").value;
-        let clu_test = new process_stack.dbscan_cluster(min_samp,eps_val);
+        let clu_test = new process_stack.dbscan_cluster(min_samp, eps_val);
         proc_stack.add(clu_test);
     }
     update_stack_html();
@@ -90,6 +91,7 @@ document.getElementById("add_filter").onclick = function () {
 };
 
 document.getElementById("load_data_button").onclick = function () {
+    $('body').addClass('wait');
     let boxes = $(".data_tickbox");
     let key_ticked = [];
     let ticked = [];
@@ -109,6 +111,18 @@ document.getElementById("load_data_button").onclick = function () {
         contentType: 'application/json',
         success: function (d) {
             console.log("data loaded");
+            data_load = true;
+            let keys = JSON.parse(d);
+            console.log(keys);
+            let opt = $("#filter_option");
+            opt.empty();
+            for (let i = 0; i < keys.length; i++) {
+                let elem = document.createElement("option");
+                elem.value = keys[i];
+                elem.innerHTML = keys[i];
+                opt.append(elem);
+            }
+            $('body').removeClass('wait');
         },
         data: JSON.stringify([ticked])
     });
@@ -116,7 +130,14 @@ document.getElementById("load_data_button").onclick = function () {
 
 
 document.getElementById("calculate").onclick = function () {
-    proc_stack.calculate();
+    if (data_load) {
+        $('body').addClass('wait');
+        proc_stack.calculate();
+        $('body').removeClass('wait');
+    } else {
+        alert("Please load 1 or more data files before calculating.");
+    }
+
 };
 
 function Delete(currentEl, name) {
@@ -124,9 +145,9 @@ function Delete(currentEl, name) {
     currentEl.parentNode.parentNode.removeChild(currentEl.parentNode);
 }
 
-let download_button = document.getElementById('export_data_button').onclick = function () {
-    zip_files();
-};
+// let download_button = document.getElementById('export_data_button').onclick = function () {
+//     zip_files();
+// };
 
 
 function zip_files() {

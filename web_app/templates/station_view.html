@@ -9,7 +9,7 @@
 {% block content %}
     <div class="wrapper">
         <div class="w3-container w3-blue-grey head">
-            <h1>{{ name }} lat: {{ lat }} lon: {{ lng }}</h1>
+            <h1>{{ name }} lat: {{ lat }} lon: {{ lon }}</h1>
         </div>
         <div class="w3-container w3-teal head_in">
             <h1>Input</h1>
@@ -98,8 +98,6 @@
                     <div class="w3-container w3-white content">
                         <P></P>
                         <select id="filter_option" class="w3-select" name="option">
-                            <option value="height">Height</option>
-                            <option value="pressure">Pressure</option>
                         </select>
                         <P></P>
                         <label>Min</label>
@@ -150,96 +148,72 @@
 
         <div class="output">
             <div class="scroll">
-                <a id="export_data_button" class="w3-button w3-teal">Export Output</a>
-                {#                <canvas id="OutputCanvas"></canvas>#}
-{#                <img src="/test_figure">#}
-                <div id="my_dataviz"></div>
+                <div class="w3-card-4" id="cluster_div">
+                    <header class="w3-container w3-teal collapsible">
+                        <div class="w3-row-padding">
+                            <div class="w3-half">
+                                <h2>Cluster</h2>
+                            </div>
+                        </div>
+                    </header>
+                    <div id="cluster_container" class="w3-container w3-white content">
+                        <P></P>
+                        <label>Keys</label>
+                        <input class="w3-input" type="text" id="keys_cluster"><br>
+                        <label>K</label>
+                        <input class="w3-input" type="number" id="k_cluster"><br>
+                        <label>Cluster number</label>
+                        <input class="w3-input" type="numebr" id="nu_clust"><br>
+                        <a id="add_plot" class="w3-button w3-teal" onclick="add_plot()">Plot</a>
+                        <P></P>
+                    </div>
+                </div>
+
+                <dif id="plots"></dif>
             </div>
         </div>
 
     </div>
     <script src="{{ url_for('static', filename='javascript/station_utils.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/station_view_input.js') }}"></script>
-    {#    <script src="{{ url_for('static', filename='javascript/station_view_output.js') }}"></script>#}
     <script src="{{ url_for('static', filename='javascript/data_utils.js') }}"></script>
     <script src="{{ url_for('static', filename='javascript/stack.js') }}"></script>
     <script>
-        // 2. Use the margin convention practice
-        var margin = {top: 50, right: 50, bottom: 50, left: 50}
-            , width = 300 - margin.left - margin.right // Use the window's width
-            , height = 250 - margin.top - margin.bottom; // Use the window's height
 
-        // The number of datapoints
-        var n = 40;
+        function get_cluster_from_mask(mask, cluster_num) {
+            let temp = JSON.parse(JSON.stringify(mask));
+            for (let i = 0; i < temp.length; i++) {
+                if (temp[i] === cluster_num) {
+                    temp[i] = 1;
+                } else {
+                    temp[i] = 0;
+                }
+            }
+            return temp
+        }
 
-        // 5. X scale will use the index of our data
-        var xScale = d3.scaleLinear()
-            .domain([0, n - 1]) // input
-            .range([0, width]); // output
-
-        // 6. Y scale will use the randomly generate number
-        var yScale = d3.scaleLinear()
-            .domain([0, 1]) // input
-            .range([height, 0]); // output
-
-        // 7. d3's line generator
-        var line = d3.line()
-            .x(function (d, i) {
-                return xScale(i);
-            }) // set the x values for the line generator
-            .y(function (d) {
-                return yScale(d.y);
-            }) // set the y values for the line generator
-            .curve(d3.curveMonotoneX) // apply smoothing to the line
-
-        // 8. An array of objects of length N. Each object has key -> value pair, the key being "y" and the value is a random number
-        var dataset = d3.range(n).map(function (d) {
-            return {"y": d3.randomUniform(1)()}
-        })
-
-        // 1. Add the SVG to the page and employ #2
-        var svg2 = d3.select("#my_dataviz").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-            .attr("class", "graph-svg-component");
-
-        // 3. Call the x axis in a group tag
-        svg2.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(d3.axisBottom(xScale)); // Create an axis component with d3.axisBottom
-
-        // 4. Call the y axis in a group tag
-        svg2.append("g")
-            .attr("class", "y axis")
-            .call(d3.axisLeft(yScale)); // Create an axis component with d3.axisLeft
-
-        // 9. Append the path, bind the data, and call the line generator
-        svg2.append("path")
-            .datum(dataset) // 10. Binds data to the line
-            .attr("class", "line") // Assign a class for styling
-            .attr("d", line); // 11. Calls the line generator
-
-        // 12. Appends a circle for each datapoint
-        svg2.selectAll(".dot")
-            .data(dataset)
-            .enter().append("circle") // Uses the enter().append() method
-            .attr("class", "dot") // Assign a class for styling
-            .attr("cx", function (d, i) {
-                return xScale(i)
-            })
-            .attr("cy", function (d) {
-                return yScale(d.y)
-            })
-            .attr("r", 3)
-            .on("mouseover", function (a, b, c) {
-                console.log(a)
-                this.attr('class', 'focus')
-            })
-            .on("mouseout", function () {
+        function add_plot() {
+            let keys = $("#keys_cluster").val().split(",");
+            let k = parseInt($("#k_cluster").val());
+            let clust = parseInt($("#nu_clust").val());
+            let mask = [];
+            for (let j = 0; j < 6; j++) {
+                mask.push(get_cluster_from_mask(proc_stack.mask, j + 1));
+            }
+            $.ajax({
+                url: '/plot_figure',
+                type: 'post',
+                dataType: 'html',
+                contentType: 'application/json',
+                success: function (d) {
+                    console.log(d);
+                    let temp = document.createElement("img");
+                    temp.src = "data:image/svg+xml;base64, " + window.btoa(unescape(encodeURIComponent(d)));
+                    document.getElementById('plots').append(temp);
+                },
+                data: JSON.stringify([keys, k, mask])
             });
+        }
 
         let coll = document.getElementsByClassName("collapsible");
         let i;
@@ -339,39 +313,6 @@
                 return projection([d[1], d[0]])[1];
             });
 
-
-        function renderLines(mm, weight, colours) {
-            g.selectAll(".traj").remove();
-            let lat_lng = [mm["lat"], mm["lon"]];
-            let p = [];
-
-            // for each cluster
-            for (let l = 0; l < lat_lng[0].length; l++) {
-                p_ = [];
-                lats = lat_lng[0][l];
-                longs = lat_lng[1][l];
-
-                // for each traj in that cluster
-                for (let i = 0; i < lats.length; i++) {
-                    p_.push([lats[i], longs[i]]);
-                }
-                p.push(p_);
-            }
-
-            let m = Math.max(...weight);
-            for (let i = 0; i < lat_lng[0].length; i++) {
-                let w = weight[i];
-                let hsl_string = "".concat("hsl(", colours[i], ", 50%, 50%)");
-                g.append("path")
-                    .attr("class", "traj")
-                    .attr("d", lineFunction(p[i]))
-                    .attr("stroke", hsl_string)
-                    .attr("opacity", 0.7)
-                    .attr("stroke-width", (w / m) * 2.5)
-                    .attr("fill", "none")
-                    .attr("transform", "translate(" + trans[0] + "," + trans[1] + ")" + "scale(" + trans[2] + ")");
-            }
-        }
 
         function render_all_lines(mm, parse = false) {
             if (parse) {
