@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 from flask import session
 import ujson as json
 
-
 def plot_svg(data, keys, count):
     """ renders the plot on the fly.
     """
@@ -12,8 +11,7 @@ def plot_svg(data, keys, count):
 
     if len(data) == 1:
         ys = data[0]
-        for i in range(len(data[0])):
-            xs.append(range(240, -1, -1))
+        xs = list(range(240, -1, -1))
         plt.xlabel("time")
         plt.ylabel(keys[0])
     else:
@@ -23,7 +21,8 @@ def plot_svg(data, keys, count):
         plt.ylabel(keys[1])
 
     a = [float(i) / max(count) * 5 for i in count]
-
+    print(a)
+    print(count)
     for j in range(len(xs)):
         plt.plot(xs[j], ys[j], linewidth=a[j], label="cluster " + str(j + 1) + "[" + str(count[j]) + "]")
     plt.tight_layout()
@@ -41,15 +40,12 @@ def plot_svg3d(data, keys, count):
     ax.set_ylabel(keys[1])
     ax.set_zlabel(keys[2])
     a = [float(i) / max(count) * 5 for i in count]
+    xs = data[0]
+    ys = data[1]
+    zs = data[2]
 
-    for d in range(len(data)):
-        xs = data[d][0]
-        ys = data[d][1]
-        zs = data[d][2]
-
-        print(a)
-        for j in range(len(xs)):
-            plt.plot(xs[j], ys[j], zs[j], linewidth=a[d], label="cluster " + str(j + 1) + "[" + str(count[d]) + "]")
+    for j in range(len(xs)):
+        plt.plot(xs[j], ys[j], zs[j], linewidth=a[j], label="cluster " + str(j + 1) + "[" + str(count[j]) + "]")
     plt.tight_layout()
     plt.legend()
     plt.close()

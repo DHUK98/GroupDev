@@ -9,7 +9,7 @@ function sortFunction(a, b) {
 
 function convert_cluster_jsons(current_data) {
     for (let i = 0; i < current_data.length; i++) {
-        console.log("sending json to netcdf")
+        console.log("sending json to netcdf");
         send_json_to_netcdf(current_data[i], i);
     }
 }

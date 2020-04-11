@@ -84,12 +84,12 @@ let process_stack = {
             if (this.function_array[num_funcs - 1].output["lat"]) {
                 console.log(accumulated_mask);
                 console.log(this.function_array[num_funcs - 1].output);
-                render_all_lines(this.function_array[num_funcs - 1].output);
+                render_all_lines(this.function_array[num_funcs - 1].output,true);
             } else {
                 await process_stack.get_data(accumulated_mask).then(data => {
                     console.log("data back");
                     console.log(data);
-                    render_all_lines(data);
+                    render_all_lines(data,false);
                 });
             }
             this.mask = accumulated_mask;

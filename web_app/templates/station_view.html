@@ -197,9 +197,7 @@
             let k = parseInt($("#k_cluster").val());
             let clust = parseInt($("#nu_clust").val());
             let mask = [];
-            for (let j = 0; j < 6; j++) {
-                mask.push(get_cluster_from_mask(proc_stack.mask, j + 1));
-            }
+            mask = get_cluster_from_mask(proc_stack.mask, clust);
             $.ajax({
                 url: '/plot_figure',
                 type: 'post',
@@ -315,11 +313,7 @@
             });
 
 
-        function render_all_lines(mm, parse = false) {
-            if (parse) {
-                mm = JSON.parse(mm);
-            }
-
+        function render_all_lines(mm, clusters) {
             g.selectAll(".traj").remove();
             let lat_lng = [mm["lat"], mm["lon"]];
 
@@ -334,6 +328,17 @@
                 }
                 p.push(p_);
             }
+            let weights = new Array(lat_lng[0].length).fill(0.5);
+            if (clusters) {
+                weights = mm["count"];
+                console.log(weights);
+                let w = [];
+                for (let j = 0; j < weights.length; j++) {
+                    w.push(weights[j] / Math.max(...weights) * 5);
+                }
+                weights = w;
+            }
+
             // let m = Math.max(...weight);
             for (let i = 0; i < lat_lng[0].length; i++) {
                 // let w = weight[i];
@@ -344,7 +349,7 @@
                     .attr("stroke", function () {
                         return "gray";
                     }).attr("id", i)
-                    .attr("stroke-width", 0.5)
+                    .attr("stroke-width", weights[i])
                     .attr("fill", "none")
                     .attr("opacity", 0.2)
                     .attr("transform", "translate(" + trans[0] + "," + trans[1] + ")" + "scale(" + trans[2] + ")");
