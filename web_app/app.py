@@ -59,10 +59,11 @@ def plot_figure():
     mask = list(data[2])
 
     full_data = session.get("data")
-    centroids = []
+    print(len(full_data["lat"]))
     masked_data = apply_mask(mask, full_data)
+    print(len(masked_data["lat"]))
     clustered_data = cluster_request(masked_data, keys, cluster_type="kmeans", cluster_no=num_clusters)
-    centroids.append(list(clustered_data["centroids"]))
+    centroids = list(clustered_data["centroids"])
     count = list(clustered_data["count"])
 
     if len(keys) <= 2:

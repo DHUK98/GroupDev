@@ -18,6 +18,7 @@ flask-session = "*"
 ujson = "*"
 werkzeug = "==0.16.1"
 jsonmerge = "*"
+shapely = "*"
 
 [requires]
 python_version = "3.6"

@@ -5,7 +5,7 @@ let options = {
 };
 
 let stackList = new List("stack_list", options);
-var data_load = false;
+let data_load = false;
 
 
 function update_stack_html() {

@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 from flask import session
 import ujson as json
 
-
 def plot_svg(data, keys, count):
     """ renders the plot on the fly.
     """
@@ -41,7 +40,6 @@ def plot_svg3d(data, keys, count):
     ax.set_ylabel(keys[1])
     ax.set_zlabel(keys[2])
     a = [float(i) / max(count) * 5 for i in count]
-
     xs = data[0]
     ys = data[1]
     zs = data[2]
