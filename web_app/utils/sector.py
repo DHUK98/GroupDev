@@ -28,9 +28,17 @@ def sector_point(x, y, start_ang, end_ang, dist):
         return False
     return is_angle_between(point_ang, start_ang, end_ang)
 
+# Temporary measure, in future will change so that for single sector int params will be lists of length 1
+def sector(id, i, start, end_, dist, thresh):
+    # Switch function to redirect either to single_sector() or multi_sector() depending on input
+    if type(start) == list:
+        return multi_sector(id, i, start, end_, dist, thresh)
+    else:
+        return single_sector(id, i, start, end_, dist, thresh)
 
-def sector(id, i, start_ang, end_ang, dist, thresh):
-    print("sector.py sector start")
+
+def single_sector(id, i, start_ang, end_ang, dist, thresh):
+    print("sector.py single_sector start")
     output = []
     # data = get_data(id, i)
     data = session.get('data')
@@ -50,6 +58,56 @@ def sector(id, i, start_ang, end_ang, dist, thresh):
                 break
             test = transformer.transform(np.array(lon[j][k]), np.array(lat[j][k]))
             sec = sector_point(test[0], test[1], start_ang, end_ang, dist)
+            if not sec:
+                outside += 1
+
+        if outside <= thresh:
+            output.append(1)
+        else:
+            output.append(0)
+
+    print("sector.py sector done")
+
+    return output
+
+
+def multi_sector(id, i, start_angles, end_angles, dists, thresh):
+    print("sector.py multi_sector start")
+    output = []
+    # data = get_data(id, i)
+    data = session.get('data')
+    lat = data["lat"]
+    lon = data["lon"]
+    transformer = Transformer.from_crs({"proj": "longlat", "datum": 'WGS84'},
+                                       {"proj": 'aeqd', "lon_0": str(lon[0][0]), "lat_0": str(lat[0][0]),
+                                        "datum": 'WGS84'}, skip_equivalent=True)
+
+    n_sectors = len(dists)
+
+    # SEE TRELLO KNOWN BUGS
+    for s in range(n_sectors):
+        if start_angles[s] == 0 and end_angles[s] == 360:
+            return list(np.ones(len(lat)))
+
+        print("start loop for sector", s)
+    for j in range(len(lat)):
+
+        outside = 0
+        for k in range(len(lat[j])):
+
+            if outside > thresh:
+                break
+            test = transformer.transform(np.array(lon[j][k]), np.array(lat[j][k]))
+            sec = False
+
+            # Test each point against each sector; point counted as legal if it is within at least 1 sector
+            for s in range(n_sectors):
+                test_sec = sector_point(test[0], test[1], start_angles[s], end_angles[s], dists[s])
+                if test_sec:
+                    sec = True
+                    break
+
+            # Add 1 to 'outside' score if point is not in any sector
             if not sec:
                 outside += 1
 

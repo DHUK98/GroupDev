@@ -36,7 +36,7 @@ document.getElementById("add_sector").onclick = function () {
     if (d_s > 0 && t_h >= 0 && t_h % 1 === 0) {
         let url = "/sector/" + iid +
             "/" + s_a + "/" + e_a +
-            "/" + d_s + "/" + t_h;
+            "/" + d_s + "/" + t_h;j
         if (url.includes("//"))
             return;
         renderSector(s_a, e_a, d_s / (20000 * 1000) * 250);
